@@ -264,6 +264,36 @@ export const eventAttendees = pgTable(
   ],
 );
 
+export const eventInvites = pgTable(
+  "event_invites",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    demoRunId: uuid("demo_run_id").references(() => demoRuns.id, {
+      onDelete: "cascade",
+    }),
+    eventId: uuid("event_id")
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+    secretHash: varchar("secret_hash", { length: 64 }).notNull(),
+    createdByUserId: uuid("created_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("event_invites_secret_hash_unique").on(table.secretHash),
+    uniqueIndex("event_invites_one_active_event_unique")
+      .on(table.eventId)
+      .where(sql`${table.revokedAt} is null`),
+    index("event_invites_event_active_idx")
+      .on(table.eventId)
+      .where(sql`${table.revokedAt} is null`),
+    index("event_invites_demo_run_idx").on(table.demoRunId),
+  ],
+);
+
 export const venues = pgTable(
   "venues",
   {

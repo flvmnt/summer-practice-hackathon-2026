@@ -5,6 +5,8 @@ import {
   chatUserGroupBucket,
   evaluateAuthRateLimit,
   hashRateLimitParts,
+  invitePreviewIpBucket,
+  inviteUserEventBucket,
   loginIpUserBucket,
   loginUserBucket,
   recoveryIpUserBucket,
@@ -34,11 +36,19 @@ describe("auth rate limit helpers", () => {
     expect(chatUserEventBucket("user-1", "event-1")).toMatch(
       /^chat:send:user_event:[a-f0-9]{32}$/,
     );
+    expect(inviteUserEventBucket("user-1", "event-1")).toMatch(
+      /^invite:create:user_event:[a-f0-9]{32}$/,
+    );
+    expect(invitePreviewIpBucket("192.0.2.10")).toMatch(
+      /^invite:preview:ip:[a-f0-9]{32}$/,
+    );
   });
 
   it("keeps auth policies aligned with the spec", () => {
     expect(AUTH_RATE_LIMIT_POLICIES).toEqual({
       chatUserGroup: { limit: 20, windowSeconds: 60 },
+      invitePreviewIp: { limit: 60, windowSeconds: 60 },
+      inviteUserEvent: { limit: 6, windowSeconds: 3600 },
       loginIpUser: { limit: 5, windowSeconds: 900 },
       loginUser: { limit: 10, windowSeconds: 900 },
       signupIp: { limit: 10, windowSeconds: 3600 },

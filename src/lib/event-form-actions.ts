@@ -3,6 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { postEventMessageAction } from "@/lib/chat";
 import { createGroupEventAction } from "@/lib/events";
+import { createEventInviteAction, revokeEventInviteAction } from "@/lib/invites";
 import { castVenueVoteAction } from "@/lib/votes";
 
 export type CreateGroupEventFormState = {
@@ -21,6 +22,12 @@ export type EventChatFormState = {
 export type VenueVoteFormState = {
   error?: string;
   voted?: boolean;
+};
+
+export type EventInviteFormState = {
+  error?: string;
+  invitePath?: string;
+  revoked?: boolean;
 };
 
 function stringField(formData: FormData, name: string) {
@@ -79,4 +86,36 @@ export async function castVenueVoteFormAction(
   }
 
   return { voted: true };
+}
+
+export async function createEventInviteFormAction(
+  _previousState: EventInviteFormState,
+  formData: FormData,
+): Promise<EventInviteFormState> {
+  const result = await createEventInviteAction({
+    eventId: stringField(formData, "eventId"),
+    locale: stringField(formData, "locale") === "en" ? "en" : "ro",
+  });
+
+  if (!result.ok) {
+    return { error: result.error };
+  }
+
+  return { invitePath: result.data.invitePath };
+}
+
+export async function revokeEventInviteFormAction(
+  _previousState: EventInviteFormState,
+  formData: FormData,
+): Promise<EventInviteFormState> {
+  const result = await revokeEventInviteAction({
+    eventId: stringField(formData, "eventId"),
+    locale: stringField(formData, "locale") === "en" ? "en" : "ro",
+  });
+
+  if (!result.ok) {
+    return { error: result.error };
+  }
+
+  return { revoked: true };
 }

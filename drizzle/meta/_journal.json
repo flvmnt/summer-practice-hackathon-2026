@@ -57,6 +57,13 @@
       "when": 1778321904492,
       "tag": "0007_cultured_kree",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1778322831411,
+      "tag": "0008_keen_energizer",
+      "breakpoints": true
     }
   ]
 }

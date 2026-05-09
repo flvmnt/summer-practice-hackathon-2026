@@ -82,6 +82,7 @@ export type EventDetails = {
     whenAt: string;
     durationMin: number;
     customLocationText: string | null;
+    createdByUserId: string | null;
   };
   attendees: Array<{
     userId: string;
@@ -334,6 +335,7 @@ export async function getEventAction(input: {
       whenAt: events.whenAt,
       durationMin: events.durationMin,
       customLocationText: events.customLocationText,
+      createdByUserId: events.createdByUserId,
     })
     .from(events)
     .where(eq(events.id, parsed.data.eventId))
@@ -407,6 +409,7 @@ export async function getEventAction(input: {
       whenAt: event.whenAt.toISOString(),
       durationMin: event.durationMin,
       customLocationText: event.customLocationText,
+      createdByUserId: event.createdByUserId,
     },
     attendees,
     messages: await loadEventMessages(parsed.data.eventId, 30),

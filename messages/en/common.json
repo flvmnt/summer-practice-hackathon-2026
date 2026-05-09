@@ -268,7 +268,9 @@
       "messagePlaceholder": "Message the group",
       "send": "Send message",
       "sending": "Sending",
-      "genericError": "The message could not be sent. Check your session and try again."
+      "genericError": "The message could not be sent. Check your session and try again.",
+      "emptyTitle": "No group messages yet",
+      "emptyBody": "Start with the first concrete plan: time, venue, or who can bring equipment."
     },
     "sports": {
       "football": "Football",
@@ -299,6 +301,19 @@
       "indoor_recommended": "Rain risk is high. Prefer an indoor or covered venue.",
       "wind_warning": "Wind may affect this sport. Keep an indoor fallback ready.",
       "cold_warning": "Cold conditions. Consider indoor play or a shorter session."
+    },
+    "invite": {
+      "title": "Invite link",
+      "body": "Create a public preview link for this event. It does not include chat, attendees, votes, or private group details.",
+      "create": "Create invite link",
+      "creating": "Creating link",
+      "share": "Share",
+      "copy": "Copy",
+      "copied": "Copied",
+      "revoke": "Revoke active link",
+      "revoking": "Revoking",
+      "revoked": "Active invite links were revoked.",
+      "genericError": "The invite link could not be updated. Check your session and owner role."
     },
     "chatTitle": "Event chat",
     "attendeesTitle": "Attendees",
@@ -357,6 +372,37 @@
     "title": "Judge Mode placeholder",
     "enabledBody": "Demo proof is enabled by environment flag. Scoring rows stay unclaimed until later phases add live or seeded proof.",
     "disabledBody": "Demo proof is disabled by environment flag. Scoring rows stay unclaimed until later phases add live or seeded proof."
+  },
+  "invitePreview": {
+    "back": "Back to ShowUp2Move",
+    "eyebrow": "Event invite",
+    "title": "{sport} with ShowUp2Move",
+    "body": "A private group is organizing this activity. Join or log in to coordinate in the app.",
+    "when": "When: {when}",
+    "duration": "Duration: {minutes} min",
+    "location": "Location: {location}",
+    "city": "City: {city}",
+    "status": "Status: {status}",
+    "signup": "Create account",
+    "login": "Log in",
+    "venuePending": "Venue shared after joining",
+    "statuses": {
+      "proposed": "Proposed",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled"
+    },
+    "sports": {
+      "football": "Football",
+      "basketball": "Basketball",
+      "tennis": "Tennis",
+      "volleyball": "Volleyball",
+      "badminton": "Badminton",
+      "running": "Running",
+      "cycling": "Cycling",
+      "yoga": "Yoga",
+      "hiking": "Hiking",
+      "table_tennis": "Table tennis"
+    }
   },
   "notFound": {
     "title": "Page not found",

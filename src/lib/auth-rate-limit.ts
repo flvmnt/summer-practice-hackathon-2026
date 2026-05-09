@@ -26,6 +26,8 @@ export const AUTH_RATE_LIMIT_POLICIES = {
   signupIp: { limit: 10, windowSeconds: 60 * 60 },
   recoveryIpUser: { limit: 3, windowSeconds: 30 * 60 },
   chatUserGroup: { limit: 20, windowSeconds: 60 },
+  inviteUserEvent: { limit: 6, windowSeconds: 60 * 60 },
+  invitePreviewIp: { limit: 60, windowSeconds: 60 },
 } as const;
 
 function normalizePart(value: string) {
@@ -64,6 +66,14 @@ export function chatUserGroupBucket(userId: string, groupId: string) {
 
 export function chatUserEventBucket(userId: string, eventId: string) {
   return `chat:send:user_event:${hashRateLimitParts(userId, eventId)}`;
+}
+
+export function inviteUserEventBucket(userId: string, eventId: string) {
+  return `invite:create:user_event:${hashRateLimitParts(userId, eventId)}`;
+}
+
+export function invitePreviewIpBucket(ip: string) {
+  return `invite:preview:ip:${hashRateLimitParts(ip)}`;
 }
 
 export function evaluateAuthRateLimit(

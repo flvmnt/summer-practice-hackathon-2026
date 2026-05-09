@@ -268,7 +268,9 @@
       "messagePlaceholder": "Trimite un mesaj grupului",
       "send": "Trimite mesaj",
       "sending": "Se trimite",
-      "genericError": "Mesajul nu a putut fi trimis. Verifică sesiunea și încearcă din nou."
+      "genericError": "Mesajul nu a putut fi trimis. Verifică sesiunea și încearcă din nou.",
+      "emptyTitle": "Nu există încă mesaje în grup",
+      "emptyBody": "Începe cu primul plan concret: oră, locație sau cine poate aduce echipament."
     },
     "sports": {
       "football": "Fotbal",
@@ -299,6 +301,19 @@
       "indoor_recommended": "Riscul de ploaie este ridicat. Preferă o locație indoor sau acoperită.",
       "wind_warning": "Vântul poate afecta acest sport. Păstrează o variantă indoor.",
       "cold_warning": "Este frig. Luați în calcul indoor sau o sesiune mai scurtă."
+    },
+    "invite": {
+      "title": "Link de invitație",
+      "body": "Creează un link public de previzualizare pentru eveniment. Nu include chat, participanți, voturi sau detalii private ale grupului.",
+      "create": "Creează link",
+      "creating": "Se creează linkul",
+      "share": "Distribuie",
+      "copy": "Copiază",
+      "copied": "Copiat",
+      "revoke": "Revocă linkul activ",
+      "revoking": "Se revocă",
+      "revoked": "Linkurile active de invitație au fost revocate.",
+      "genericError": "Linkul de invitație nu a putut fi actualizat. Verifică sesiunea și rolul de owner."
     },
     "chatTitle": "Chat de eveniment",
     "attendeesTitle": "Participanți",
@@ -357,6 +372,37 @@
     "title": "Placeholder pentru Mod juriu",
     "enabledBody": "Dovada demo este activată prin variabilă de mediu. Rândurile de scor rămân nerevendicate până când fazele următoare adaugă dovezi live sau seeded.",
     "disabledBody": "Dovada demo este dezactivată prin variabilă de mediu. Rândurile de scor rămân nerevendicate până când fazele următoare adaugă dovezi live sau seeded."
+  },
+  "invitePreview": {
+    "back": "Înapoi la ShowUp2Move",
+    "eyebrow": "Invitație la eveniment",
+    "title": "{sport} prin ShowUp2Move",
+    "body": "Un grup privat organizează această activitate. Creează cont sau autentifică-te ca să coordonezi în aplicație.",
+    "when": "Când: {when}",
+    "duration": "Durată: {minutes} min",
+    "location": "Locație: {location}",
+    "city": "Oraș: {city}",
+    "status": "Status: {status}",
+    "signup": "Creează cont",
+    "login": "Autentificare",
+    "venuePending": "Locația este afișată după intrare",
+    "statuses": {
+      "proposed": "Propus",
+      "confirmed": "Confirmat",
+      "cancelled": "Anulat"
+    },
+    "sports": {
+      "football": "Fotbal",
+      "basketball": "Baschet",
+      "tennis": "Tenis",
+      "volleyball": "Volei",
+      "badminton": "Badminton",
+      "running": "Alergare",
+      "cycling": "Ciclism",
+      "yoga": "Yoga",
+      "hiking": "Drumeție",
+      "table_tennis": "Tenis de masă"
+    }
   },
   "notFound": {
     "title": "Pagina nu a fost găsită",
