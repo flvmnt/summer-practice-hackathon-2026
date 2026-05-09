@@ -16,13 +16,43 @@ export function GET(request: Request) {
       ok: true,
       rows: [
         {
-          id: "phase-0-shell",
+          id: "foundation-shell",
           label: "Deployable shell",
-          status: "fallback",
+          status: "live",
           proof: "/api/health",
         },
+        {
+          id: "auth",
+          label: "Registration, login, and recovery routes",
+          status: "fallback",
+          proof: "/ro/signup",
+        },
+        {
+          id: "profile-onboarding",
+          label: "Profile, sports, skill, and location onboarding routes",
+          status: "fallback",
+          proof: "/ro/onboarding/profile",
+        },
+        {
+          id: "show-up-today",
+          label: "ShowUpToday availability and matching response path",
+          status: "fallback",
+          proof: "/ro/today",
+        },
+        {
+          id: "matching-groups-chat-events",
+          label: "Matching, groups, chat, events, maps, and votes",
+          status: "missing",
+          proof: "Not implemented yet",
+        },
+        {
+          id: "ai-photo-upload",
+          label: "Photo upload and AI assistance",
+          status: "missing",
+          proof: "Not implemented yet",
+        },
       ],
-      note: "Placeholder only. Later phases must replace this with rubric-row proof.",
+      note: "Only rows marked live should be claimed during judging.",
     },
     {
       headers: {
