@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { AuthField } from "@/components/auth/AuthField";
 import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 import { Glyph } from "@/components/ui/Glyph";
@@ -102,6 +102,17 @@ export function RecoverForm({
 }) {
   const [state, formAction] = useActionState(recoverFormAction, initialState);
   const formError = errorText(state.error, copy);
+  const [username, setUsername] = useState("");
+  const [recoveryCode, setRecoveryCode] = useState("");
+  // Stage 1 = identify (username + recovery code). Stage 2 = set new password.
+  // Both fields must be filled before the password field is revealed so the
+  // user can't see step 2 before establishing identity. The action still
+  // verifies the recovery code server-side; this is a UX gate, not a security
+  // boundary.
+  const stage: "identify" | "verified" =
+    username.trim().length > 0 && recoveryCode.trim().length >= 4
+      ? "verified"
+      : "identify";
 
   if (state.newRecoveryCode) {
     // Step 3 — success
@@ -153,16 +164,18 @@ export function RecoverForm({
     );
   }
 
-  // Steps 1 + 2 are submitted together via the existing action; we render
-  // both fields on one page but keep the visual rail pinned to "step 1" until
-  // the user has typed in the recovery code (purely visual aid).
+  // Step 2 (new password) is hidden until the user has filled in both
+  // username + recovery code. The action still verifies the code on submit;
+  // this is a visual gate so the password field doesn't render before
+  // identity is established.
   return (
     <form action={formAction} className="grid gap-4">
-      <StepRail active={1} steps={steps} />
+      <StepRail active={stage === "verified" ? 2 : 1} steps={steps} />
       <AuthField
         autoComplete="username"
         label={copy.username}
         name="username"
+        onValueChange={setUsername}
         placeholder={copy.usernamePlaceholder}
         showPasswordLabel={showLabel}
         hidePasswordLabel={hideLabel}
@@ -171,31 +184,36 @@ export function RecoverForm({
         autoComplete="one-time-code"
         label={copy.recoveryCode}
         name="recoveryCode"
+        onValueChange={setRecoveryCode}
         placeholder={copy.recoveryCodePlaceholder}
         showPasswordLabel={showLabel}
         hidePasswordLabel={hideLabel}
       />
-      <div
-        className="my-1"
-        aria-hidden
-        style={{ height: 1, background: "var(--line)" }}
-      />
-      <p
-        className="mono text-[10px] font-bold uppercase"
-        style={{ color: "var(--ink-muted)", letterSpacing: "0.12em" }}
-      >
-        {steps.step2}
-      </p>
-      <AuthField
-        autoComplete="new-password"
-        label={copy.newPassword}
-        minLength={8}
-        name="newPassword"
-        placeholder={copy.newPasswordPlaceholder}
-        type="password"
-        showPasswordLabel={showLabel}
-        hidePasswordLabel={hideLabel}
-      />
+      {stage === "verified" ? (
+        <>
+          <div
+            className="my-1"
+            aria-hidden
+            style={{ height: 1, background: "var(--line)" }}
+          />
+          <p
+            className="mono text-[10px] font-bold uppercase"
+            style={{ color: "var(--ink-muted)", letterSpacing: "0.12em" }}
+          >
+            {steps.step2}
+          </p>
+          <AuthField
+            autoComplete="new-password"
+            label={copy.newPassword}
+            minLength={8}
+            name="newPassword"
+            placeholder={copy.newPasswordPlaceholder}
+            type="password"
+            showPasswordLabel={showLabel}
+            hidePasswordLabel={hideLabel}
+          />
+        </>
+      ) : null}
       {formError ? (
         <p
           className="text-[13px] font-medium"
@@ -210,7 +228,11 @@ export function RecoverForm({
           {formError}
         </p>
       ) : null}
-      <AuthSubmitButton label={copy.submit} pendingLabel={copy.pending} />
+      <AuthSubmitButton
+        label={copy.submit}
+        pendingLabel={copy.pending}
+        disabled={stage !== "verified"}
+      />
     </form>
   );
 }

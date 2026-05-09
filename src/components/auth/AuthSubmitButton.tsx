@@ -6,24 +6,30 @@ import { useFormStatus } from "react-dom";
 type AuthSubmitButtonProps = {
   label: string;
   pendingLabel: string;
+  disabled?: boolean;
 };
 
 /**
  * AuthSubmitButton — direction B sodium-orange primary using the .btn-s2m
  * utility from globals.css. Pinned to the form so useFormStatus works.
  */
-export function AuthSubmitButton({ label, pendingLabel }: AuthSubmitButtonProps) {
+export function AuthSubmitButton({
+  label,
+  pendingLabel,
+  disabled = false,
+}: AuthSubmitButtonProps) {
   const { pending } = useFormStatus();
+  const isDisabled = pending || disabled;
 
   return (
     <button
       type="submit"
       className="btn-s2m"
-      disabled={pending}
+      disabled={isDisabled}
       aria-busy={pending || undefined}
       style={{
         width: "100%",
-        opacity: pending ? 0.7 : 1,
+        opacity: isDisabled ? 0.7 : 1,
       }}
     >
       {pending ? (

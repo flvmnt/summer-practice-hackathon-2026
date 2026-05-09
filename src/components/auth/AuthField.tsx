@@ -15,6 +15,7 @@ type AuthFieldProps = {
   inputMode?: InputHTMLAttributes<HTMLInputElement>["inputMode"];
   showPasswordLabel?: string;
   hidePasswordLabel?: string;
+  onValueChange?: (value: string) => void;
 };
 
 /**
@@ -34,6 +35,7 @@ export function AuthField({
   inputMode,
   showPasswordLabel = "Show password",
   hidePasswordLabel = "Hide password",
+  onValueChange,
 }: AuthFieldProps) {
   const id = useId();
   const errId = error ? `${id}-err` : undefined;
@@ -74,6 +76,11 @@ export function AuthField({
             minHeight: 48,
             transition: "border-color var(--t-1) var(--ease), box-shadow var(--t-1) var(--ease)",
           }}
+          onChange={
+            onValueChange
+              ? (e) => onValueChange(e.currentTarget.value)
+              : undefined
+          }
           onFocus={(e) => {
             e.currentTarget.style.borderColor = error
               ? "var(--alert)"
