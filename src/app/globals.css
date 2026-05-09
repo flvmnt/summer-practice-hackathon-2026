@@ -446,3 +446,17 @@ select {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+/*
+ * Bottom gutter for pages that mount the fixed MobileTabBar so the last
+ * scrollable row isn't overlapped. 78px (bar) + safe-area-inset-bottom + 16px
+ * breathing room. Cleared on md+ where the tabbar is hidden.
+ */
+.has-mobile-tabbar {
+  padding-bottom: calc(78px + env(safe-area-inset-bottom) + 16px);
+}
+@media (min-width: 768px) {
+  .has-mobile-tabbar {
+    padding-bottom: 0;
+  }
+}

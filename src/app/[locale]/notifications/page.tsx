@@ -96,7 +96,7 @@ export default async function NotificationsPage({
       style={{
         background: "var(--bg)",
         color: "var(--ink)",
-        paddingBottom: "calc(96px + env(safe-area-inset-bottom))",
+        paddingBottom: "calc(96px + env(safe-area-inset-bottom) + 16px)",
       }}
     >
       <header

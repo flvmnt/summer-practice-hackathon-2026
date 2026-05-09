@@ -105,7 +105,7 @@ export default async function CreateEventPage({
       style={{
         background: "var(--surface-2)",
         color: "var(--ink)",
-        paddingBottom: "calc(78px + env(safe-area-inset-bottom))",
+        paddingBottom: "calc(78px + env(safe-area-inset-bottom) + 16px)",
       }}
     >
       <header className="flex items-center gap-3 px-5 pt-6 md:hidden">

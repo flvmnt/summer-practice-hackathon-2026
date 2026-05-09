@@ -88,7 +88,7 @@ export default async function CalendarPage({
       style={{
         background: "var(--bg)",
         color: "var(--ink)",
-        paddingBottom: "calc(78px + env(safe-area-inset-bottom))",
+        paddingBottom: "calc(78px + env(safe-area-inset-bottom) + 16px)",
       }}
     >
       <div

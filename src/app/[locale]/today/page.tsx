@@ -62,7 +62,7 @@ export default async function TodayPage({
       style={{
         background: "var(--bg)",
         color: "var(--ink)",
-        paddingBottom: "calc(78px + env(safe-area-inset-bottom))",
+        paddingBottom: "calc(78px + env(safe-area-inset-bottom) + 16px)",
       }}
     >
       {/* Mobile header */}

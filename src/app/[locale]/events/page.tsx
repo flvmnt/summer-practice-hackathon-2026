@@ -92,7 +92,7 @@ export default async function EventsPage({
       style={{
         background: "var(--surface-2)",
         color: "var(--ink)",
-        paddingBottom: "calc(78px + env(safe-area-inset-bottom))",
+        paddingBottom: "calc(78px + env(safe-area-inset-bottom) + 16px)",
       }}
     >
       <header
