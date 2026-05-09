@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /api/
+Disallow: /onboarding/
+Disallow: /ro/onboarding/
+Disallow: /en/onboarding/
+Disallow: /demo
+Disallow: /ro/demo
+Disallow: /en/demo
+Allow: /
