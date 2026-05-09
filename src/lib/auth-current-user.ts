@@ -30,12 +30,18 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
       locale: users.locale,
       bannedAt: users.bannedAt,
       deletedAt: users.deletedAt,
+      updatedAt: users.updatedAt,
     })
     .from(users)
     .where(eq(users.id, session.userId))
     .limit(1);
 
   if (!user || user.bannedAt || user.deletedAt) {
+    await clearSession();
+    return null;
+  }
+
+  if (!session.userUpdatedAt || session.userUpdatedAt !== user.updatedAt.toISOString()) {
     await clearSession();
     return null;
   }

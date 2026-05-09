@@ -3,11 +3,14 @@ import { headers } from "next/headers";
 
 export async function getRequestIp() {
   const headerStore = await headers();
-  const forwardedFor = headerStore.get("x-forwarded-for");
+  const directProxyIp =
+    headerStore.get("cf-connecting-ip") ??
+    headerStore.get("x-real-ip") ??
+    headerStore.get("fly-client-ip");
 
-  if (forwardedFor) {
-    return forwardedFor.split(",")[0]?.trim() || "unknown";
+  if (directProxyIp) {
+    return directProxyIp.trim() || "unknown";
   }
 
-  return headerStore.get("x-real-ip") ?? "unknown";
+  return "unknown";
 }

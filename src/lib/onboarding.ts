@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { getDb } from "@/db";
 import { userSports, users } from "@/db/schema";
 import { actionError, actionOk, type ActionResult } from "@/lib/action-result";
@@ -44,7 +44,13 @@ export async function updateOnboardingProfileAction(
       bio: parsed.data.bio,
       updatedAt: new Date(),
     })
-    .where(eq(users.id, session.userId))
+    .where(
+      and(
+        eq(users.id, session.userId),
+        isNull(users.bannedAt),
+        isNull(users.deletedAt),
+      ),
+    )
     .returning({
       id: users.id,
       username: users.username,
@@ -53,9 +59,10 @@ export async function updateOnboardingProfileAction(
       locale: users.locale,
       bannedAt: users.bannedAt,
       deletedAt: users.deletedAt,
+      updatedAt: users.updatedAt,
     });
 
-  if (!user || user.bannedAt || user.deletedAt) {
+  if (!user) {
     await clearSession();
     return actionError("unauthorized");
   }
@@ -66,6 +73,7 @@ export async function updateOnboardingProfileAction(
     fullName: user.fullName,
     isAdmin: user.isAdmin,
     locale: user.locale === "en" ? "en" : "ro",
+    userUpdatedAt: user.updatedAt.toISOString(),
   });
 
   return actionOk();
@@ -84,16 +92,8 @@ export async function setUserSportsAction(input: SetUserSportsInput): Promise<Ac
     return actionError("unauthorized");
   }
 
-  await getDb().transaction(async (tx) => {
-    await tx.delete(userSports).where(eq(userSports.userId, session.userId!));
-    await tx.insert(userSports).values(
-      parsed.data.sports.map((entry) => ({
-        userId: session.userId!,
-        sport: entry.sport,
-        level: entry.level,
-      })),
-    );
-    await tx
+  const user = await getDb().transaction(async (tx) => {
+    const [updatedUser] = await tx
       .update(users)
       .set({
         skillLevel: Math.round(
@@ -102,7 +102,50 @@ export async function setUserSportsAction(input: SetUserSportsInput): Promise<Ac
         ),
         updatedAt: new Date(),
       })
-      .where(eq(users.id, session.userId!));
+      .where(
+        and(
+          eq(users.id, session.userId!),
+          isNull(users.bannedAt),
+          isNull(users.deletedAt),
+        ),
+      )
+      .returning({
+        id: users.id,
+        username: users.username,
+        fullName: users.fullName,
+        isAdmin: users.isAdmin,
+        locale: users.locale,
+        updatedAt: users.updatedAt,
+      });
+
+    if (!updatedUser) {
+      return null;
+    }
+
+    await tx.delete(userSports).where(eq(userSports.userId, updatedUser.id));
+    await tx.insert(userSports).values(
+      parsed.data.sports.map((entry) => ({
+        userId: updatedUser.id,
+        sport: entry.sport,
+        level: entry.level,
+      })),
+    );
+
+    return updatedUser;
+  });
+
+  if (!user) {
+    await clearSession();
+    return actionError("unauthorized");
+  }
+
+  await saveUserSession({
+    userId: user.id,
+    username: user.username,
+    fullName: user.fullName,
+    isAdmin: user.isAdmin,
+    locale: user.locale === "en" ? "en" : "ro",
+    userUpdatedAt: user.updatedAt.toISOString(),
   });
 
   return actionOk();
@@ -138,17 +181,35 @@ export async function updateOnboardingLocationAction(
       maxDistanceKm: parsed.data.maxDistanceKm,
       updatedAt: new Date(),
     })
-    .where(eq(users.id, session.userId))
+    .where(
+      and(
+        eq(users.id, session.userId),
+        isNull(users.bannedAt),
+        isNull(users.deletedAt),
+      ),
+    )
     .returning({
       id: users.id,
-      bannedAt: users.bannedAt,
-      deletedAt: users.deletedAt,
+      username: users.username,
+      fullName: users.fullName,
+      isAdmin: users.isAdmin,
+      locale: users.locale,
+      updatedAt: users.updatedAt,
     });
 
-  if (!user || user.bannedAt || user.deletedAt) {
+  if (!user) {
     await clearSession();
     return actionError("unauthorized");
   }
+
+  await saveUserSession({
+    userId: user.id,
+    username: user.username,
+    fullName: user.fullName,
+    isAdmin: user.isAdmin,
+    locale: user.locale === "en" ? "en" : "ro",
+    userUpdatedAt: user.updatedAt.toISOString(),
+  });
 
   return actionOk();
 }

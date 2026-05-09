@@ -47,6 +47,7 @@ type AuthUserRow = {
   locale: string;
   bannedAt: Date | null;
   deletedAt: Date | null;
+  updatedAt: Date;
 };
 
 async function findUserByUsername(username: string): Promise<AuthUserRow | undefined> {
@@ -61,6 +62,7 @@ async function findUserByUsername(username: string): Promise<AuthUserRow | undef
       locale: users.locale,
       bannedAt: users.bannedAt,
       deletedAt: users.deletedAt,
+      updatedAt: users.updatedAt,
     })
     .from(users)
     .where(eq(users.username, username))
@@ -69,13 +71,16 @@ async function findUserByUsername(username: string): Promise<AuthUserRow | undef
   return user;
 }
 
-function sessionUserFromRow(user: Pick<AuthUserRow, "id" | "username" | "fullName" | "isAdmin" | "locale">) {
+function sessionUserFromRow(
+  user: Pick<AuthUserRow, "id" | "username" | "fullName" | "isAdmin" | "locale" | "updatedAt">,
+) {
   return {
     userId: user.id,
     username: user.username,
     fullName: user.fullName,
     isAdmin: user.isAdmin,
     locale: user.locale === "en" ? "en" as const : "ro" as const,
+    userUpdatedAt: user.updatedAt.toISOString(),
   };
 }
 
@@ -126,6 +131,7 @@ export async function signupAction(input: SignupInput): Promise<ActionResult<{ r
         fullName: users.fullName,
         isAdmin: users.isAdmin,
         locale: users.locale,
+        updatedAt: users.updatedAt,
       });
 
     if (!user) {
@@ -234,6 +240,7 @@ export async function recoverAccountAction(
       fullName: users.fullName,
       isAdmin: users.isAdmin,
       locale: users.locale,
+      updatedAt: users.updatedAt,
     });
 
   if (!updatedUser) {

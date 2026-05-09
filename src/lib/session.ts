@@ -11,6 +11,7 @@ export type SessionData = {
   fullName?: string;
   isAdmin?: boolean;
   locale?: AppLocale;
+  userUpdatedAt?: string;
 };
 
 const DEV_SESSION_SECRET =
@@ -42,7 +43,7 @@ export async function getSession() {
 }
 
 export type SessionUser = Required<Pick<SessionData, "userId" | "username" | "isAdmin">> &
-  Pick<SessionData, "fullName" | "locale">;
+  Pick<SessionData, "fullName" | "locale" | "userUpdatedAt">;
 
 export async function saveUserSession(user: SessionUser) {
   const session = await getSession();
@@ -51,6 +52,7 @@ export async function saveUserSession(user: SessionUser) {
   session.fullName = user.fullName;
   session.isAdmin = user.isAdmin;
   session.locale = user.locale;
+  session.userUpdatedAt = user.userUpdatedAt;
   await session.save();
 }
 
