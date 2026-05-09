@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { Glyph } from "@/components/ui/Glyph";
 import { Pill } from "@/components/ui/Pill";
 import { cn } from "@/lib/utils";
@@ -11,6 +12,8 @@ type Props = {
   backHref: string;
   backLabel: string;
   className?: string;
+  /** Optional trailing slot (e.g., <HeaderBell />). */
+  rightSlot?: ReactNode;
 };
 
 /**
@@ -26,6 +29,7 @@ export function GroupHeader({
   backHref,
   backLabel,
   className,
+  rightSlot,
 }: Props) {
   return (
     <header
@@ -73,6 +77,7 @@ export function GroupHeader({
           </div>
         ) : null}
       </div>
+      {rightSlot ? <div className="flex-none">{rightSlot}</div> : null}
     </header>
   );
 }

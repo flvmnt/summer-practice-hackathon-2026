@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Glyph } from "@/components/ui/Glyph";
 import { IconButton } from "@/components/ui/IconButton";
 import { Input } from "@/components/ui/Input";
+import { HeaderBell } from "@/components/layout/HeaderBell";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { MapDeniedFallback } from "./MapDeniedFallback";
 import { MapFilters, type TimeFilter } from "./MapFilters";
@@ -195,6 +196,7 @@ export function MapPageClient({ venues, filterSports, locale, labels }: Props) {
                 {labels.subtitle}
               </p>
             </div>
+            <HeaderBell unreadCount={0} locale={locale} />
           </div>
 
           <Input

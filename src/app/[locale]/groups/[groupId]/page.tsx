@@ -10,6 +10,8 @@ import { GroupHeader } from "@/components/group/GroupHeader";
 import { GroupMembersList } from "@/components/group/GroupMembersList";
 import { GroupTabs, type GroupTabId } from "@/components/group/GroupTabs";
 import { TeamBalancePanel } from "@/components/group/TeamBalancePanel";
+import { HeaderBell } from "@/components/layout/HeaderBell";
+import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { Card } from "@/components/ui/Card";
 import { Glyph } from "@/components/ui/Glyph";
 import { Pill } from "@/components/ui/Pill";
@@ -242,7 +244,10 @@ export default async function GroupPage({
   /* --------------------------- layout --------------------------- */
 
   return (
-    <main className="min-h-screen" style={{ background: "var(--surface-2)" }}>
+    <main
+      className="min-h-screen has-mobile-tabbar"
+      style={{ background: "var(--surface-2)" }}
+    >
       {/* Mobile header — sticky so count + captain stay above the fold */}
       <div className="sticky top-0 z-10 md:hidden">
         <GroupHeader
@@ -252,6 +257,7 @@ export default async function GroupPage({
           memberCount={members.length}
           sizeTarget={group.sizeTarget}
           sportLabel={sportLabel}
+          rightSlot={<HeaderBell unreadCount={0} locale={locale} />}
         />
       </div>
 
@@ -431,6 +437,8 @@ export default async function GroupPage({
           </Card>
         </div>
       </div>
+
+      <MobileTabBar />
     </main>
   );
 }

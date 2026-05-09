@@ -2,6 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { GroupListItem } from "@/components/groups/GroupListItem";
+import { HeaderBell } from "@/components/layout/HeaderBell";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Glyph } from "@/components/ui/Glyph";
@@ -113,6 +114,7 @@ export default async function GroupsPage({
             {copy.title}
           </h1>
         </div>
+        <HeaderBell unreadCount={0} locale={locale} />
       </header>
 
       <div className="mx-auto w-full max-w-3xl px-5 pt-4 md:pt-10">

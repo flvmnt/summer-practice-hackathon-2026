@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { HeaderBell } from "@/components/layout/HeaderBell";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { SetupBanner } from "@/components/onboarding/SetupBanner";
 import { TodayPromptCard } from "@/components/today/TodayPromptCard";
@@ -95,18 +96,7 @@ export default async function TodayPage({
           >
             <Glyph.sun size={14} /> 21° clear
           </span>
-          <Link
-            href={`/${locale}/notifications`}
-            aria-label="Notifications"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full"
-            style={{
-              background: "var(--surface)",
-              boxShadow: "inset 0 0 0 1px var(--line)",
-              color: "var(--ink)",
-            }}
-          >
-            <Glyph.bell size={18} />
-          </Link>
+          <HeaderBell unreadCount={0} locale={locale} />
         </div>
       </header>
 

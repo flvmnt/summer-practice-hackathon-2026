@@ -7,10 +7,6 @@ type Props = {
   demoEnabled: boolean;
 };
 
-/**
- * Wordmark — s2m with the "2" styled as a forward arrow.
- * Adapted from ShowUp2Move/screens.jsx::Wordmark.
- */
 function Wordmark({ size = 28 }: { size?: number }) {
   return (
     <span
@@ -18,7 +14,7 @@ function Wordmark({ size = 28 }: { size?: number }) {
       style={{
         fontSize: size,
         lineHeight: 1,
-        letterSpacing: "-0.045em",
+        letterSpacing: "-0.05em",
         color: "var(--ink)",
         display: "inline-flex",
         alignItems: "baseline",
@@ -27,38 +23,10 @@ function Wordmark({ size = 28 }: { size?: number }) {
     >
       s
       <span
-        style={{
-          position: "relative",
-          color: "var(--accent)",
-          display: "inline-block",
-          marginRight: ".02em",
-        }}
+        style={{ color: "var(--accent)", fontWeight: 400 }}
         aria-hidden="true"
       >
         2
-        <span
-          style={{
-            position: "absolute",
-            left: ".55em",
-            top: ".45em",
-            width: ".5em",
-            height: "2.5px",
-            background: "currentColor",
-            borderRadius: 2,
-          }}
-        />
-        <span
-          style={{
-            position: "absolute",
-            left: ".88em",
-            top: ".34em",
-            width: ".22em",
-            height: ".22em",
-            borderTop: "2.5px solid currentColor",
-            borderRight: "2.5px solid currentColor",
-            transform: "rotate(45deg)",
-          }}
-        />
       </span>
       m
     </span>

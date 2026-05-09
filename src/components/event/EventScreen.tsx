@@ -6,6 +6,7 @@ import { Glyph } from "@/components/ui/Glyph";
 import { IconButton } from "@/components/ui/IconButton";
 import { Pill } from "@/components/ui/Pill";
 import { ToastProvider } from "@/components/ui/Toast";
+import { HeaderBell } from "@/components/layout/HeaderBell";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import {
   CaptainAutoEventReveal,
@@ -111,6 +112,7 @@ export function EventScreen(props: Props) {
 
 function EventScreenInner({
   copy,
+  locale,
   groupHref,
   currentUserId,
   isCaptain,
@@ -339,6 +341,7 @@ function EventScreenInner({
           >
             {statusLabel}
           </Pill>
+          <HeaderBell unreadCount={0} locale={locale} />
         </div>
       </header>
 

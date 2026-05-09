@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
+import { HeaderBell } from "@/components/layout/HeaderBell";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { IcsExportButton } from "@/components/event/IcsExportButton";
 import { Card } from "@/components/ui/Card";
@@ -111,6 +112,7 @@ export default async function CalendarPage({
             <Glyph.back size={16} />
             {copy.back}
           </Link>
+          <HeaderBell unreadCount={0} locale={locale} />
         </header>
 
         <div style={{ marginTop: 24 }}>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { setRequestLocale } from "next-intl/server";
+import { HeaderBell } from "@/components/layout/HeaderBell";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { Avatar } from "@/components/ui/Avatar";
 import { Card } from "@/components/ui/Card";
@@ -151,7 +152,10 @@ export default async function LeaderboardPage({
             <Glyph.back size={16} />
             {todayLabel}
           </Link>
-          <Pill variant="live">{liveLabel}</Pill>
+          <div className="flex items-center gap-2">
+            <Pill variant="live">{liveLabel}</Pill>
+            <HeaderBell unreadCount={0} locale={locale} />
+          </div>
         </header>
 
         <div style={{ marginTop: 24 }}>

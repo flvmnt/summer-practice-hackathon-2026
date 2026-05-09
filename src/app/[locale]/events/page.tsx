@@ -2,6 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { EventListItem, type RsvpStatusLite } from "@/components/events/EventListItem";
+import { HeaderBell } from "@/components/layout/HeaderBell";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Glyph } from "@/components/ui/Glyph";
@@ -117,20 +118,23 @@ export default async function EventsPage({
             {copy.title}
           </h1>
         </div>
-        <Link
-          href={`/${locale}/events/new`}
-          className="grid place-items-center"
-          aria-label={copy.create}
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 999,
-            background: "var(--accent)",
-            color: "var(--on-accent, #fff)",
-          }}
-        >
-          <Glyph.plus size={18} />
-        </Link>
+        <div className="flex items-center gap-2">
+          <HeaderBell unreadCount={0} locale={locale} />
+          <Link
+            href={`/${locale}/events/new`}
+            className="grid place-items-center"
+            aria-label={copy.create}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 999,
+              background: "var(--accent)",
+              color: "var(--on-accent, #fff)",
+            }}
+          >
+            <Glyph.plus size={18} />
+          </Link>
+        </div>
       </header>
 
       <div className="mx-auto w-full max-w-3xl px-5 pt-4 md:pt-10">

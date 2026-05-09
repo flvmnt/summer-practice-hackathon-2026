@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { HeaderBell } from "@/components/layout/HeaderBell";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { InlineEditPanels } from "@/components/settings/InlineEditPanels";
 import { SettingsSection } from "@/components/settings/SettingsSection";
@@ -309,6 +310,7 @@ export default async function SettingsPage({
             {copy.title}
           </h1>
         </div>
+        <HeaderBell unreadCount={0} locale={locale} />
       </header>
 
       <SettingsTabs sections={sectionDefs} current={section} />

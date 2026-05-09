@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import Link from "next/link";
+import { HeaderBell } from "@/components/layout/HeaderBell";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import {
   MatchPercentPanel,
@@ -156,6 +157,7 @@ export default async function PublicProfilePage({
             {copy.eyebrow}
           </div>
         </div>
+        {viewer ? <HeaderBell unreadCount={0} locale={locale} /> : null}
       </header>
 
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-5 pt-4 md:pt-10">
