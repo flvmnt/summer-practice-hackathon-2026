@@ -15,8 +15,10 @@ type Props = {
     healthUnknown: string;
     seedLoaded: string;
     seedEmpty: string;
+    seedEmptyHint?: string;
     aiCache: string;
     aiCacheEmpty: string;
+    aiCacheEmptyHint?: string;
     build: string;
     seed: string;
     aiCacheLabel: string;
@@ -49,11 +51,13 @@ export function DemoHealth({
           .replace("{groups}", String(seed.groups))
           .replace("{events}", String(seed.events))
       : copy.seedEmpty;
+  const seedHint = totalSeeded === 0 ? copy.seedEmptyHint : undefined;
 
   const aiLabel =
     aiCacheEntries > 0
       ? copy.aiCache.replace("{count}", String(aiCacheEntries))
       : copy.aiCacheEmpty;
+  const aiHint = aiCacheEntries === 0 ? copy.aiCacheEmptyHint : undefined;
 
   return (
     <div
@@ -70,12 +74,14 @@ export function DemoHealth({
       <StatusTile
         eyebrow={copy.seed}
         body={seedLabel}
+        hint={seedHint}
         pill={totalSeeded > 0 ? `${totalSeeded}` : "0"}
         variant={totalSeeded > 0 ? "field" : "default"}
       />
       <StatusTile
         eyebrow={copy.aiCacheLabel}
         body={aiLabel}
+        hint={aiHint}
         pill={aiCacheEntries > 0 ? `${aiCacheEntries}` : "0"}
         variant={aiCacheEntries > 0 ? "accent" : "default"}
       />
@@ -93,12 +99,14 @@ export function DemoHealth({
 function StatusTile({
   eyebrow,
   body,
+  hint,
   pill,
   variant,
   mono,
 }: {
   eyebrow: string;
   body: string;
+  hint?: string;
   pill: string;
   variant: "field" | "alt" | "accent" | "default";
   mono?: boolean;
@@ -127,6 +135,14 @@ function StatusTile({
       >
         {body}
       </span>
+      {hint ? (
+        <span
+          className="text-[11px] leading-snug"
+          style={{ color: "var(--ink-muted)" }}
+        >
+          {hint}
+        </span>
+      ) : null}
     </div>
   );
 }

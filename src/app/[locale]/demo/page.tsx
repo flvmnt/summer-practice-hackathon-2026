@@ -11,6 +11,7 @@ import { isDemoModeEnabled } from "@/lib/demo/guard";
 import {
   RUBRIC_CATEGORIES,
   RUBRIC_TOTAL_MAX,
+  type RubricCategoryId,
   summarizeRubric,
 } from "@/lib/demo/scoring-proofs";
 import { getServerEnv } from "@/lib/env";
@@ -82,6 +83,16 @@ export default async function JudgeModePage({
   const buildSha =
     process.env.NEXT_PUBLIC_BUILD_SHA ?? health.commit ?? "dev";
 
+  // Localized category labels keyed by stable RubricCategoryId. Falls back to
+  // the canonical English label from scoring-proofs.ts if a key is ever missing.
+  const categoryLabel = (id: RubricCategoryId, fallback: string): string => {
+    try {
+      return t(`categories.${id}`);
+    } catch {
+      return fallback;
+    }
+  };
+
   return (
     <main
       className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-6 px-4 py-6 sm:px-6"
@@ -116,8 +127,10 @@ export default async function JudgeModePage({
           healthUnknown: t("health.unknown"),
           seedLoaded: t("health.seedLoaded"),
           seedEmpty: t("health.seedEmpty"),
+          seedEmptyHint: t("health.seedEmptyHint"),
           aiCache: t("health.aiCacheLoaded"),
           aiCacheEmpty: t("health.aiCacheEmpty"),
+          aiCacheEmptyHint: t("health.aiCacheEmptyHint"),
           build: t("health.build"),
           seed: t("health.seed"),
           aiCacheLabel: t("health.aiCache"),
@@ -127,11 +140,45 @@ export default async function JudgeModePage({
 
       <DemoControls locale={locale} copy={controlsCopy} />
 
-      <section className="flex flex-col gap-5">
+      {/* Sticky category nav: anchors to each section, scrolls horizontally
+          on narrow viewports so all caps stay reachable in one gesture. */}
+      <nav
+        aria-label={t("navAria")}
+        className="sticky top-0 z-10 -mx-4 px-4 py-2 sm:-mx-6 sm:px-6"
+        style={{
+          background:
+            "color-mix(in oklab, var(--bg) 88%, transparent)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          borderBottom: "1px solid var(--line)",
+        }}
+      >
+        <ul className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {RUBRIC_CATEGORIES.map((category) => (
+            <li key={category.id} className="shrink-0">
+              <a
+                href={`#${category.id}`}
+                className="mono inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em]"
+                style={{
+                  background: "var(--surface)",
+                  color: "var(--ink)",
+                  border: "1px solid var(--line)",
+                  borderRadius: "var(--r-pill)",
+                }}
+              >
+                {categoryLabel(category.id, category.label)}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <section className="flex flex-col gap-7">
         {RUBRIC_CATEGORIES.map((category) => (
           <RubricSection
             key={category.id}
-            label={category.label}
+            id={category.id}
+            label={categoryLabel(category.id, category.label)}
             rows={category.rows.map((row) => ({
               ...row,
               evidence: localizeEvidence(row.evidence, locale),
@@ -142,7 +189,7 @@ export default async function JudgeModePage({
       </section>
 
       <footer
-        className="mono mt-2 flex flex-col gap-2 px-3 py-3 text-[12px] tabular-nums"
+        className="mono mt-2 flex flex-col gap-2 px-3 py-3 text-[12px] tabular-nums sm:px-4"
         style={{
           background: "var(--surface)",
           border: "1px solid var(--line)",
@@ -150,7 +197,7 @@ export default async function JudgeModePage({
           color: "var(--ink)",
         }}
       >
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <span className="font-bold">
             {t("totals.total")} · {t("totals.claimed")}{" "}
             {summary.totalClaimed.toLocaleString()}p / {t("totals.max")}{" "}
@@ -158,7 +205,7 @@ export default async function JudgeModePage({
           </span>
           <Glyph.shield size={14} />
         </div>
-        <div className="flex flex-wrap items-center gap-3 text-[11px]">
+        <div className="flex flex-wrap items-center gap-2 text-[11px]">
           <LegendChip
             label={statusLabels.live}
             color="var(--field)"
@@ -182,7 +229,7 @@ export default async function JudgeModePage({
           />
           <LegendChip
             label={statusLabels.pending}
-            color="var(--ink-muted)"
+            color="var(--ink-2)"
             soft="var(--surface-2)"
             count={summary.byStatus.pending.count}
             points={summary.byStatus.pending.points}
@@ -208,11 +255,11 @@ function LegendChip({
 }) {
   return (
     <span
-      className="inline-flex items-center gap-1 px-2 py-0.5"
+      className="inline-flex items-center gap-1 px-2 py-0.5 whitespace-nowrap"
       style={{
         background: soft,
         color,
-        borderRadius: 6,
+        borderRadius: "var(--r-chip)",
       }}
     >
       <span className="font-bold uppercase tracking-[0.12em]">{label}</span>
