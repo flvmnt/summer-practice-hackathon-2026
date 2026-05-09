@@ -132,7 +132,6 @@ export function TodayQueuedCard({
               }}
             >
               <span>{link.label}</span>
-              <Glyph.arrow size={16} />
             </Link>
           ))}
         </div>

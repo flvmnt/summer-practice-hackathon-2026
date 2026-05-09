@@ -70,7 +70,6 @@ export function TodaySaidNoCard({ title, body, changeLabel, onChange }: Props) {
         }}
       >
         {changeLabel}
-        <Glyph.arrow size={14} />
       </button>
     </div>
   );

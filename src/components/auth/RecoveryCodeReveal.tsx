@@ -115,27 +115,6 @@ function RecoveryCodeRevealInner({ recoveryCode, username, locale, copy }: Props
 
   return (
     <div className="grid gap-5">
-      <div className="grid gap-2">
-        <span
-          className="mono text-[10px] font-bold uppercase"
-          style={{ color: "var(--accent-deep)", letterSpacing: "0.18em" }}
-        >
-          {copy.eyebrow}
-        </span>
-        <h2
-          className="display"
-          style={{ fontSize: 28, lineHeight: 1.05 }}
-        >
-          {copy.title}
-        </h2>
-        <p
-          className="text-[14px]"
-          style={{ color: "var(--ink-muted)", lineHeight: 1.5 }}
-        >
-          {copy.body}
-        </p>
-      </div>
-
       {/* Code tiles in a tactile bordered card */}
       <div
         style={{
@@ -160,16 +139,16 @@ function RecoveryCodeRevealInner({ recoveryCode, username, locale, copy }: Props
               key={`${block}-${i}`}
               className="mono"
               style={{
-                fontSize: 28,
+                fontSize: 22,
                 fontWeight: 600,
                 letterSpacing: "0.12em",
                 color: "var(--ink)",
                 background: "var(--surface)",
-                padding: "10px 14px",
+                padding: "8px 12px",
                 borderRadius: "var(--r-chip)",
                 border: "1px solid var(--line-2)",
                 boxShadow: "inset 0 1px 2px rgba(14,26,31,0.05)",
-                minWidth: 64,
+                minWidth: 56,
                 textAlign: "center",
               }}
             >
@@ -194,7 +173,7 @@ function RecoveryCodeRevealInner({ recoveryCode, username, locale, copy }: Props
             className="btn-s2m btn-secondary"
             style={{ minHeight: 48, fontSize: 14, background: "var(--surface)" }}
           >
-            {downloaded ? <Glyph.check size={16} /> : <Glyph.arrow size={16} />}
+            {downloaded ? <Glyph.check size={16} /> : null}
             {downloaded ? copy.downloaded : copy.download}
           </button>
         </div>
@@ -202,20 +181,16 @@ function RecoveryCodeRevealInner({ recoveryCode, username, locale, copy }: Props
 
       {/* Privacy notice */}
       <div
-        className="flex items-start gap-2.5"
+        className="flex items-center justify-center gap-2"
         style={{
-          padding: "12px 14px",
+          padding: "10px 14px",
           background: "var(--surface-2)",
           borderRadius: "var(--r-card)",
+          color: "var(--ink-muted)",
         }}
       >
-        <span style={{ color: "var(--ink-muted)", marginTop: 1 }}>
-          <Glyph.shield size={16} />
-        </span>
-        <p
-          className="text-[12px]"
-          style={{ color: "var(--ink-muted)", lineHeight: 1.45 }}
-        >
+        <Glyph.shield size={14} />
+        <p className="text-[12px] text-center" style={{ lineHeight: 1.4 }}>
           {copy.privacy}
         </p>
       </div>
@@ -251,7 +226,6 @@ function RecoveryCodeRevealInner({ recoveryCode, username, locale, copy }: Props
         }}
       >
         {copy.continue}
-        <Glyph.arrow size={16} />
       </button>
     </div>
   );

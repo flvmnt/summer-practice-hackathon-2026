@@ -52,7 +52,7 @@ export default async function SignupPage({
 
   return (
     <main
-      className="mx-auto flex min-h-screen w-full flex-col items-stretch px-4 py-8 sm:max-w-md sm:px-6 sm:py-12"
+      className="mx-auto flex min-h-screen w-full flex-col items-stretch px-3 py-6 sm:max-w-2xl sm:px-6 sm:py-12"
       style={{ background: "var(--bg)" }}
     >
       <Link
@@ -76,7 +76,7 @@ export default async function SignupPage({
         >
           {t("eyebrow")}
         </p>
-        <h1 className="display" style={{ fontSize: 36, lineHeight: 1.02 }}>
+        <h1 className="display" style={{ fontSize: 28, lineHeight: 1.05 }}>
           {brandLine}
         </h1>
         <p className="text-[14px]" style={{ color: "var(--ink-muted)", lineHeight: 1.5 }}>
@@ -93,14 +93,6 @@ export default async function SignupPage({
           border: "1px solid var(--line)",
         }}
       >
-        <div className="mb-4 grid gap-1">
-          <h2 className="display" style={{ fontSize: 22, lineHeight: 1.1 }}>
-            {t("cardTitle")}
-          </h2>
-          <p className="text-[13px]" style={{ color: "var(--ink-muted)", lineHeight: 1.5 }}>
-            {t("cardBody")}
-          </p>
-        </div>
         <SignupForm
           copy={t.raw("form")}
           locale={locale}

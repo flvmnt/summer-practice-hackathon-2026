@@ -158,7 +158,6 @@ export function RecoverForm({
           style={{ width: "100%" }}
         >
           {copy.continue}
-          <Glyph.arrow size={16} />
         </Link>
       </div>
     );

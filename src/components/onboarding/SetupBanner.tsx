@@ -55,7 +55,6 @@ export function SetupBanner({
           }}
         >
           Continue setup
-          <Glyph.arrow size={14} />
         </Link>
       </div>
       <div
