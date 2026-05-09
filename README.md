@@ -1,5 +1,19 @@
 # 🏆 Hackathon Challenge — ShowUp2Move
 
+## 🚀 Local setup
+
+1. Copy the env template and fill in real values:
+   `cp .env.example .env.local`
+2. Generate a 64-char session secret:
+   `openssl rand -hex 32` → paste into `SESSION_SECRET`
+3. Set `DATABASE_URL` to your local Postgres or Railway URL.
+4. Install deps, migrate, run dev server:
+   `pnpm install && pnpm db:migrate && pnpm dev`
+
+The dev server boots at <http://localhost:3000>. Required env vars are listed in `.env.example` with comments. AI, R2, and email keys are optional for local development — deterministic fallbacks are wired in their absence.
+
+---
+
 ## 🎯 Theme
 
 Build a **smart social sports-matching platform** that helps people quickly organize spontaneous sports activities with others nearby.
