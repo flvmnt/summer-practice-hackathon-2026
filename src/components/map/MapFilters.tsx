@@ -45,6 +45,12 @@ export function MapFilters({
       style={{
         padding: "4px 2px",
         scrollbarWidth: "none",
+        scrollSnapType: "x proximity",
+        WebkitOverflowScrolling: "touch",
+        WebkitMaskImage:
+          "linear-gradient(90deg, black 0, black calc(100% - 24px), transparent 100%)",
+        maskImage:
+          "linear-gradient(90deg, black 0, black calc(100% - 24px), transparent 100%)",
       }}
     >
       <button
