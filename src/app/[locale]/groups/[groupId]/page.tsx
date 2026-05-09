@@ -413,13 +413,18 @@ export default async function GroupPage({
       {/* Desktop: 3-column shell */}
       <div className="hidden md:block">
         <div
-          className="mx-auto grid w-full max-w-6xl gap-5 px-5 py-6"
-          style={{ gridTemplateColumns: "0.75fr 1.25fr 0.85fr" }}
+          className="mx-auto grid w-full gap-6 px-8 py-8 2xl:px-10"
+          style={{
+            maxWidth: 1640,
+            gridTemplateColumns:
+              "minmax(320px, 0.9fr) minmax(560px, 1.45fr) minmax(380px, 1fr)",
+          }}
         >
           {/* Left: members + plan summary */}
           <Card
             as="section"
             className="flex flex-col gap-4 p-5"
+            style={{ minHeight: "82vh" }}
             variant="card"
           >
             <Link
@@ -486,7 +491,7 @@ export default async function GroupPage({
           <Card
             as="section"
             className="flex flex-col overflow-hidden p-0"
-            style={{ minHeight: "70vh" }}
+            style={{ minHeight: "82vh" }}
             variant="card"
           >
             <header
@@ -516,6 +521,7 @@ export default async function GroupPage({
           <Card
             as="section"
             className="flex flex-col gap-4 p-5"
+            style={{ minHeight: "82vh" }}
             variant="card"
           >
             {isCaptain ? (

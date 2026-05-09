@@ -175,7 +175,7 @@ export async function CaptainBriefPanel({
         </span>
 
         {loading ? (
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-2">
             <BriefStatSkeleton />
             <BriefStatSkeleton />
             <BriefStatSkeleton />
@@ -186,7 +186,7 @@ export async function CaptainBriefPanel({
             body={t(`empty.body.${role}`)}
           />
         ) : (
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-2">
             <BriefStat
               icon={<Glyph.pin size={16} />}
               label={t("sections.venue")}

@@ -297,7 +297,7 @@ function EventScreenInner({
         borderRadius: 14,
         border: "1px solid var(--line)",
         overflow: "hidden",
-        minHeight: 360,
+        minHeight: 520,
       }}
     >
       {streamStatus !== "idle" &&
@@ -426,7 +426,7 @@ function EventScreenInner({
     <main
       className="mx-auto w-full"
       style={{
-        maxWidth: 1120,
+        maxWidth: 1560,
         paddingBottom: 92, // mobile tab bar height + safe area
       }}
     >
@@ -478,7 +478,7 @@ function EventScreenInner({
         </div>
       </header>
 
-      <div className="mx-auto grid w-full gap-4 px-4 py-4 lg:grid-cols-[0.85fr_1.2fr_0.95fr]">
+      <div className="mx-auto grid w-full gap-6 px-6 py-5 lg:grid-cols-[minmax(340px,0.95fr)_minmax(560px,1.35fr)_minmax(340px,0.9fr)] lg:px-8 lg:py-6">
         {/* Mobile: tabs. Desktop: 3-col with tabs hidden, all panels visible. */}
         <div className="lg:hidden">
           <EventTabs
@@ -490,7 +490,7 @@ function EventScreenInner({
         </div>
 
         <section className="hidden lg:block">{detailsPanel}</section>
-        <section className="hidden lg:flex lg:flex-col">{chatPanel}</section>
+        <section className="hidden lg:flex lg:min-h-[68vh] lg:flex-col">{chatPanel}</section>
         <section className="hidden lg:block">{votePanel}</section>
       </div>
 

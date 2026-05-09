@@ -2,7 +2,6 @@
 
 import { useFormStatus } from "react-dom";
 import { Glyph, type GlyphName } from "@/components/ui/Glyph";
-import { Pill } from "@/components/ui/Pill";
 import { NearbyAvatarRow } from "./NearbyAvatarRow";
 import type { SportKey } from "@/lib/sports";
 
@@ -102,8 +101,6 @@ export function TodayPromptHero({
   primarySport,
   yesLabel,
   noLabel,
-  windowLabel,
-  weatherLabel,
   nearbyLabel,
 }: Props) {
   // Split last word so we can color it accent - visual blueprint from screens.jsx
@@ -121,19 +118,12 @@ export function TodayPromptHero({
         border: "1px solid var(--line)",
       }}
     >
-      <div className="flex flex-wrap items-center gap-2">
-        <Pill variant="live">
-          <span style={{ fontWeight: 700 }}>{windowLabel}</span>
-        </Pill>
-        <Pill icon={<Glyph.cloud size={14} />}>{weatherLabel}</Pill>
-      </div>
       <div
         className="display"
         style={{
           fontSize: "clamp(48px, 11vw, 72px)",
           lineHeight: 0.95,
           letterSpacing: "-0.045em",
-          marginTop: 18,
         }}
       >
         {lead ? <>{lead} </> : null}
