@@ -30,7 +30,7 @@ const SPORT_GLYPH: Record<string, keyof typeof Glyph> = {
   basketball: "basketball",
   tennis: "tennis",
   volleyball: "volley",
-  badminton: "tennis",
+  badminton: "badminton",
   running: "running",
   cycling: "running",
   yoga: "pulse",

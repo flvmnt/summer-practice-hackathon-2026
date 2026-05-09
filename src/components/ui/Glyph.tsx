@@ -244,6 +244,18 @@ export const Glyph = {
       "M19 5 c-4 4 -4 10 0 14",
     ],
   }),
+  // Shuttlecock: cork ball at the bottom, conical feathers fanning up.
+  badminton: make({
+    paths: [
+      "M9 16 L7 5 L17 5 L15 16 Z",
+      "M12 5 L12 16",
+      "M11 9 L9.4 5",
+      "M13 9 L14.6 5",
+      "M12 19 m-1.6 0 a1.6 1.6 0 1 0 3.2 0 a1.6 1.6 0 1 0 -3.2 0",
+      "M10.4 19 L9 17",
+      "M13.6 19 L15 17",
+    ],
+  }),
   padel: make({
     paths: [
       "M5 4 H14 V13 H5 Z M5 4 a4 4 0 0 0 0 8 H5",

@@ -102,6 +102,9 @@ export function MapInner({
   useEffect(() => {
     const container = containerRef.current;
     if (!container || mapRef.current) return;
+    // Capture the markers map by reference so the cleanup function works on
+    // the same Map instance the effect saw, not a later replacement.
+    const markers = markersRef.current;
     let cancelled = false;
 
     const style: string | StyleSpecification = tileKey
@@ -183,7 +186,7 @@ export function MapInner({
         // ignore
       }
       mapRef.current = null;
-      markersRef.current.clear();
+      markers.clear();
     };
   }, [tileKey, reinitKey]);
 

@@ -22,7 +22,7 @@ const SPORT_GLYPH: Partial<Record<SportKey, GlyphName>> = {
   basketball: "basketball",
   tennis: "tennis",
   volleyball: "volley",
-  badminton: "tennis",
+  badminton: "badminton",
   running: "running",
   cycling: "running",
   yoga: "spark",
