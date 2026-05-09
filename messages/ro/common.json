@@ -6,7 +6,7 @@
     "signup": "Cont nou",
     "eyebrow": "Practică de vară Haufe 2026",
     "title": "Intră în meciul care se formează deja lângă tine.",
-    "subtitle": "O aplicație web mobile-first pentru potriviri sportive spontane — fotbal, tenis, baschet și alergare în Timișoara.",
+    "subtitle": "O aplicație web mobile-first pentru potriviri sportive spontane - fotbal, tenis, baschet și alergare în Timișoara.",
     "openToday": "Deschide Today",
     "judgeMode": "Mod juriu",
     "loopSteps": [
@@ -235,7 +235,7 @@
         "pro": "Pro"
       },
       "aiSuggestionsLabel": "Sugerate pentru tine",
-      "aiSuggestionsHint": "Din descrierea ta — apasă pentru a adăuga",
+      "aiSuggestionsHint": "Din descrierea ta - apasă pentru a adăuga",
       "empty": "Alege cel puțin un sport pentru a continua.",
       "next": "Înainte"
     },
@@ -269,8 +269,8 @@
       "cityLabel": "Oraș",
       "useLocation": "Folosește locația mea",
       "locating": "Se localizează…",
-      "locationDenied": "Locația refuzată — scrie orașul manual.",
-      "locationError": "N-am putut citi locația — scrie orașul manual.",
+      "locationDenied": "Locația refuzată - scrie orașul manual.",
+      "locationError": "N-am putut citi locația - scrie orașul manual.",
       "locationOk": "Am notat. O folosim doar pentru distanță.",
       "distanceLabel": "Cât de departe te deplasezi?",
       "km": "km",
@@ -280,11 +280,11 @@
     "photo": {
       "stepLabel": "Pasul 4 din 4",
       "title": "Adaugă o poză",
-      "subtitle": "Opțional — ajută echipa să te recunoască.",
+      "subtitle": "Opțional - ajută echipa să te recunoască.",
       "dropZoneTitle": "Trage o poză aici",
-      "dropZoneSub": "Opțional — JPG, PNG sau HEIC.",
+      "dropZoneSub": "Opțional - JPG, PNG sau HEIC.",
       "changePhoto": "Alege altă poză",
-      "uploadComing": "Încărcarea pozelor se conectează în curând — vei putea salva în alt pas.",
+      "uploadComing": "Încărcarea pozelor se conectează în curând - vei putea salva în alt pas.",
       "analyze": "Analizează cu AI",
       "analyzing": "Citesc poza…",
       "aiPicked": "AI a ales",
@@ -352,7 +352,7 @@
       },
       "queued": {
         "title": "Îți căutăm echipa",
-        "subhead": "Stai pe fază — verificăm toți jucătorii din apropiere care au zis da azi.",
+        "subhead": "Stai pe fază - verificăm toți jucătorii din apropiere care au zis da azi.",
         "lookingFor": "Caut {sport}",
         "searchingLabel": "Caut",
         "elapsedJustNow": "chiar acum",
@@ -536,7 +536,7 @@
       "empty": {
         "heading": "Niciun plan fixat încă",
         "body": {
-          "captain": "Fixează locația și ora de start când ești gata — echipa vede actualizările imediat.",
+          "captain": "Fixează locația și ora de start când ești gata - echipa vede actualizările imediat.",
           "viewer": "Căpitanul va fixa locația, ora de start și prognoza odată ce decide."
         },
         "venue": {
@@ -713,7 +713,7 @@
       "aiCacheLoaded": "{count} intrări în cache",
       "aiCacheEmpty": "Gol",
       "build": "Build",
-      "seedEmptyHint": "Demo nepopulat încă — rulează /api/demo/seed",
+      "seedEmptyHint": "Demo nepopulat încă - rulează /api/demo/seed",
       "aiCacheEmptyHint": "Cache-ul se umple după primul apel AI"
     },
     "controls": {
@@ -965,10 +965,10 @@
       "title": "Confidențialitate",
       "body": "Decide ce văd ceilalți.",
       "visibilityLabel": "Vizibilitate profil",
-      "public": "Public — oricine cu linkul",
-      "private": "Privat — doar membri din grupurile tale",
+      "public": "Public - oricine cu linkul",
+      "private": "Privat - doar membri din grupurile tale",
       "approxLocation": "Doar locație aproximativă",
-      "approxLocationBody": "Locația ta de acasă este mereu rotunjită — nu apare niciodată exact.",
+      "approxLocationBody": "Locația ta de acasă este mereu rotunjită - nu apare niciodată exact.",
       "alwaysOn": "Mereu activ"
     },
     "reminders": {
@@ -980,7 +980,7 @@
     "integrations": {
       "title": "Integrări",
       "body": "Conectează servicii externe.",
-      "strava": "Conectează Strava — în curând",
+      "strava": "Conectează Strava - în curând",
       "stravaBody": "OAuth/import Strava este pe traseul bonus."
     }
   },
@@ -1086,7 +1086,7 @@
       },
       "step3": {
         "title": "Ieși azi?",
-        "body": "Un singur tap dimineața. Da — căutăm jucători din apropiere acum."
+        "body": "Un singur tap dimineața. Da - căutăm jucători din apropiere acum."
       },
       "step4": {
         "title": "Potrivire + întâlnire",
@@ -1121,7 +1121,7 @@
   "leaderboard": {
     "kicker": "Clasament",
     "title": "Jucători săptămâna aceasta",
-    "body": "Punctele se acordă pentru prezență, conducere și serii. Clasament demonstrativ — clasamentul real vine cu telemetria potrivirilor.",
+    "body": "Punctele se acordă pentru prezență, conducere și serii. Clasament demonstrativ - clasamentul real vine cu telemetria potrivirilor.",
     "col": {
       "rank": "Loc",
       "player": "Jucător",
