@@ -73,7 +73,7 @@ export default async function NotificationsPage({
     markAllRead: t("markAllRead"),
     markRead: t("markRead"),
     open: t("open"),
-    unreadCount: (count: number) => t("unreadCount", { count }),
+    unreadCount: t.raw("unreadCount") as string,
     allCaughtUp: t("allCaughtUp"),
     filterAria: t("filterAria"),
     justNow: t("relativeTime.justNow"),

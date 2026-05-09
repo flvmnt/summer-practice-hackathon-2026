@@ -38,7 +38,7 @@ type NotificationInboxCopy = {
   markAllRead: string;
   markRead: string;
   open: string;
-  unreadCount: (count: number) => string;
+  unreadCount: string;
   allCaughtUp: string;
   filterAria: string;
   justNow: string;
@@ -152,7 +152,7 @@ export function NotificationInboxActions({
           aria-live="polite"
         >
           {unreadCount > 0
-            ? copy.unreadCount(unreadCount)
+            ? copy.unreadCount.replace("{count}", String(unreadCount))
             : copy.allCaughtUp}
         </div>
         <button
