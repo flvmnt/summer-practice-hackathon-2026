@@ -1,22 +1,26 @@
-import {
-  CalendarDays,
-  CalendarPlus,
-  CloudSun,
-  MapPinned,
-  MessageSquareText,
-  UsersRound,
-} from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { EventChatForm } from "@/components/event/EventChatForm";
-import { VenueVoteForm } from "@/components/event/VenueVoteForm";
+import { EventScreen, type EventScreenCopy } from "@/components/event/EventScreen";
+import type { RsvpStatus } from "@/components/event/RsvpButtons";
 import type { AppLocale } from "@/i18n/routing";
-import { getEventAction } from "@/lib/chat";
+import { getEventAction, getGroupAction } from "@/lib/chat";
 import type { SportKey } from "@/lib/sports";
 import { getOpenMeteoForecast } from "@/lib/weather";
 
 export const dynamic = "force-dynamic";
+
+type WeatherFit =
+  | "outdoor_good"
+  | "indoor_recommended"
+  | "wind_warning"
+  | "cold_warning";
+
+function asRsvp(status: string | undefined): RsvpStatus {
+  if (status === "going" || status === "maybe" || status === "declined") {
+    return status;
+  }
+  return "going";
+}
 
 export default async function EventPage({
   params,
@@ -32,193 +36,206 @@ export default async function EventPage({
     redirect(`/${locale}/today`);
   }
 
-  const { event, attendees, messages } = result.data;
-  const [weatherVenue] = [...result.data.venueCandidates].sort(
-    (left, right) => right.votes - left.votes || left.optionIdx - right.optionIdx,
-  );
-  const weather = weatherVenue
+  const { event, attendees, messages, venueCandidates, venueVote, currentUserId } =
+    result.data;
+
+  // Captain check — query the group via the existing action so we don't touch
+  // chat.ts. Falls back to "not captain" if group fetch fails.
+  const groupResult = await getGroupAction({ groupId: event.groupId });
+  const isCaptain = groupResult.ok
+    ? groupResult.data.group.captainUserId === currentUserId
+    : false;
+
+  // Pick recommended venue (rank 1 = first in deterministic order).
+  const recommended = venueCandidates[0] ?? null;
+  const weather = recommended
     ? await getOpenMeteoForecast({
-        lat: weatherVenue.lat,
-        lng: weatherVenue.lng,
+        lat: recommended.lat,
+        lng: recommended.lng,
         whenAt: event.whenAt,
         sport: event.sport,
       })
     : null;
+
   const sportLabel = t(`sports.${event.sport as SportKey}`);
-  const when = new Intl.DateTimeFormat(locale === "ro" ? "ro-RO" : "en-US", {
+  const whenFmt = new Intl.DateTimeFormat(locale === "ro" ? "ro-RO" : "en-US", {
     dateStyle: "medium",
     timeStyle: "short",
     timeZone: "Europe/Bucharest",
-  }).format(new Date(event.whenAt));
-  const weatherAt = weather
-    ? new Intl.DateTimeFormat(locale === "ro" ? "ro-RO" : "en-US", {
-        timeStyle: "short",
-        timeZone: "Europe/Bucharest",
-      }).format(new Date(weather.forecastAt))
+  });
+  const timeFmt = new Intl.DateTimeFormat(locale === "ro" ? "ro-RO" : "en-US", {
+    timeStyle: "short",
+    timeZone: "Europe/Bucharest",
+  });
+  const startsAt = new Date(event.whenAt);
+  const endsAt = new Date(startsAt.getTime() + event.durationMin * 60_000);
+  const whenLabel = whenFmt.format(startsAt);
+  const whenRange = `${timeFmt.format(startsAt)} – ${timeFmt.format(endsAt)}`;
+
+  const myAttendee = attendees.find((a) => a.userId === currentUserId);
+  const initialRsvp = asRsvp(myAttendee?.status);
+
+  const fit: WeatherFit | null = weather ? (weather.fit as WeatherFit) : null;
+
+  const copy: EventScreenCopy = {
+    back: t("back"),
+    tabs: {
+      details: locale === "ro" ? "Detalii" : "Details",
+      chat: locale === "ro" ? "Chat eveniment" : "Event chat",
+      vote: locale === "ro" ? "Vot" : "Vote",
+    },
+    details: {
+      sportLabel: t("title", { sport: sportLabel }),
+      whenLabel,
+      durationLabel: t("duration", { minutes: event.durationMin }),
+      venuePending: t("venuePending"),
+      weatherTitle: t("weatherTitle"),
+      weatherFit: {
+        outdoor_good: t("weatherFit.outdoor_good"),
+        indoor_recommended: t("weatherFit.indoor_recommended"),
+        wind_warning: t("weatherFit.wind_warning"),
+        cold_warning: t("weatherFit.cold_warning"),
+      },
+      weatherMetrics: weather
+        ? t("weatherMetrics", {
+            temperature: Math.round(weather.temperatureC),
+            rain: Math.round(weather.rainProbability),
+            wind: Math.round(weather.windKmh),
+          })
+        : "",
+      directions: t("directions"),
+      copyInvite: locale === "ro" ? "Copiază invitația" : "Copy invite",
+      inviteCopied: locale === "ro" ? "Invitație copiată" : "Invite copied",
+      inviteCopyError:
+        locale === "ro" ? "Nu s-a putut copia" : "Could not copy",
+      ics: t("calendar"),
+      icsToast:
+        locale === "ro" ? "Calendar descărcat" : "Calendar downloaded",
+      rsvp: {
+        going: t("attendeeStatuses.going"),
+        maybe: t("attendeeStatuses.maybe"),
+        no: t("attendeeStatuses.declined"),
+        saved: locale === "ro" ? "RSVP actualizat" : "RSVP updated",
+      },
+      mapPreviewLabel: locale === "ro" ? "Previzualizare hartă" : "Map preview",
+      priceTier: recommended
+        ? t(`priceTiers.${recommended.priceTier}`)
+        : "",
+      distanceKm: recommended?.distanceKm ?? null,
+    },
+    chat: {
+      title: t("chatTitle"),
+      empty: t("emptyChat"),
+      system: t("system"),
+      form: t.raw("form"),
+    },
+    vote: {
+      title:
+        locale === "ro"
+          ? "Vot: alegeți o locație"
+          : "Vote: choose a venue",
+      closeVote: locale === "ro" ? "Închide votul" : "Close vote",
+      closedNotice:
+        locale === "ro" ? "Votul este închis." : "Voting is closed.",
+    },
+    captainReveal: {
+      pillLabel:
+        locale === "ro" ? "Sugestie auto pentru căpitan" : "Captain auto-suggest",
+      versionLabel: "auto · v1",
+      headline: locale === "ro" ? "Plan sugerat" : "Suggested plan",
+      whenRange:
+        locale === "ro" ? `Astăzi, ${whenRange}` : `Today, ${whenRange}`,
+      reasoning:
+        locale === "ro"
+          ? "8 membri au votat după 18:00, vremea este senină, iar locația este cea mai apropiată de centrul grupului."
+          : "8 members voted after 18:00, weather is clear, venue is closest to the group center.",
+      recommendedSubLine: recommended
+        ? [
+            recommended.distanceKm ? `${recommended.distanceKm} km` : null,
+            t(`priceTiers.${recommended.priceTier}`),
+          ]
+            .filter(Boolean)
+            .join(" · ")
+        : "",
+      alternateNames: venueCandidates.slice(1, 3).map((c) => c.name),
+      alternateLines: venueCandidates
+        .slice(1, 3)
+        .map((c) =>
+          [
+            c.distanceKm ? `${c.distanceKm} km` : null,
+            t(`priceTiers.${c.priceTier}`),
+          ]
+            .filter(Boolean)
+            .join(" · "),
+        ),
+      confirmPlan: locale === "ro" ? "Confirmă planul" : "Confirm plan",
+      startVote: locale === "ro" ? "Pornește votul" : "Start vote",
+      suggestSomethingElse:
+        locale === "ro" ? "Sugerează altceva" : "Suggest something else",
+      suggestSomethingElseToast:
+        locale === "ro" ? "În curând" : "Coming soon",
+      confirmedToast:
+        locale === "ro" ? "Plan confirmat" : "Plan confirmed",
+    },
+    status: {
+      proposed: t("statuses.proposed"),
+      confirmed: t("statuses.confirmed"),
+      cancelled: t("statuses.cancelled"),
+    },
+  };
+
+  const venueForScreen = recommended
+    ? {
+        name: recommended.name,
+        lat: recommended.lat ? Number(recommended.lat) : null,
+        lng: recommended.lng ? Number(recommended.lng) : null,
+        distanceKm: recommended.distanceKm,
+        priceTier: recommended.priceTier,
+        fit: (fit ?? "outdoor_good") as WeatherFit,
+      }
     : null;
 
   return (
-    <main className="mx-auto grid min-h-screen w-full max-w-6xl gap-5 px-5 py-6 lg:grid-cols-[0.85fr_1.2fr_0.9fr]">
-      <section className="rounded-lg border border-[var(--line)] bg-[var(--panel-strong)] p-5 shadow-sm">
-        <Link
-          className="inline-flex min-h-11 items-center rounded-md border border-[var(--line)] bg-white px-3 text-sm font-semibold"
-          href={`/${locale}/groups/${event.groupId}`}
-        >
-          {t("back")}
-        </Link>
-        <div className="mt-6 flex size-11 items-center justify-center rounded-full bg-[var(--mint)] text-[var(--navy)]">
-          <CalendarDays aria-hidden="true" size={22} />
-        </div>
-        <p className="mt-4 text-sm font-semibold text-[var(--muted)]">
-          {sportLabel}
-        </p>
-        <h1 className="mt-2 text-3xl font-bold">{t("title", { sport: sportLabel })}</h1>
-        <div className="mt-4 grid gap-2 text-sm leading-6 text-[var(--muted)]">
-          <p>{t("when", { when })}</p>
-          <p>{t("duration", { minutes: event.durationMin })}</p>
-          <p>{event.customLocationText ?? t("venuePending")}</p>
-          <p className="rounded-md bg-[var(--cloud)] px-3 py-2 font-semibold">
-            {t("status", { status: t(`statuses.${event.status}`) })}
-          </p>
-          <Link
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-[var(--court)] px-4 text-sm font-semibold text-white"
-            href={`/api/events/${event.id}/ics?locale=${locale}`}
-          >
-            <CalendarPlus aria-hidden="true" size={18} />
-            {t("calendar")}
-          </Link>
-        </div>
-        {weather ? (
-          <div className="mt-5 rounded-md border border-[var(--line)] bg-white p-3">
-            <div className="flex items-center gap-2">
-              <CloudSun aria-hidden="true" size={18} />
-              <h2 className="text-sm font-bold">{t("weatherTitle")}</h2>
-            </div>
-            <p className="mt-2 text-sm font-semibold">
-              {t(`weatherFit.${weather.fit}`)}
-            </p>
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-              {t("weatherMetrics", {
-                temperature: Math.round(weather.temperatureC),
-                rain: Math.round(weather.rainProbability),
-                wind: Math.round(weather.windKmh),
-              })}
-            </p>
-            {weatherAt ? (
-              <p className="mt-1 text-xs font-semibold text-[var(--muted)]">
-                {t("weatherSource", {
-                  venue: weatherVenue.name,
-                  time: weatherAt,
-                })}
-              </p>
-            ) : null}
-          </div>
-        ) : null}
-      </section>
-
-      <section className="rounded-lg border border-[var(--line)] bg-[var(--panel-strong)] p-5 shadow-sm">
-        <div className="mb-4 flex items-center gap-3">
-          <MessageSquareText aria-hidden="true" size={22} />
-          <h2 className="text-xl font-bold">{t("chatTitle")}</h2>
-        </div>
-        <div className="grid max-h-[52vh] min-h-64 gap-3 overflow-y-auto rounded-md bg-[var(--cloud)] p-3">
-          {messages.length > 0 ? (
-            messages.map((message) => (
-              <article className="rounded-md bg-white p-3" key={message.id}>
-                <p className="text-sm font-bold">
-                  {message.user?.fullName ?? t("system")}
-                </p>
-                <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
-                  {message.body}
-                </p>
-              </article>
-            ))
-          ) : (
-            <p className="self-center text-center text-sm font-semibold text-[var(--muted)]">
-              {t("emptyChat")}
-            </p>
-          )}
-        </div>
-        <div className="mt-4">
-          <EventChatForm copy={t.raw("form")} eventId={event.id} />
-        </div>
-      </section>
-
-      <section className="rounded-lg border border-[var(--line)] bg-[var(--panel-strong)] p-5 shadow-sm">
-        <div className="mb-4 flex items-center gap-3">
-          <UsersRound aria-hidden="true" size={22} />
-          <h2 className="text-xl font-bold">{t("attendeesTitle")}</h2>
-        </div>
-        <ul className="grid gap-2">
-          {attendees.map((attendee) => (
-            <li
-              className="rounded-md border border-[var(--line)] bg-white px-3 py-2"
-              key={attendee.userId}
-            >
-              <span className="font-semibold">{attendee.fullName}</span>
-              <span className="ml-2 text-sm text-[var(--muted)]">
-                {t(`attendeeStatuses.${attendee.status}`)}
-              </span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-6 rounded-md border border-[var(--line)] bg-white p-3">
-          <div className="mb-3 flex items-center gap-2">
-            <MapPinned aria-hidden="true" size={18} />
-            <h2 className="text-sm font-bold">{t("venuesTitle")}</h2>
-          </div>
-          <p className="mb-3 text-sm leading-6 text-[var(--muted)]">
-            {t("venuesBody")}
-          </p>
-          <ul className="grid gap-3">
-            {result.data.venueCandidates.map((candidate) => (
-              <li
-                className="grid gap-3 rounded-md border border-[var(--line)] bg-[var(--cloud)] p-3"
-                key={candidate.venueId}
-              >
-                <div>
-                  <p className="font-bold">{candidate.name}</p>
-                  <p className="text-sm leading-6 text-[var(--muted)]">
-                    {candidate.address}
-                  </p>
-                  <p className="mt-1 text-xs font-semibold text-[var(--muted)]">
-                    {t("venueMeta", {
-                      distance: candidate.distanceKm ?? "?",
-                      price: t(`priceTiers.${candidate.priceTier}`),
-                      confidence: t(`priceConfidence.${candidate.priceConfidence}`),
-                    })}
-                  </p>
-                </div>
-                <p className="text-sm leading-6 text-[var(--muted)]">
-                  {candidate.reason}
-                </p>
-                <div className="grid gap-2">
-                  <Link
-                    className="inline-flex min-h-11 items-center justify-center rounded-md border border-[var(--line)] bg-white px-3 text-sm font-semibold"
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${candidate.lat},${candidate.lng}`}
-                    target="_blank"
-                  >
-                    {t("directions")}
-                  </Link>
-                  {result.data.venueVote ? (
-                    <VenueVoteForm
-                      copy={t.raw("voteForm")}
-                      eventId={event.id}
-                      optionIdx={candidate.optionIdx}
-                      selected={
-                        result.data.venueVote.selectedOptionIdx === candidate.optionIdx
-                      }
-                    />
-                  ) : null}
-                  <p className="text-xs font-semibold text-[var(--muted)]">
-                    {t("votes", { count: candidate.votes })}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-    </main>
+    <EventScreen
+      copy={copy}
+      locale={locale}
+      groupHref={`/${locale}/groups/${event.groupId}`}
+      currentUserId={currentUserId}
+      isCaptain={isCaptain}
+      event={{
+        id: event.id,
+        sport: event.sport,
+        status: event.status,
+        whenAt: event.whenAt,
+        durationMin: event.durationMin,
+      }}
+      venue={venueForScreen}
+      weather={
+        weather
+          ? {
+              fit: weather.fit as WeatherFit,
+              temperatureC: weather.temperatureC,
+              rainProbability: weather.rainProbability,
+              windKmh: weather.windKmh,
+            }
+          : null
+      }
+      initialRsvp={initialRsvp}
+      messages={messages.map((m) => ({
+        id: m.id,
+        body: m.body,
+        createdAt: m.createdAt,
+        user: m.user ? { id: m.user.id, fullName: m.user.fullName } : null,
+      }))}
+      venueOptions={venueCandidates.map((c) => ({
+        optionIdx: c.optionIdx,
+        venueId: c.venueId,
+        name: c.name,
+        votes: c.votes,
+      }))}
+      totalAttendees={attendees.length}
+      myVoteOptionIdx={venueVote?.selectedOptionIdx ?? null}
+      voteOpen={venueVote ? venueVote.status === "open" : false}
+    />
   );
 }

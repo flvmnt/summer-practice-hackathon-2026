@@ -1,0 +1,23 @@
+{
+  "event.tabs.details": "Detalii",
+  "event.tabs.chat": "Chat eveniment",
+  "event.tabs.vote": "Vot",
+  "event.copyInvite": "Copiază invitația",
+  "event.inviteCopied": "Invitație copiată",
+  "event.inviteCopyError": "Nu s-a putut copia",
+  "event.icsToast": "Calendar descărcat",
+  "event.rsvp.saved": "RSVP actualizat",
+  "event.mapPreviewLabel": "Previzualizare hartă",
+  "event.vote.title": "Vot: alegeți o locație",
+  "event.vote.closeVote": "Închide votul",
+  "event.vote.closedNotice": "Votul este închis.",
+  "event.captainReveal.pillLabel": "Sugestie auto pentru căpitan",
+  "event.captainReveal.versionLabel": "auto · v1",
+  "event.captainReveal.headline": "Plan sugerat",
+  "event.captainReveal.reasoning": "8 membri au votat după 18:00, vremea este senină, iar locația este cea mai apropiată de centrul grupului.",
+  "event.captainReveal.confirmPlan": "Confirmă planul",
+  "event.captainReveal.startVote": "Pornește votul",
+  "event.captainReveal.suggestSomethingElse": "Sugerează altceva",
+  "event.captainReveal.suggestSomethingElseToast": "În curând",
+  "event.captainReveal.confirmedToast": "Plan confirmat"
+}
