@@ -1,6 +1,7 @@
 import {
   CalendarDays,
   CalendarPlus,
+  CloudSun,
   MapPinned,
   MessageSquareText,
   UsersRound,
@@ -13,6 +14,7 @@ import { VenueVoteForm } from "@/components/event/VenueVoteForm";
 import type { AppLocale } from "@/i18n/routing";
 import { getEventAction } from "@/lib/chat";
 import type { SportKey } from "@/lib/sports";
+import { getOpenMeteoForecast } from "@/lib/weather";
 
 export const dynamic = "force-dynamic";
 
@@ -31,12 +33,29 @@ export default async function EventPage({
   }
 
   const { event, attendees, messages } = result.data;
+  const [weatherVenue] = [...result.data.venueCandidates].sort(
+    (left, right) => right.votes - left.votes || left.optionIdx - right.optionIdx,
+  );
+  const weather = weatherVenue
+    ? await getOpenMeteoForecast({
+        lat: weatherVenue.lat,
+        lng: weatherVenue.lng,
+        whenAt: event.whenAt,
+        sport: event.sport,
+      })
+    : null;
   const sportLabel = t(`sports.${event.sport as SportKey}`);
   const when = new Intl.DateTimeFormat(locale === "ro" ? "ro-RO" : "en-US", {
     dateStyle: "medium",
     timeStyle: "short",
     timeZone: "Europe/Bucharest",
   }).format(new Date(event.whenAt));
+  const weatherAt = weather
+    ? new Intl.DateTimeFormat(locale === "ro" ? "ro-RO" : "en-US", {
+        timeStyle: "short",
+        timeZone: "Europe/Bucharest",
+      }).format(new Date(weather.forecastAt))
+    : null;
 
   return (
     <main className="mx-auto grid min-h-screen w-full max-w-6xl gap-5 px-5 py-6 lg:grid-cols-[0.85fr_1.2fr_0.9fr]">
@@ -69,6 +88,32 @@ export default async function EventPage({
             {t("calendar")}
           </Link>
         </div>
+        {weather ? (
+          <div className="mt-5 rounded-md border border-[var(--line)] bg-white p-3">
+            <div className="flex items-center gap-2">
+              <CloudSun aria-hidden="true" size={18} />
+              <h2 className="text-sm font-bold">{t("weatherTitle")}</h2>
+            </div>
+            <p className="mt-2 text-sm font-semibold">
+              {t(`weatherFit.${weather.fit}`)}
+            </p>
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+              {t("weatherMetrics", {
+                temperature: Math.round(weather.temperatureC),
+                rain: Math.round(weather.rainProbability),
+                wind: Math.round(weather.windKmh),
+              })}
+            </p>
+            {weatherAt ? (
+              <p className="mt-1 text-xs font-semibold text-[var(--muted)]">
+                {t("weatherSource", {
+                  venue: weatherVenue.name,
+                  time: weatherAt,
+                })}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
       </section>
 
       <section className="rounded-lg border border-[var(--line)] bg-[var(--panel-strong)] p-5 shadow-sm">

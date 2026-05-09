@@ -284,6 +284,15 @@
     "venuePending": "Venue to be confirmed",
     "status": "Status: {status}",
     "calendar": "Add to calendar",
+    "weatherTitle": "Weather fit",
+    "weatherMetrics": "{temperature}°C · {rain}% rain · {wind} km/h wind",
+    "weatherSource": "Open-Meteo for {venue}, near {time}.",
+    "weatherFit": {
+      "outdoor_good": "Clear enough to keep the outdoor option high.",
+      "indoor_recommended": "Rain risk is high. Prefer an indoor or covered venue.",
+      "wind_warning": "Wind may affect this sport. Keep an indoor fallback ready.",
+      "cold_warning": "Cold conditions. Consider indoor play or a shorter session."
+    },
     "chatTitle": "Event chat",
     "attendeesTitle": "Attendees",
     "venuesTitle": "Venue vote",

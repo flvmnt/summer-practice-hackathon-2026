@@ -284,6 +284,15 @@
     "venuePending": "Locația urmează să fie confirmată",
     "status": "Status: {status}",
     "calendar": "Adaugă în calendar",
+    "weatherTitle": "Potrivire meteo",
+    "weatherMetrics": "{temperature}°C · {rain}% ploaie · vânt {wind} km/h",
+    "weatherSource": "Open-Meteo pentru {venue}, în jurul orei {time}.",
+    "weatherFit": {
+      "outdoor_good": "Vremea susține opțiunea în aer liber.",
+      "indoor_recommended": "Riscul de ploaie este ridicat. Preferă o locație indoor sau acoperită.",
+      "wind_warning": "Vântul poate afecta acest sport. Păstrează o variantă indoor.",
+      "cold_warning": "Este frig. Luați în calcul indoor sau o sesiune mai scurtă."
+    },
     "chatTitle": "Chat de eveniment",
     "attendeesTitle": "Participanți",
     "venuesTitle": "Vot pentru locație",
