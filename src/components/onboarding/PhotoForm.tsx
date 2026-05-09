@@ -450,6 +450,11 @@ export function PhotoForm({ locale, initialPhotoUrl }: PhotoFormProps) {
                   </span>
                 </button>
 
+                <div
+                  aria-live="polite"
+                  aria-busy={aiState === "loading"}
+                  className="grid gap-2"
+                >
                 {aiState === "loading" ? (
                   <div className="flex flex-wrap gap-2" aria-hidden>
                     <Skeleton width={92} height={36} radius={10} />
@@ -550,6 +555,7 @@ export function PhotoForm({ locale, initialPhotoUrl }: PhotoFormProps) {
                     </p>
                   </div>
                 ) : null}
+                </div>
               </div>
             </div>
           ) : null}
