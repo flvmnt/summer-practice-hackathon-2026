@@ -1,5 +1,5 @@
 import "server-only";
-import { S3Client } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 let r2Client: S3Client | undefined;
 
@@ -69,4 +69,14 @@ export function getPublicUploadBaseUrl(): string {
     throw new Error("PUBLIC_UPLOAD_BASE_URL is required for uploads");
   }
   return base.replace(/\/+$/, "");
+}
+
+/**
+ * Deletes an object from R2 by key. Throws on AWS errors so callers can
+ * decide whether to log-and-continue (replace flows) or fail loud.
+ */
+export async function deleteFromR2(objectKey: string): Promise<void> {
+  const client = getR2Client();
+  const bucket = getR2Bucket();
+  await client.send(new DeleteObjectCommand({ Bucket: bucket, Key: objectKey }));
 }

@@ -5,6 +5,7 @@ import { getDb } from "@/db";
 import { profilePhotos, users } from "@/db/schema";
 import { actionError, actionOk, type ActionResult } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth-current-user";
+import { deleteFromR2 } from "@/lib/r2";
 import { saveUserSession } from "@/lib/session";
 import { MAX_BYTES, uploadProfilePhoto } from "@/lib/uploads";
 
@@ -58,8 +59,24 @@ export async function uploadProfilePhotoAction(
     return actionError("upload_failed");
   }
 
+  // Snapshot existing R2 keys for this user BEFORE the insert so we can
+  // delete the replaced objects after the new row is committed. AGENTS.md
+  // mandates "delete replaced objects" on profile-photo upload.
+  const db = getDb();
+  let replacedKeys: string[] = [];
   try {
-    const db = getDb();
+    const existing = await db
+      .select({ objectKey: profilePhotos.objectKey })
+      .from(profilePhotos)
+      .where(eq(profilePhotos.userId, user.id));
+    replacedKeys = existing.map((row) => row.objectKey);
+  } catch {
+    // Non-fatal: if the snapshot fails the new upload still succeeds; we
+    // just leak the old object on this one cycle.
+    replacedKeys = [];
+  }
+
+  try {
     const updated = await db.transaction(async (tx) => {
       await tx.insert(profilePhotos).values({
         userId: user.id,
@@ -109,6 +126,23 @@ export async function uploadProfilePhotoAction(
     });
   } catch {
     return actionError("upload_failed");
+  }
+
+  // Delete replaced R2 objects after the new row has committed. Best-effort:
+  // a stale object is preferable to failing a successful upload. The new key
+  // is excluded as a safety belt — `profile_photos.object_key` is unique so
+  // a collision is impossible, but defending against future schema changes
+  // costs nothing here.
+  for (const oldKey of replacedKeys) {
+    if (oldKey === uploaded.key) {
+      continue;
+    }
+    try {
+      await deleteFromR2(oldKey);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "unknown";
+      console.warn(`[uploads] failed to delete replaced R2 object ${oldKey}: ${message}`);
+    }
   }
 
   return actionOk({ photoUrl: uploaded.url });
