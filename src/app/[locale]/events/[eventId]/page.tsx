@@ -3,17 +3,22 @@ import { redirect } from "next/navigation";
 import { EventScreen, type EventScreenCopy } from "@/components/event/EventScreen";
 import type { RsvpStatus } from "@/components/event/RsvpButtons";
 import type { AppLocale } from "@/i18n/routing";
+import {
+  generateCaptainBrief,
+  type CaptainBrief,
+  type WeatherKind,
+} from "@/lib/ai/captain-brief";
 import { getEventAction, getGroupAction } from "@/lib/chat";
 import type { SportKey } from "@/lib/sports";
-import { getOpenMeteoForecast } from "@/lib/weather";
+import { getOpenMeteoForecast, type WeatherFit } from "@/lib/weather";
 
 export const dynamic = "force-dynamic";
 
-type WeatherFit =
-  | "outdoor_good"
-  | "indoor_recommended"
-  | "wind_warning"
-  | "cold_warning";
+function weatherKindFromFit(fit: WeatherFit | null): WeatherKind {
+  if (fit === "outdoor_good") return "sunny";
+  if (fit === "indoor_recommended") return "rainy";
+  return "cloudy";
+}
 
 function asRsvp(status: string | undefined): RsvpStatus {
   if (status === "going" || status === "maybe" || status === "declined") {
@@ -76,6 +81,29 @@ export default async function EventPage({
   const initialRsvp = asRsvp(myAttendee?.status);
 
   const fit: WeatherFit | null = weather ? (weather.fit as WeatherFit) : null;
+
+  // Captain brief — server-side, on-demand. The lib has a deterministic
+  // fallback and never throws on input; wrap in try/catch as belt-and-
+  // suspenders so a transient AI provider failure never tanks the page.
+  const goingCount = attendees.filter((a) => a.status === "going").length;
+  const groupSize = goingCount > 0 ? goingCount : attendees.length;
+  let captainBrief: { brief: CaptainBrief; source: "ai" | "fallback" } | null =
+    null;
+  if (groupSize > 0) {
+    try {
+      captainBrief = await generateCaptainBrief({
+        groupSize,
+        sport: event.sport,
+        weather: weatherKindFromFit(fit),
+        candidateVenues: venueCandidates.map((c) => ({
+          name: c.name,
+          distanceKm: c.distanceKm ? Number(c.distanceKm) : 0,
+        })),
+      });
+    } catch {
+      captainBrief = null;
+    }
+  }
 
   const copy: EventScreenCopy = {
     back: t("back"),
@@ -177,6 +205,18 @@ export default async function EventPage({
       confirmedToast:
         locale === "ro" ? "Plan confirmat" : "Plan confirmed",
     },
+    captainBrief: {
+      header: t("captainBrief.header"),
+      sourceAi: t("captainBrief.sourceAi"),
+      sourceFallback: t("captainBrief.sourceFallback"),
+      reasonLabel: t("captainBrief.reasonLabel"),
+      decisionsLabel: t("captainBrief.decisionsLabel"),
+      decisionLabels: {
+        venue: t("captainBrief.decisionLabels.venue"),
+        time: t("captainBrief.decisionLabels.time"),
+        team: t("captainBrief.decisionLabels.team"),
+      },
+    },
     status: {
       proposed: t("statuses.proposed"),
       confirmed: t("statuses.confirmed"),
@@ -236,6 +276,7 @@ export default async function EventPage({
       totalAttendees={attendees.length}
       myVoteOptionIdx={venueVote?.selectedOptionIdx ?? null}
       voteOpen={venueVote ? venueVote.status === "open" : false}
+      captainBrief={captainBrief}
     />
   );
 }

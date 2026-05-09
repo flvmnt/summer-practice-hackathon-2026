@@ -11,6 +11,10 @@ import {
   CaptainAutoEventReveal,
   type CaptainAutoEventRevealCopy,
 } from "@/components/event/CaptainAutoEventReveal";
+import {
+  CaptainBriefPanel,
+  type CaptainBriefPanelCopy,
+} from "@/components/event/CaptainBriefPanel";
 import { EventChatForm } from "@/components/event/EventChatForm";
 import {
   EventDetailsPanel,
@@ -19,6 +23,7 @@ import {
 import { EventTabs } from "@/components/event/EventTabs";
 import { VoteCard } from "@/components/event/VoteCard";
 import type { RsvpStatus } from "@/components/event/RsvpButtons";
+import type { CaptainBrief } from "@/lib/ai/captain-brief";
 import type { SportKey } from "@/lib/sports";
 
 export type EventScreenCopy = {
@@ -42,6 +47,7 @@ export type EventScreenCopy = {
     closedNotice: string;
   };
   captainReveal: CaptainAutoEventRevealCopy;
+  captainBrief: CaptainBriefPanelCopy;
   status: { proposed: string; confirmed: string; cancelled: string };
 };
 
@@ -92,6 +98,7 @@ type Props = {
   totalAttendees: number;
   myVoteOptionIdx: number | null;
   voteOpen: boolean;
+  captainBrief: { brief: CaptainBrief; source: "ai" | "fallback" } | null;
 };
 
 export function EventScreen(props: Props) {
@@ -116,6 +123,7 @@ function EventScreenInner({
   totalAttendees,
   myVoteOptionIdx,
   voteOpen,
+  captainBrief,
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -147,28 +155,37 @@ function EventScreenInner({
         : copy.status.proposed;
 
   const detailsPanel = (
-    <EventDetailsPanel
-      copy={copy.details}
-      event={{
-        id: event.id,
-        sport: event.sport,
-        whenAt: event.whenAt,
-        durationMin: event.durationMin,
-      }}
-      venue={
-        venue
-          ? {
-              name: venue.name,
-              lat: venue.lat,
-              lng: venue.lng,
-              distanceKm: venue.distanceKm,
-              priceTier: venue.priceTier,
-            }
-          : null
-      }
-      weather={weather}
-      initialRsvp={initialRsvp}
-    />
+    <div className="grid gap-4">
+      {captainBrief ? (
+        <CaptainBriefPanel
+          copy={copy.captainBrief}
+          brief={captainBrief.brief}
+          source={captainBrief.source}
+        />
+      ) : null}
+      <EventDetailsPanel
+        copy={copy.details}
+        event={{
+          id: event.id,
+          sport: event.sport,
+          whenAt: event.whenAt,
+          durationMin: event.durationMin,
+        }}
+        venue={
+          venue
+            ? {
+                name: venue.name,
+                lat: venue.lat,
+                lng: venue.lng,
+                distanceKm: venue.distanceKm,
+                priceTier: venue.priceTier,
+              }
+            : null
+        }
+        weather={weather}
+        initialRsvp={initialRsvp}
+      />
+    </div>
   );
 
   const chatPanel = (
