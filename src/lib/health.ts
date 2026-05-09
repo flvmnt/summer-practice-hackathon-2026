@@ -11,24 +11,29 @@ export type HealthStatus = {
   version: "2026-hackathon";
 };
 
-function baseHealthStatus(): Omit<HealthStatus, "ok" | "db"> {
-  const env = getServerEnv();
-
-  return {
-    process: "up",
-    phase: "phase_1",
-    commit:
-      env.RAILWAY_GIT_COMMIT_SHA ??
-      env.VERCEL_GIT_COMMIT_SHA ??
-      process.env.GIT_COMMIT ??
-      "local",
-    version: "2026-hackathon",
-  };
+function rawCommit() {
+  return (
+    process.env.RAILWAY_GIT_COMMIT_SHA ??
+    process.env.VERCEL_GIT_COMMIT_SHA ??
+    process.env.GIT_COMMIT ??
+    "local"
+  );
 }
 
 export async function getHealthStatus(): Promise<HealthStatus> {
-  const env = getServerEnv();
-  const base = baseHealthStatus();
+  const base: Omit<HealthStatus, "ok" | "db"> = {
+    process: "up",
+    phase: "phase_1",
+    commit: rawCommit(),
+    version: "2026-hackathon",
+  };
+
+  let env: ReturnType<typeof getServerEnv>;
+  try {
+    env = getServerEnv();
+  } catch {
+    return { ...base, ok: false, db: "down" };
+  }
 
   if (!env.DATABASE_URL) {
     return {
@@ -40,16 +45,8 @@ export async function getHealthStatus(): Promise<HealthStatus> {
 
   try {
     await getSqlClient()`select 1`;
-    return {
-      ...base,
-      ok: true,
-      db: "up",
-    };
+    return { ...base, ok: true, db: "up" };
   } catch {
-    return {
-      ...base,
-      ok: false,
-      db: "down",
-    };
+    return { ...base, ok: false, db: "down" };
   }
 }
