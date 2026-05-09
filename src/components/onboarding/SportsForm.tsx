@@ -43,6 +43,11 @@ type SportsFormCopy = {
   sports: Record<string, string>;
 };
 
+export type SportsFormHeaderCopy = {
+  title: string;
+  subtitle: string;
+};
+
 export type AiSuggestionsCopy = {
   label: string;
   hint: string;
@@ -119,12 +124,14 @@ const initialState: OnboardingSportsFormState = {};
 
 export function SportsForm({
   copy,
+  headerCopy,
   defaultSports,
   locale,
   suggestedSports,
   aiSuggestionsCopy,
 }: {
   copy: SportsFormCopy;
+  headerCopy: SportsFormHeaderCopy;
   defaultSports: Array<{ sport: SportKey; level: number }>;
   locale: AppLocale;
   suggestedSports?: SportKey[];
@@ -238,12 +245,8 @@ export function SportsForm({
       <WizardMobileHeader
         step={2}
         total={3}
-        title={locale === "ro" ? "Alege sporturile" : "Choose sports"}
-        subtitle={
-          locale === "ro"
-            ? "Alege ce îți place să joci"
-            : "Pick what you like to play"
-        }
+        title={headerCopy.title}
+        subtitle={headerCopy.subtitle}
       />
 
       <form ref={formRef} className="contents" action={() => submit()}>

@@ -51,6 +51,10 @@ export default async function SportsOnboardingPage({
     >
       <SportsForm
         copy={t.raw("form")}
+        headerCopy={{
+          title: t("headerTitle"),
+          subtitle: t("headerSubtitle"),
+        }}
         defaultSports={user.sports}
         locale={locale}
         suggestedSports={suggestedSports}
