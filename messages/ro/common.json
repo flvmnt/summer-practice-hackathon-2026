@@ -921,27 +921,27 @@
         },
         "achievements": {
           "label": "Realizare First Match",
-          "note": "Doar First Match este revendicata; Showed Up 3 Times rămâne nerevendicata până la prezenta reala."
+          "note": "Doar First Match este revendicată; Showed Up 3 Times rămâne nerevendicată până la prezența reală."
         },
         "i18n": {
           "label": "Multi-limba RO/EN (next-intl)",
-          "note": "Prefix de locale mereu; RO implicit; acoperire completa a mesajelor."
+          "note": "Prefix de locale mereu; RO implicit; acoperire completă a mesajelor."
         },
         "invite-share": {
-          "label": "Link public de invitatie + distribuire",
-          "note": "Previzualizare privacy-safe; chat / participanti / voturi nu sunt expuse."
+          "label": "Link public de invitație + distribuire",
+          "note": "Previzualizare privacy-safe; chat / participanți / voturi nu sunt expuse."
         },
         "deployable-shell": {
           "label": "Shell Railway + /api/health",
           "note": "Serviciu Railway; health verifică conectivitatea bazei de date."
         },
         "clean-architecture": {
-          "label": "Arhitectura curata + contracte zod",
-          "note": "Limite src/app + src/lib + src/db; server actions validate cu zod."
+          "label": "Arhitectură curată + contracte zod",
+          "note": "Limite src/app + src/lib + src/db; server actions validează cu zod."
         },
         "responsive-mobile": {
           "label": "UI mobile-first responsive",
-          "note": "Mai intai 360px; bottom nav; compozitoare sticky; screenshoturi Playwright pe latimi diferite."
+          "note": "Mai întâi 360px; bottom nav; compozitoare sticky; screenshoturi Playwright pe lățimi diferite."
         },
         "judge-mode": {
           "label": "Pagina dovada Judge Mode (acest ecran)",
@@ -1370,5 +1370,21 @@
     },
     "stub": "Date demonstrative · TODO",
     "back": "Azi"
+  },
+  "walkthrough": {
+    "steps": {
+      "today": "Today",
+      "groups": "Grupuri",
+      "group": "Grup",
+      "event": "Eveniment",
+      "vote": "Vot",
+      "calendar": "Calendar",
+      "judgeMode": "Mod juriu"
+    },
+    "nav": {
+      "aria": "Navigare prezentare demo",
+      "previous": "Pasul anterior ({label})",
+      "next": "Pasul urmator ({label})"
+    }
   }
 }
