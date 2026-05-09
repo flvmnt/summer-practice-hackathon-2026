@@ -1,27 +1,41 @@
-import {
-  CalendarDays,
-  MessageSquareText,
-  Trophy,
-  UsersRound,
-} from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { ReactNode } from "react";
+import { CaptainBriefPanel } from "@/components/group/CaptainBriefPanel";
 import { CreateGroupEventForm } from "@/components/group/CreateGroupEventForm";
+import { FormationTimeline } from "@/components/group/FormationTimeline";
 import { GroupChatForm } from "@/components/group/GroupChatForm";
+import { GroupHeader } from "@/components/group/GroupHeader";
+import { GroupMembersList } from "@/components/group/GroupMembersList";
+import { GroupTabs, type GroupTabId } from "@/components/group/GroupTabs";
 import { TeamBalancePanel } from "@/components/group/TeamBalancePanel";
+import { Card } from "@/components/ui/Card";
+import { Glyph } from "@/components/ui/Glyph";
+import { Pill } from "@/components/ui/Pill";
 import type { AppLocale } from "@/i18n/routing";
 import { getGroupAction } from "@/lib/chat";
 import { SPORTS, type SportKey } from "@/lib/sports";
 
 export const dynamic = "force-dynamic";
 
+type SearchParams = { tab?: string | string[] };
+
+function readTab(value: string | string[] | undefined): GroupTabId {
+  const raw = Array.isArray(value) ? value[0] : value;
+  if (raw === "chat" || raw === "players") return raw;
+  return "plan";
+}
+
 export default async function GroupPage({
   params,
+  searchParams,
 }: Readonly<{
   params: Promise<{ locale: AppLocale; groupId: string }>;
+  searchParams: Promise<SearchParams>;
 }>) {
   const { locale, groupId } = await params;
+  const sp = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("group");
   const groupResult = await getGroupAction({ groupId });
@@ -33,120 +47,407 @@ export default async function GroupPage({
   const group = groupResult.data.group;
   const members = groupResult.data.members;
   const captain = members.find((member) => member.userId === group.captainUserId);
+  const isCaptain = groupResult.data.currentUserId === group.captainUserId;
   const showTeamBalance = SPORTS[group.sport].evenTeams && members.length >= 2;
+  const sportLabel = t(`sports.${group.sport as SportKey}`);
+  const currentTab = readTab(sp.tab);
+  const events = groupResult.data.events;
+  const upcomingEvent = events[0] ?? null;
+
+  // Confirmation status counts. Shape stays stable when statuses widen later.
+  const confirmedMembers = members.filter((m) => m.status === "confirmed");
+  const maybeMembers = members.filter((m) => m.status === "maybe");
+  const noMembers = members.filter(
+    (m) => m.status !== "confirmed" && m.status !== "maybe",
+  );
+
+  const briefMembers = members.map((m) => ({
+    id: m.userId,
+    name: m.fullName,
+    status:
+      m.status === "confirmed"
+        ? ("confirmed" as const)
+        : m.status === "maybe"
+          ? ("pending" as const)
+          : ("declined" as const),
+  }));
+
+  const formationReasons: Array<{
+    icon?: ReactNode;
+    label: string;
+    value?: string;
+  }> = [
+    { icon: <Glyph.pin size={12} />, label: "Within distance gate", value: "5 km" },
+    { icon: <Glyph.spark size={12} />, label: `Same sport · ${sportLabel}` },
+    { icon: <Glyph.pulse size={12} />, label: "Skill mix balanced" },
+    { icon: <Glyph.groups size={12} />, label: "Group size fit" },
+  ];
+
+  const eventDateLabel = upcomingEvent
+    ? new Intl.DateTimeFormat(locale === "ro" ? "ro-RO" : "en-US", {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: "Europe/Bucharest",
+      }).format(new Date(upcomingEvent.whenAt))
+    : null;
+
+  const membersCopy = {
+    captainBadge: t("captainBadge"),
+    playerBadge: t("playerBadge"),
+    statusConfirmed: "Confirmed",
+    statusMaybe: "Maybe",
+    statusPending: "Pending",
+  };
+
+  const formCopy = t.raw("form") as {
+    messagePlaceholder: string;
+    send: string;
+    sending: string;
+    genericError: string;
+  };
+  const chatCopy = {
+    ...formCopy,
+    emptyTitle: t("emptyChat"),
+    emptyBody: "Say where and when works for you.",
+  };
+
+  /* ------------------ shared section renderers ------------------ */
+
+  const planSection = (
+    <div className="flex flex-col gap-3 px-4 py-4 md:p-0">
+      {isCaptain ? (
+        <CaptainBriefPanel
+          members={briefMembers}
+          suggestedVenue={
+            upcomingEvent?.title
+              ? { name: upcomingEvent.title }
+              : { name: "Pick a venue", sub: "Tap to suggest" }
+          }
+          suggestedTime={eventDateLabel}
+          weather={null}
+        />
+      ) : null}
+
+      <FormationTimeline reasons={formationReasons} title="Why this group?" />
+
+      <Card variant="card" className="flex flex-col gap-3 p-4">
+        <header className="flex items-center gap-2">
+          <span
+            aria-hidden
+            className="grid h-7 w-7 place-items-center"
+            style={{
+              background: "var(--accent-soft)",
+              color: "var(--accent-deep)",
+              borderRadius: 8,
+            }}
+          >
+            <Glyph.cal size={16} />
+          </span>
+          <h2
+            className="display"
+            style={{ fontSize: 16, lineHeight: 1.15, color: "var(--ink)" }}
+          >
+            {t("planTitle")}
+          </h2>
+        </header>
+
+        {upcomingEvent ? (
+          <EventProposalRow
+            href={`/${locale}/events/${upcomingEvent.id}`}
+            label={eventDateLabel}
+            confirmed={confirmedMembers.length}
+            maybe={maybeMembers.length}
+            no={noMembers.length}
+          />
+        ) : isCaptain ? (
+          <CreateGroupEventForm
+            copy={t.raw("eventForm")}
+            groupId={group.id}
+            locale={locale}
+          />
+        ) : (
+          <p
+            className="text-[13px] leading-snug"
+            style={{ color: "var(--ink-muted)" }}
+          >
+            {t("noEvent")}
+          </p>
+        )}
+      </Card>
+
+      {showTeamBalance ? (
+        <TeamBalancePanel
+          canShuffle={isCaptain}
+          copy={t.raw("teamBalance")}
+          members={members}
+        />
+      ) : null}
+    </div>
+  );
+
+  const chatSection = (
+    <div
+      className="flex flex-col"
+      style={{ minHeight: "calc(100dvh - 110px)" }}
+    >
+      <GroupChatForm
+        captainUserId={group.captainUserId}
+        copy={chatCopy}
+        currentUserId={groupResult.data.currentUserId}
+        groupId={group.id}
+        messages={groupResult.data.messages}
+      />
+    </div>
+  );
+
+  const playersSection = (
+    <div className="flex flex-col gap-3 px-4 py-4 md:p-0">
+      <GroupMembersList
+        captainUserId={group.captainUserId}
+        copy={membersCopy}
+        members={members}
+      />
+    </div>
+  );
+
+  /* --------------------------- layout --------------------------- */
 
   return (
-    <main className="mx-auto grid min-h-screen w-full max-w-6xl gap-5 px-5 py-6 lg:grid-cols-[0.75fr_1.25fr_0.85fr]">
-      <section className="rounded-lg border border-[var(--line)] bg-[var(--panel-strong)] p-5 shadow-sm">
-        <Link
-          className="inline-flex min-h-11 items-center rounded-md border border-[var(--line)] bg-white px-3 text-sm font-semibold"
-          href={`/${locale}/today`}
+    <main className="min-h-screen" style={{ background: "var(--surface-2)" }}>
+      {/* Mobile header — sticky so count + captain stay above the fold */}
+      <div className="sticky top-0 z-10 md:hidden">
+        <GroupHeader
+          backHref={`/${locale}/today`}
+          backLabel={t("back")}
+          captainName={captain?.fullName ?? null}
+          memberCount={members.length}
+          sizeTarget={group.sizeTarget}
+          sportLabel={sportLabel}
+        />
+      </div>
+
+      {/* Mobile: tabs */}
+      <GroupTabs
+        chat={chatSection}
+        current={currentTab}
+        labels={{ plan: "Plan", chat: "Chat", players: "Players" }}
+        plan={planSection}
+        players={playersSection}
+      />
+
+      {/* Desktop: 3-column shell */}
+      <div className="hidden md:block">
+        <div
+          className="mx-auto grid w-full max-w-6xl gap-5 px-5 py-6"
+          style={{ gridTemplateColumns: "0.75fr 1.25fr 0.85fr" }}
         >
-          {t("back")}
-        </Link>
-        <div className="mt-6 flex size-11 items-center justify-center rounded-full bg-[var(--mint)] text-[var(--navy)]">
-          <Trophy aria-hidden="true" size={22} />
-        </div>
-        <h1 className="mt-4 text-3xl font-bold">
-          {t("title", { sport: t(`sports.${group.sport as SportKey}`) })}
-        </h1>
-        <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
-          {t("summary", {
-            count: members.length,
-            target: group.sizeTarget,
-          })}
-        </p>
-        {captain ? (
-          <p className="mt-4 rounded-md bg-[var(--cloud)] px-3 py-2 text-sm font-semibold">
-            {t("captain", { name: captain.fullName })}
-          </p>
-        ) : null}
-        <div className="mt-6 rounded-md border border-[var(--line)] bg-white p-3">
-          <div className="mb-3 flex items-center gap-2">
-            <CalendarDays aria-hidden="true" size={18} />
-            <h2 className="text-sm font-bold">{t("planTitle")}</h2>
-          </div>
-          {groupResult.data.events.length > 0 ? (
-            <ul className="grid gap-2">
-              {groupResult.data.events.map((event) => (
-                <li key={event.id}>
-                  <Link
-                    className="block rounded-md bg-[var(--cloud)] px-3 py-2 text-sm font-semibold"
-                    href={`/${locale}/events/${event.id}`}
-                  >
-                    {t("eventListTitle", {
-                      sport: t(`sports.${event.sport as SportKey}`),
-                    })}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : groupResult.data.currentUserId === group.captainUserId ? (
-            <CreateGroupEventForm
-              copy={t.raw("eventForm")}
-              groupId={group.id}
-              locale={locale}
-            />
-          ) : (
-            <p className="text-sm leading-6 text-[var(--muted)]">{t("noEvent")}</p>
-          )}
-        </div>
-      </section>
-
-      <section className="rounded-lg border border-[var(--line)] bg-[var(--panel-strong)] p-5 shadow-sm">
-        <div className="mb-4 flex items-center gap-3">
-          <MessageSquareText aria-hidden="true" size={22} />
-          <h2 className="text-xl font-bold">{t("chatTitle")}</h2>
-        </div>
-        <div className="grid max-h-[52vh] min-h-64 gap-3 overflow-y-auto rounded-md bg-[var(--cloud)] p-3">
-          {groupResult.data.messages.length > 0 ? (
-            groupResult.data.messages.map((message) => (
-              <article className="rounded-md bg-white p-3" key={message.id}>
-                <p className="text-sm font-bold">
-                  {message.user?.fullName ?? t("system")}
-                </p>
-                <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
-                  {message.body}
-                </p>
-              </article>
-            ))
-          ) : (
-            <p className="self-center text-center text-sm font-semibold text-[var(--muted)]">
-              {t("emptyChat")}
-            </p>
-          )}
-        </div>
-        <div className="mt-4">
-          <GroupChatForm copy={t.raw("form")} groupId={group.id} />
-        </div>
-      </section>
-
-      <section className="rounded-lg border border-[var(--line)] bg-[var(--panel-strong)] p-5 shadow-sm">
-        <div className="mb-4 flex items-center gap-3">
-          <UsersRound aria-hidden="true" size={22} />
-          <h2 className="text-xl font-bold">{t("playersTitle")}</h2>
-        </div>
-        <ul className="grid gap-2">
-          {members.map((member) => (
-            <li
-              className="rounded-md border border-[var(--line)] bg-white px-3 py-2"
-              key={member.userId}
+          {/* Left: members + plan summary */}
+          <Card
+            as="section"
+            className="flex flex-col gap-4 p-5"
+            variant="card"
+          >
+            <Link
+              className="btn-s2m btn-secondary self-start"
+              href={`/${locale}/today`}
+              style={{ minHeight: 40, padding: "8px 14px", fontSize: 13 }}
             >
-              <span className="font-semibold">{member.fullName}</span>
-              <span className="ml-2 text-sm text-[var(--muted)]">
-                {member.role === "captain" ? t("captainBadge") : t("playerBadge")}
+              <Glyph.back size={16} />
+              {t("back")}
+            </Link>
+
+            <header className="flex flex-col gap-1">
+              <span
+                className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
+                style={{ color: "var(--ink-muted)" }}
+              >
+                {sportLabel}
               </span>
-            </li>
-          ))}
-        </ul>
-        {showTeamBalance ? (
-          <TeamBalancePanel
-            canShuffle={groupResult.data.currentUserId === group.captainUserId}
-            copy={t.raw("teamBalance")}
-            members={members}
-          />
-        ) : null}
-      </section>
+              <h1
+                className="display"
+                style={{ fontSize: 26, lineHeight: 1.05, color: "var(--ink)" }}
+              >
+                {t("title", { sport: sportLabel })}
+              </h1>
+              <p
+                className="mt-1 text-[13px] leading-snug"
+                style={{ color: "var(--ink-muted)" }}
+              >
+                {t("summary", {
+                  count: members.length,
+                  target: group.sizeTarget,
+                })}
+              </p>
+              {captain ? (
+                <div className="mt-2">
+                  <Pill icon={<Glyph.crown size={12} />} variant="accent">
+                    {t("captain", { name: captain.fullName })}
+                  </Pill>
+                </div>
+              ) : null}
+            </header>
+
+            <h2
+              className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
+              style={{ color: "var(--ink-muted)" }}
+            >
+              {t("playersTitle")}
+            </h2>
+            <GroupMembersList
+              captainUserId={group.captainUserId}
+              copy={membersCopy}
+              members={members}
+            />
+          </Card>
+
+          {/* Center: chat */}
+          <Card
+            as="section"
+            className="flex flex-col overflow-hidden p-0"
+            style={{ minHeight: "70vh" }}
+            variant="card"
+          >
+            <header
+              className="flex items-center gap-2 px-5 py-4"
+              style={{ borderBottom: "1px solid var(--line)" }}
+            >
+              <Glyph.chat size={18} />
+              <h2
+                className="display"
+                style={{ fontSize: 16, lineHeight: 1.1, color: "var(--ink)" }}
+              >
+                {t("chatTitle")}
+              </h2>
+            </header>
+            <div className="min-h-0 flex-1">
+              <GroupChatForm
+                captainUserId={group.captainUserId}
+                copy={chatCopy}
+                currentUserId={groupResult.data.currentUserId}
+                groupId={group.id}
+                messages={groupResult.data.messages}
+              />
+            </div>
+          </Card>
+
+          {/* Right: event tools */}
+          <Card
+            as="section"
+            className="flex flex-col gap-4 p-5"
+            variant="card"
+          >
+            {isCaptain ? (
+              <CaptainBriefPanel
+                members={briefMembers}
+                suggestedTime={eventDateLabel}
+                suggestedVenue={
+                  upcomingEvent?.title
+                    ? { name: upcomingEvent.title }
+                    : { name: "Pick a venue", sub: "Tap to suggest" }
+                }
+                weather={null}
+              />
+            ) : null}
+
+            <FormationTimeline
+              reasons={formationReasons}
+              title="Why this group?"
+            />
+
+            <div className="flex flex-col gap-2">
+              <h2
+                className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
+                style={{ color: "var(--ink-muted)" }}
+              >
+                {t("planTitle")}
+              </h2>
+              {upcomingEvent ? (
+                <EventProposalRow
+                  confirmed={confirmedMembers.length}
+                  href={`/${locale}/events/${upcomingEvent.id}`}
+                  label={eventDateLabel}
+                  maybe={maybeMembers.length}
+                  no={noMembers.length}
+                />
+              ) : isCaptain ? (
+                <CreateGroupEventForm
+                  copy={t.raw("eventForm")}
+                  groupId={group.id}
+                  locale={locale}
+                />
+              ) : (
+                <p
+                  className="text-[13px] leading-snug"
+                  style={{ color: "var(--ink-muted)" }}
+                >
+                  {t("noEvent")}
+                </p>
+              )}
+            </div>
+
+            {showTeamBalance ? (
+              <TeamBalancePanel
+                canShuffle={isCaptain}
+                copy={t.raw("teamBalance")}
+                members={members}
+              />
+            ) : null}
+          </Card>
+        </div>
+      </div>
     </main>
+  );
+}
+
+function EventProposalRow({
+  confirmed,
+  href,
+  label,
+  maybe,
+  no,
+}: {
+  confirmed: number;
+  href: string;
+  label: string | null;
+  maybe: number;
+  no: number;
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      <Link
+        className="flex items-center gap-2 rounded-[12px] px-3 py-2.5"
+        href={href}
+        style={{
+          background: "var(--surface-2)",
+          color: "var(--ink)",
+          border: "1px solid var(--line)",
+        }}
+      >
+        <Glyph.clock size={16} />
+        <span className="text-[13px] font-semibold">
+          {label ?? "Event proposed"}
+        </span>
+        <span
+          aria-hidden
+          className="ml-auto"
+          style={{ color: "var(--ink-muted)" }}
+        >
+          <Glyph.chevron size={14} />
+        </span>
+      </Link>
+      <div className="flex flex-wrap gap-2">
+        <Link href={href}>
+          <Pill icon={<Glyph.check size={12} />} variant="field">
+            Going · {confirmed}
+          </Pill>
+        </Link>
+        <Link href={href}>
+          <Pill variant="alt">Maybe · {maybe}</Pill>
+        </Link>
+        <Link href={href}>
+          <Pill variant="alt">No · {no}</Pill>
+        </Link>
+      </div>
+    </div>
   );
 }
