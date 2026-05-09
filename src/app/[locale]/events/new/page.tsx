@@ -166,16 +166,8 @@ export default async function CreateEventPage({
 
       <div className="mx-auto w-full max-w-xl px-5 pt-4 md:pt-10">
         <div className="hidden md:block">
-          <Link
-            href={`/${locale}/events`}
-            className="btn-s2m btn-secondary inline-flex"
-            style={{ minHeight: 40, padding: "8px 14px", fontSize: 13 }}
-          >
-            <Glyph.back size={16} />
-            {copy.back}
-          </Link>
           <h1
-            className="display mt-6"
+            className="display"
             style={{ fontSize: 36, lineHeight: 1.05 }}
           >
             {copy.title}

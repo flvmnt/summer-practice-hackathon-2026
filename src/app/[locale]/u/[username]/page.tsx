@@ -214,17 +214,6 @@ export default async function PublicProfilePage({
       </header>
 
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-5 pt-4 md:pt-10">
-        <div className="hidden md:block">
-          <Link
-            href={viewer ? `/${locale}/today` : `/${locale}`}
-            className="btn-s2m btn-secondary inline-flex"
-            style={{ minHeight: 40, padding: "8px 14px", fontSize: 13 }}
-          >
-            <Glyph.back size={16} />
-            {copy.back}
-          </Link>
-        </div>
-
         <PublicProfileCard
           fullName={target.fullName}
           username={target.username}

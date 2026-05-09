@@ -141,16 +141,6 @@ export default async function GroupsPage({
           </ul>
         )}
 
-        <div className="mt-6 hidden md:flex">
-          <Link
-            href={`/${locale}/today`}
-            className="btn-s2m btn-secondary"
-            style={{ minHeight: 40, padding: "8px 14px", fontSize: 13 }}
-          >
-            <Glyph.back size={16} />
-            {t("back")}
-          </Link>
-        </div>
       </div>    </main>
   );
 }

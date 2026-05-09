@@ -30,11 +30,23 @@ function stripLocale(pathname: string): string {
   return pathname.replace(/^\/[a-z]{2}(?=\/|$)/, "") || "/";
 }
 
-function isActive(pathname: string, item: NavItem): boolean {
+/**
+ * Score how strongly an item claims this pathname. Higher = better match.
+ * Exact match wins; otherwise the longest matching prefix wins. We compare
+ * scores across all items so only the single most-specific item lights up.
+ */
+function matchScore(pathname: string, item: NavItem): number {
   const stripped = stripLocale(pathname);
-  if (stripped === item.href) return true;
+  if (stripped === item.href) return 1_000_000;
   const prefixes = item.match ?? [item.href];
-  return prefixes.some((p) => stripped.startsWith(p) && p !== "/");
+  let best = 0;
+  for (const p of prefixes) {
+    if (p === "/") continue;
+    if (stripped === p || stripped.startsWith(p + "/") || stripped.startsWith(p)) {
+      best = Math.max(best, p.length);
+    }
+  }
+  return best;
 }
 
 function hrefFor(pathname: string, href: string) {
@@ -56,11 +68,16 @@ type Props = {
 export function DesktopSidebar({ unreadCount = 0, className }: Props) {
   const pathname = usePathname() ?? "/";
   const t = useTranslations("sidebar");
+  const strippedPathname = stripLocale(pathname);
   const hasUnread = unreadCount > 0;
   const localeMatch = pathname.match(/^\/(en|ro)(?=\/|$)/);
   const localePrefix = localeMatch ? `/${localeMatch[1]}` : "";
   const notificationsHref = `${localePrefix}/notifications`;
-  const notificationsActive = stripLocale(pathname).startsWith("/notifications");
+  const notificationsActive = strippedPathname.startsWith("/notifications");
+
+  if (strippedPathname === "/") {
+    return null;
+  }
 
   return (
     <aside
@@ -109,10 +126,14 @@ export function DesktopSidebar({ unreadCount = 0, className }: Props) {
 
       {/* Primary nav */}
       <nav aria-label={t("primaryAriaLabel")} className="flex flex-col gap-1">
-        {ITEMS.map((item) => {
-          const Icon = Glyph[item.glyph];
-          const active = isActive(pathname, item);
-          return (
+        {(() => {
+          const scores = ITEMS.map((item) => matchScore(pathname, item));
+          const top = Math.max(...scores);
+          const activeId = top > 0 ? ITEMS[scores.indexOf(top)]?.id : null;
+          return ITEMS.map((item) => {
+            const Icon = Glyph[item.glyph];
+            const active = item.id === activeId;
+            return (
             <Link
               key={item.id}
               href={hrefFor(pathname, item.href)}
@@ -135,7 +156,8 @@ export function DesktopSidebar({ unreadCount = 0, className }: Props) {
               <span>{t(`items.${item.id}`)}</span>
             </Link>
           );
-        })}
+          });
+        })()}
       </nav>
 
       {/* Spacer pushes the notifications row to the bottom */}

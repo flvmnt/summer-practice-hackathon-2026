@@ -132,20 +132,8 @@ export default async function TodayPage({
         <div className="grid items-start gap-8 lg:grid-cols-[0.82fr_1.18fr]">
           {/* Info column - desktop only */}
           <section className="hidden lg:block">
-            <Link
-              href={`/${locale}`}
-              className="inline-flex min-h-11 items-center gap-2 rounded-md border px-3 text-sm font-semibold"
-              style={{
-                borderColor: "var(--line)",
-                background: "var(--surface)",
-                color: "var(--ink)",
-              }}
-            >
-              <Glyph.back size={16} />
-              {t("back")}
-            </Link>
             <div
-              className="mt-8 grid place-items-center"
+              className="grid place-items-center"
               style={{
                 width: 56,
                 height: 56,

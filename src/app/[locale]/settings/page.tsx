@@ -466,19 +466,7 @@ export default async function SettingsPage({
                 </button>
               </div>
             </SettingsSection>
-          ) : null}
-
-          <div className="mt-2 hidden md:flex">
-            <Link
-              href={`/${locale}/today`}
-              className="btn-s2m btn-secondary"
-              style={{ minHeight: 40, padding: "8px 14px", fontSize: 13 }}
-            >
-              <Glyph.back size={16} />
-              {copy.backToToday}
-            </Link>
-          </div>
-        </div>
+          ) : null}        </div>
       </div>    </main>
   );
 }

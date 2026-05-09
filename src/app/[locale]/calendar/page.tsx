@@ -101,7 +101,7 @@ export default async function CalendarPage({
         <header className="flex items-center justify-between" style={{ gap: 12 }}>
           <Link
             href={`/${locale}/today`}
-            className="inline-flex min-h-11 items-center"
+            className="inline-flex min-h-11 items-center md:hidden"
             style={{
               gap: 6,
               padding: "8px 12px",
@@ -115,7 +115,9 @@ export default async function CalendarPage({
             <Glyph.back size={16} />
             {copy.back}
           </Link>
-          <HeaderBell unreadCount={unread} locale={locale} />
+          <span className="md:hidden">
+            <HeaderBell unreadCount={unread} locale={locale} />
+          </span>
         </header>
 
         <div style={{ marginTop: 24 }}>

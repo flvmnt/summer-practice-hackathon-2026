@@ -139,7 +139,7 @@ export default async function LeaderboardPage({
         <header className="flex items-center justify-between" style={{ gap: 12 }}>
           <Link
             href={`/${locale}/today`}
-            className="inline-flex min-h-11 items-center"
+            className="inline-flex min-h-11 items-center md:hidden"
             style={{
               gap: 6,
               padding: "8px 12px",
@@ -153,7 +153,7 @@ export default async function LeaderboardPage({
             <Glyph.back size={16} />
             {todayLabel}
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 md:hidden">
             <Pill variant="live">{liveLabel}</Pill>
             <HeaderBell unreadCount={unread} locale={locale} />
           </div>
