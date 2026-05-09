@@ -37,6 +37,7 @@ export default async function EventPage({
   setRequestLocale(locale);
   const t = await getTranslations("event");
   const tConn = await getTranslations("chat.connection");
+  const tUi = await getTranslations("ui");
   const result = await getEventAction({ eventId });
 
   if (!result.ok) {
@@ -195,6 +196,7 @@ export default async function EventPage({
       suggestSomethingElse: t("captainReveal.suggestSomethingElse"),
       suggestSomethingElseToast: t("captainReveal.suggestSomethingElseToast"),
       confirmedToast: t("captainReveal.confirmedToast"),
+      closeLabel: tUi("sheet.close"),
     },
     captainBrief: {
       header: t("captainBrief.header"),

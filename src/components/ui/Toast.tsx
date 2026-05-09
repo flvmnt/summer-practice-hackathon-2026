@@ -41,7 +41,17 @@ function makeId(): string {
   return `t-${Math.random().toString(36).slice(2, 10)}`;
 }
 
-export function ToastProvider({ children }: { children: ReactNode }) {
+export function ToastProvider({
+  children,
+  dismissLabel,
+}: {
+  children: ReactNode;
+  /**
+   * aria-label for the per-toast dismiss button. Pass a localized string
+   * (e.g. `t("ui.toast.dismiss")`); falls back to English if omitted.
+   */
+  dismissLabel?: string;
+}) {
   const [items, setItems] = useState<ToastItem[]>([]);
   const timers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
 
@@ -86,7 +96,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <ToastViewport items={items} onDismiss={dismiss} />
+      <ToastViewport items={items} onDismiss={dismiss} dismissLabel={dismissLabel} />
     </ToastContext.Provider>
   );
 }
@@ -102,9 +112,10 @@ export function useToast(): ToastContextValue {
 type ViewportProps = {
   items: ToastItem[];
   onDismiss: (id: string) => void;
+  dismissLabel?: string;
 };
 
-export function ToastViewport({ items, onDismiss }: ViewportProps) {
+export function ToastViewport({ items, onDismiss, dismissLabel }: ViewportProps) {
   return (
     <div
       aria-live="polite"
@@ -149,7 +160,7 @@ export function ToastViewport({ items, onDismiss }: ViewportProps) {
           <button
             type="button"
             onClick={() => onDismiss(item.id)}
-            aria-label="Dismiss notification"
+            aria-label={dismissLabel ?? "Dismiss notification"}
             className="-mr-1 -mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full border-0 bg-transparent text-[var(--ink-muted)] hover:bg-[var(--surface-2)]"
           >
             <span aria-hidden>×</span>

@@ -29,6 +29,8 @@ type StepCopy = {
   step1: string;
   step2: string;
   step3: string;
+  /** aria-label for the ordered list of recovery steps. */
+  aria: string;
 };
 
 const initialState: AuthFormState = {};
@@ -50,7 +52,7 @@ function StepRail({ active, steps }: { active: 1 | 2 | 3; steps: StepCopy }) {
     <ol
       className="mono flex items-center gap-1.5 text-[10px] font-bold uppercase"
       style={{ letterSpacing: "0.12em" }}
-      aria-label="Recovery steps"
+      aria-label={steps.aria}
     >
       {labels.map((s, i) => {
         const state = s.n < active ? "done" : s.n === active ? "active" : "todo";

@@ -16,6 +16,11 @@ type Props = {
   className?: string;
   ariaLabel?: string;
   ariaLabelledBy?: string;
+  /**
+   * aria-label for the backdrop close button. Pass a localized string
+   * (e.g. `t("ui.dialog.close")`); falls back to English if omitted.
+   */
+  closeLabel?: string;
 };
 
 const FOCUSABLE =
@@ -31,6 +36,7 @@ export function Dialog({
   className,
   ariaLabel,
   ariaLabelledBy,
+  closeLabel,
 }: Props) {
   const [mounted, setMounted] = useState(open);
   const [show, setShow] = useState(false);
@@ -100,7 +106,7 @@ export function Dialog({
     >
       <button
         type="button"
-        aria-label="Close dialog"
+        aria-label={closeLabel ?? "Close dialog"}
         onClick={close}
         className="absolute inset-0 cursor-default border-0"
         style={{

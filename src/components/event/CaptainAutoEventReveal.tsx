@@ -23,6 +23,8 @@ export type CaptainAutoEventRevealCopy = {
   suggestSomethingElse: string;
   suggestSomethingElseToast: string;
   confirmedToast: string;
+  /** Localized aria-label for the sheet backdrop close button. */
+  closeLabel?: string;
 };
 
 type Props = {
@@ -136,6 +138,7 @@ export function CaptainAutoEventReveal({
         else setOpen(true);
       }}
       ariaLabel={copy.headline}
+      closeLabel={copy.closeLabel}
     >
       <div style={{ padding: "8px 22px 22px" }}>
         <div className="flex items-center gap-2">

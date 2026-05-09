@@ -23,6 +23,8 @@ type Props = {
     directionsGoogle?: string;
     directionsApple?: string;
     directionsWaze?: string;
+    /** Localized aria-label for the venue details region. */
+    venueDetailsAria?: string;
   };
 };
 
@@ -68,7 +70,7 @@ export function MapVenueSheet({ venue, expanded, onToggleExpanded, labels }: Pro
   return (
     <div
       role="region"
-      aria-label="Venue details"
+      aria-label={labels.venueDetailsAria ?? "Venue details"}
       className="fixed right-0 bottom-[78px] left-0 md:hidden"
       style={{
         background: "var(--surface)",

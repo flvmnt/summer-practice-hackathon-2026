@@ -46,6 +46,7 @@ const COPY = {
     listHeader: "Public venues",
     fallbackHint: "Showing nearby venues by city.",
     back: "Back",
+    venueDetailsAria: "Venue details",
     sport: {
       football: "Football",
       basketball: "Basketball",
@@ -89,6 +90,7 @@ const COPY = {
     listHeader: "Locuri publice",
     fallbackHint: "Afișăm locuri din oraș.",
     back: "Înapoi",
+    venueDetailsAria: "Detalii loc",
     sport: {
       football: "Fotbal",
       basketball: "Baschet",

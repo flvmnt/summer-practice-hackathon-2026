@@ -15,13 +15,19 @@ type Props = {
   children: ReactNode;
   className?: string;
   ariaLabel?: string;
+  /**
+   * aria-label for the backdrop close button. Pass a localized string
+   * (e.g. `t("ui.sheet.close")`); falls back to English if omitted so
+   * non-i18n callers keep working.
+   */
+  closeLabel?: string;
 };
 
 /**
  * Bottom sheet that slides up from below.
  * Used by Map's venue card. Backdrop blur + slide animation.
  */
-export function Sheet({ open, onOpenChange, children, className, ariaLabel }: Props) {
+export function Sheet({ open, onOpenChange, children, className, ariaLabel, closeLabel }: Props) {
   const [mounted, setMounted] = useState(open);
   const [show, setShow] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
@@ -63,7 +69,7 @@ export function Sheet({ open, onOpenChange, children, className, ariaLabel }: Pr
     >
       <button
         type="button"
-        aria-label="Close sheet"
+        aria-label={closeLabel ?? "Close sheet"}
         onClick={close}
         className="absolute inset-0 cursor-default border-0 transition-opacity"
         style={{

@@ -16,9 +16,10 @@ export default async function RecoverPage({
   const showLabel = locale === "ro" ? "Arată parola" : "Show password";
   const hideLabel = locale === "ro" ? "Ascunde parola" : "Hide password";
   const steps = {
-    step1: locale === "ro" ? "1. Identificare" : "1. Identify",
-    step2: locale === "ro" ? "2. Parolă nouă" : "2. New password",
-    step3: locale === "ro" ? "3. Gata" : "3. Done",
+    step1: t("step1"),
+    step2: t("step2"),
+    step3: t("step3"),
+    aria: t("stepsAria"),
   };
 
   return (

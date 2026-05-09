@@ -40,6 +40,7 @@ type Labels = {
   listHeader: string;
   fallbackHint: string;
   back: string;
+  venueDetailsAria: string;
   sport: Record<SportKey, string>;
 };
 
@@ -158,6 +159,7 @@ export function MapPageClient({
     directionsGoogle: labels.directionsGoogle,
     directionsApple: labels.directionsApple,
     directionsWaze: labels.directionsWaze,
+    venueDetailsAria: labels.venueDetailsAria,
   };
 
   const deniedLabels = {

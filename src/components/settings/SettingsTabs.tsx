@@ -14,6 +14,8 @@ export type SettingsSectionId =
 export type SettingsTabsProps = {
   sections: ReadonlyArray<{ id: SettingsSectionId; label: string }>;
   current: SettingsSectionId;
+  /** Localized aria-label for the tablist nav. */
+  ariaLabel: string;
 };
 
 function buildHref(
@@ -36,7 +38,7 @@ function buildHref(
  * URL-persisted via `?section=`. Active tab uses var(--accent) underline per
  * Direction B brand.
  */
-export function SettingsTabs({ sections, current }: SettingsTabsProps) {
+export function SettingsTabs({ sections, current, ariaLabel }: SettingsTabsProps) {
   const pathname = usePathname() ?? "";
   const searchParamsRaw = useSearchParams();
   const searchParams = useMemo(
@@ -48,7 +50,7 @@ export function SettingsTabs({ sections, current }: SettingsTabsProps) {
     <>
       {/* Single horizontal pill row - works at every breakpoint. */}
       <nav
-        aria-label="Settings sections"
+        aria-label={ariaLabel}
         style={{
           display: "flex",
           gap: 6,

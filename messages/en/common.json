@@ -114,7 +114,8 @@
       },
       "step1": "1. Identify",
       "step2": "2. New password",
-      "step3": "3. Done"
+      "step3": "3. Done",
+      "stepsAria": "Recovery steps"
     },
     "brandLine": "Show up. Move.",
     "brandTagline": "A pickup game is forming nearby.",
@@ -1043,6 +1044,7 @@
   "map": {
     "title": "Nearby venues",
     "subtitle": "Public pickup spots near you. Map needs your location to plot you exactly.",
+    "venueDetailsAria": "Venue details",
     "searchPlaceholder": "Search venues",
     "useMyLocation": "Use my location",
     "allSports": "All sports",
@@ -1167,6 +1169,7 @@
   "settings": {
     "title": "Settings",
     "subtitle": "Profile, sports, location, privacy, reminders.",
+    "sectionsAria": "Settings sections",
     "tabs": {
       "profile": "Profile",
       "sports": "Sports",
@@ -1415,6 +1418,17 @@
           "generic": "Invite failed to send. Try again."
         }
       }
+    }
+  },
+  "ui": {
+    "sheet": {
+      "close": "Close sheet"
+    },
+    "dialog": {
+      "close": "Close dialog"
+    },
+    "toast": {
+      "dismiss": "Dismiss notification"
     }
   }
 }
