@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowUpRight, MapPin } from "lucide-react";
 import { Glyph } from "@/components/ui/Glyph";
 import { Pill } from "@/components/ui/Pill";
 import type { MapVenue } from "./seed-venues";
@@ -18,8 +19,23 @@ type Props = {
     priceFree: string;
     priceLow: string;
     priceMedium: string;
+    /** Optional translated labels for the directions provider links. */
+    directionsGoogle?: string;
+    directionsApple?: string;
+    directionsWaze?: string;
   };
 };
+
+// TODO: wire these to next-intl keys
+//   map.venueSheet.directions      EN: "Directions"          RO: "Direcții"
+//   map.venueSheet.directionsGoogle EN: "Google Maps"        RO: "Google Maps"
+//   map.venueSheet.directionsApple  EN: "Apple Maps"         RO: "Apple Maps"
+//   map.venueSheet.directionsWaze   EN: "Waze"               RO: "Waze"
+const DIRECTIONS_FALLBACK = {
+  google: "Google Maps",
+  apple: "Apple Maps",
+  waze: "Waze",
+} as const;
 
 const PRICE_LABEL: Record<0 | 1 | 2, "priceFree" | "priceLow" | "priceMedium"> = {
   0: "priceFree",
@@ -27,9 +43,18 @@ const PRICE_LABEL: Record<0 | 1 | 2, "priceFree" | "priceLow" | "priceMedium"> =
   2: "priceMedium",
 };
 
-function directionsHref(venue: MapVenue) {
+function googleHref(venue: MapVenue) {
   const q = encodeURIComponent(`${venue.lat},${venue.lon}`);
   return `https://www.google.com/maps/dir/?api=1&destination=${q}`;
+}
+
+function appleHref(venue: MapVenue) {
+  const q = encodeURIComponent(`${venue.lat},${venue.lon}`);
+  return `https://maps.apple.com/?daddr=${q}`;
+}
+
+function wazeHref(venue: MapVenue) {
+  return `https://www.waze.com/ul?ll=${venue.lat},${venue.lon}&navigate=yes`;
 }
 
 /**
@@ -117,17 +142,58 @@ export function MapVenueSheet({ venue, expanded, onToggleExpanded, labels }: Pro
               <Pill variant="default">{labels[PRICE_LABEL[venue.priceTier]]}</Pill>
             </div>
             {expanded ? (
-              <div className="mt-4 grid gap-2">
-                <a
-                  href={directionsHref(venue)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-s2m btn-secondary inline-flex items-center justify-center gap-2"
-                  style={{ minHeight: 44 }}
-                >
-                  <Glyph.car size={16} />
-                  {labels.directions}
-                </a>
+              <div className="mt-4 grid gap-3">
+                <section aria-labelledby="venue-directions-heading">
+                  <h3
+                    id="venue-directions-heading"
+                    className="mb-2 inline-flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-wide"
+                    style={{ color: "var(--ink-muted)" }}
+                  >
+                    <MapPin size={14} aria-hidden />
+                    {labels.directions}
+                  </h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    <a
+                      href={googleHref(venue)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${labels.directions}: ${labels.directionsGoogle ?? DIRECTIONS_FALLBACK.google} (${venue.name})`}
+                      className="btn-s2m btn-secondary inline-flex items-center justify-center gap-1 px-2 text-[12px]"
+                      style={{ minHeight: 44 }}
+                    >
+                      <span className="truncate">
+                        {labels.directionsGoogle ?? DIRECTIONS_FALLBACK.google}
+                      </span>
+                      <ArrowUpRight size={12} aria-hidden />
+                    </a>
+                    <a
+                      href={appleHref(venue)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${labels.directions}: ${labels.directionsApple ?? DIRECTIONS_FALLBACK.apple} (${venue.name})`}
+                      className="btn-s2m btn-secondary inline-flex items-center justify-center gap-1 px-2 text-[12px]"
+                      style={{ minHeight: 44 }}
+                    >
+                      <span className="truncate">
+                        {labels.directionsApple ?? DIRECTIONS_FALLBACK.apple}
+                      </span>
+                      <ArrowUpRight size={12} aria-hidden />
+                    </a>
+                    <a
+                      href={wazeHref(venue)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${labels.directions}: ${labels.directionsWaze ?? DIRECTIONS_FALLBACK.waze} (${venue.name})`}
+                      className="btn-s2m btn-secondary inline-flex items-center justify-center gap-1 px-2 text-[12px]"
+                      style={{ minHeight: 44 }}
+                    >
+                      <span className="truncate">
+                        {labels.directionsWaze ?? DIRECTIONS_FALLBACK.waze}
+                      </span>
+                      <ArrowUpRight size={12} aria-hidden />
+                    </a>
+                  </div>
+                </section>
                 <button
                   type="button"
                   className="btn-s2m inline-flex items-center justify-center gap-2"
