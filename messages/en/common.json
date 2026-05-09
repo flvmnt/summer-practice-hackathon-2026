@@ -134,7 +134,70 @@
         "bioRequired": "Add a short bio before continuing.",
         "successTitle": "Profile saved",
         "successBody": "Sports, profile photo, and location are the next onboarding steps.",
-        "continue": "Continue to Today"
+        "continue": "Choose sports"
+      }
+    },
+    "sports": {
+      "back": "Back",
+      "eyebrow": "Onboarding",
+      "title": "Choose the sports you would show up for.",
+      "body": "Pick at least one sport and set a skill level. These choices become the first deterministic matching gate.",
+      "cardTitle": "Sports and skill",
+      "cardBody": "Per-sport levels override the profile fallback when matching groups.",
+      "form": {
+        "submit": "Save sports",
+        "pending": "Saving sports",
+        "genericError": "Check the details and try again.",
+        "unauthorized": "Log in again before saving your sports.",
+        "sportsRequired": "Choose at least one sport.",
+        "successTitle": "Sports saved",
+        "successBody": "Location and distance are the next proximity gate.",
+        "continue": "Set location",
+        "levels": {
+          "1": "Beginner",
+          "2": "Casual",
+          "3": "Intermediate",
+          "4": "Advanced",
+          "5": "Competitive"
+        },
+        "sports": {
+          "football": "Football",
+          "basketball": "Basketball",
+          "tennis": "Tennis",
+          "volleyball": "Volleyball",
+          "badminton": "Badminton",
+          "running": "Running",
+          "cycling": "Cycling",
+          "yoga": "Yoga",
+          "hiking": "Hiking",
+          "table_tennis": "Table tennis"
+        }
+      }
+    },
+    "location": {
+      "back": "Back",
+      "eyebrow": "Onboarding",
+      "title": "Set a private home area and radius.",
+      "body": "Matching uses coordinates for distance checks, but the app will only expose public venues and approximate group centers.",
+      "cardTitle": "Location and distance",
+      "cardBody": "Timisoara defaults are available for demo flow speed.",
+      "form": {
+        "city": "City",
+        "cityPlaceholder": "Timisoara",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "maxDistance": "Maximum distance",
+        "km": "km",
+        "submit": "Save location",
+        "pending": "Saving location",
+        "genericError": "Check the details and try again.",
+        "unauthorized": "Log in again before saving location.",
+        "cityRequired": "Enter a city with at least two characters.",
+        "invalidLatitude": "Latitude must be between -90 and 90.",
+        "invalidLongitude": "Longitude must be between -180 and 180.",
+        "successTitle": "Location saved",
+        "successBody": "The account now has the required profile, sports, and proximity fields for ShowUpToday.",
+        "continue": "Open Today"
       }
     }
   },

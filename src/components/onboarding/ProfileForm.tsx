@@ -77,7 +77,7 @@ export function ProfileForm({
         </p>
         <Link
           className="mt-4 inline-flex min-h-12 items-center justify-center rounded-md bg-[var(--lime)] px-5 text-sm font-semibold text-[var(--navy)]"
-          href={`/${locale}/today`}
+          href={`/${locale}/onboarding/sports`}
         >
           {copy.continue}
         </Link>

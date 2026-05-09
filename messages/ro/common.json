@@ -134,7 +134,70 @@
         "bioRequired": "Adauga un bio scurt inainte sa continui.",
         "successTitle": "Profil salvat",
         "successBody": "Sporturile, poza de profil si locatia sunt urmatorii pasi de onboarding.",
-        "continue": "Continua la Today"
+        "continue": "Alege sporturi"
+      }
+    },
+    "sports": {
+      "back": "Inapoi",
+      "eyebrow": "Onboarding",
+      "title": "Alege sporturile la care ai veni.",
+      "body": "Alege cel putin un sport si seteaza nivelul. Aceste alegeri devin primul filtru determinist de potrivire.",
+      "cardTitle": "Sporturi si nivel",
+      "cardBody": "Nivelurile pe sport au prioritate fata de nivelul general al profilului.",
+      "form": {
+        "submit": "Salveaza sporturile",
+        "pending": "Se salveaza sporturile",
+        "genericError": "Verifica datele si incearca din nou.",
+        "unauthorized": "Autentifica-te din nou inainte sa salvezi sporturile.",
+        "sportsRequired": "Alege cel putin un sport.",
+        "successTitle": "Sporturi salvate",
+        "successBody": "Locatia si distanta sunt urmatorul filtru de proximitate.",
+        "continue": "Seteaza locatia",
+        "levels": {
+          "1": "Incepator",
+          "2": "Casual",
+          "3": "Intermediar",
+          "4": "Avansat",
+          "5": "Competitiv"
+        },
+        "sports": {
+          "football": "Fotbal",
+          "basketball": "Baschet",
+          "tennis": "Tenis",
+          "volleyball": "Volei",
+          "badminton": "Badminton",
+          "running": "Alergare",
+          "cycling": "Ciclism",
+          "yoga": "Yoga",
+          "hiking": "Drumetie",
+          "table_tennis": "Tenis de masa"
+        }
+      }
+    },
+    "location": {
+      "back": "Inapoi",
+      "eyebrow": "Onboarding",
+      "title": "Seteaza zona de acasa si raza privata.",
+      "body": "Potrivirea foloseste coordonate pentru distanta, dar aplicatia expune doar locatii publice si centre aproximative de grup.",
+      "cardTitle": "Locatie si distanta",
+      "cardBody": "Valorile implicite pentru Timisoara ajuta fluxul de demo sa fie rapid.",
+      "form": {
+        "city": "Oras",
+        "cityPlaceholder": "Timisoara",
+        "latitude": "Latitudine",
+        "longitude": "Longitudine",
+        "maxDistance": "Distanta maxima",
+        "km": "km",
+        "submit": "Salveaza locatia",
+        "pending": "Se salveaza locatia",
+        "genericError": "Verifica datele si incearca din nou.",
+        "unauthorized": "Autentifica-te din nou inainte sa salvezi locatia.",
+        "cityRequired": "Introdu un oras cu cel putin doua caractere.",
+        "invalidLatitude": "Latitudinea trebuie sa fie intre -90 si 90.",
+        "invalidLongitude": "Longitudinea trebuie sa fie intre -180 si 180.",
+        "successTitle": "Locatie salvata",
+        "successBody": "Contul are acum campurile obligatorii pentru profil, sporturi si proximitate in ShowUpToday.",
+        "continue": "Deschide Today"
       }
     }
   },
