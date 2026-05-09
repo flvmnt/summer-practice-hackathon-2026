@@ -560,7 +560,8 @@
     "vote": {
       "title": "Vote: choose a venue",
       "closeVote": "Close vote",
-      "closedNotice": "Voting is closed."
+      "closedNotice": "Voting is closed.",
+      "yourVote": "Your vote"
     },
     "captainReveal": {
       "pillLabel": "Captain auto-suggest",
@@ -651,6 +652,15 @@
       "yoga": "Yoga",
       "hiking": "Hiking",
       "table_tennis": "Table tennis"
+    },
+    "expired": {
+      "title": "This invite link is no longer active",
+      "body": "The invite was revoked, expired, or never existed. Ask the organizer to send a fresh link.",
+      "cta": "Back to ShowUp2Move"
+    },
+    "og": {
+      "description": "Pickup game on {when}. Sign up to coordinate.",
+      "descriptionWithCity": "Pickup game in {city} on {when}. Sign up to coordinate."
     }
   },
   "notFound": {

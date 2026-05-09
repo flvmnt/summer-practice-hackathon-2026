@@ -560,7 +560,8 @@
     "vote": {
       "title": "Vot: alegeți o locație",
       "closeVote": "Închide votul",
-      "closedNotice": "Votul este închis."
+      "closedNotice": "Votul este închis.",
+      "yourVote": "Votul tău"
     },
     "captainReveal": {
       "pillLabel": "Sugestie auto pentru căpitan",
@@ -651,6 +652,15 @@
       "yoga": "Yoga",
       "hiking": "Drumeție",
       "table_tennis": "Tenis de masă"
+    },
+    "expired": {
+      "title": "Acest link de invitație nu mai este valid",
+      "body": "Invitația a fost revocată, a expirat sau nu a existat niciodată. Cere organizatorului un link nou.",
+      "cta": "Înapoi la ShowUp2Move"
+    },
+    "og": {
+      "description": "Joc pe {when}. Înscrie-te pentru a coordona.",
+      "descriptionWithCity": "Joc în {city} pe {when}. Înscrie-te pentru a coordona."
     }
   },
   "notFound": {

@@ -168,7 +168,7 @@ export function VoteCard({
             fontSize: 13,
           }}
         >
-          {t("event.vote.close")}
+          {t("event.vote.closeVote")}
         </button>
       ) : null}
     </div>
