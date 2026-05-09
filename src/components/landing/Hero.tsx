@@ -163,6 +163,7 @@ export async function Hero({ locale, demoEnabled }: Props) {
                 <Glyph.pulse size={14} /> {t("proof.venues")}
               </span>
               <span className="inline-flex items-center" style={{ gap: 6 }}>
+                <span className="ai-mark" style={{ color: "var(--accent)" }} />
                 {t("proof.ai")}
               </span>
             </div>
