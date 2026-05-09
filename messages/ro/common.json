@@ -958,7 +958,7 @@
       "event": "Eveniment",
       "vote": "Vot",
       "calendar": "Calendar",
-      "judgeMode": "Judge Mode"
+      "judgeMode": "Mod juriu"
     },
     "nav": {
       "aria": "Navigare prin demonstrația ghidată",
@@ -1386,22 +1386,6 @@
     },
     "stub": "Date demonstrative · TODO",
     "back": "Azi"
-  },
-  "walkthrough": {
-    "steps": {
-      "today": "Today",
-      "groups": "Grupuri",
-      "group": "Grup",
-      "event": "Eveniment",
-      "vote": "Vot",
-      "calendar": "Calendar",
-      "judgeMode": "Mod juriu"
-    },
-    "nav": {
-      "aria": "Navigare prezentare demo",
-      "previous": "Pasul anterior ({label})",
-      "next": "Pasul urmator ({label})"
-    }
   },
   "chat": {
     "connection": {
