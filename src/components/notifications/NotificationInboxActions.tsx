@@ -160,6 +160,7 @@ export function NotificationInboxActions({
           onClick={handleMarkAllRead}
           disabled={markAllDisabled}
           aria-disabled={markAllDisabled}
+          aria-busy={pending}
           className={cn(
             "inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-semibold transition-colors",
           )}
