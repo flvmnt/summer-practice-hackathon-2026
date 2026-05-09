@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getDb } from "@/db";
 import {
+  eventAttendees,
   eventVenueCandidates,
   events,
   groups,
@@ -11,6 +12,7 @@ import {
   votes,
 } from "@/db/schema";
 import { buildIcsCalendar } from "@/lib/calendar";
+import { getCurrentUser } from "@/lib/auth-current-user";
 import { getServerEnv } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
@@ -106,6 +108,26 @@ export async function GET(
     .limit(1);
 
   if (!event) {
+    return notFound();
+  }
+
+  const user = await getCurrentUser();
+  if (!user) {
+    return notFound();
+  }
+
+  const [attendee] = await getDb()
+    .select({ eventId: eventAttendees.eventId })
+    .from(eventAttendees)
+    .where(
+      and(
+        eq(eventAttendees.eventId, event.id),
+        eq(eventAttendees.userId, user.id),
+      ),
+    )
+    .limit(1);
+
+  if (!attendee) {
     return notFound();
   }
 

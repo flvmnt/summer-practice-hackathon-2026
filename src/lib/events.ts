@@ -19,6 +19,8 @@ import { getCurrentUser } from "@/lib/auth-current-user";
 import {
   createGroupEventInputSchema,
   type CreateGroupEventInput,
+  updateEventRsvpInputSchema,
+  type UpdateEventRsvpInput,
 } from "@/lib/contracts/event";
 import type { SportKey } from "@/lib/sports";
 
@@ -574,4 +576,35 @@ export async function getCaptainGroups(userId: string): Promise<CaptainGroup[]> 
     sizeTarget: row.sizeTarget,
     status: row.status,
   }));
+}
+
+export async function updateEventRsvpAction(
+  input: UpdateEventRsvpInput,
+): Promise<ActionResult<{ status: UpdateEventRsvpInput["status"] }>> {
+  const parsed = updateEventRsvpInputSchema.safeParse(input);
+  if (!parsed.success) {
+    return actionError("validation");
+  }
+
+  const user = await getCurrentUser();
+  if (!user) {
+    return actionError("unauthorized");
+  }
+
+  const [attendee] = await getDb()
+    .update(eventAttendees)
+    .set({ status: parsed.data.status })
+    .where(
+      and(
+        eq(eventAttendees.eventId, parsed.data.eventId),
+        eq(eventAttendees.userId, user.id),
+      ),
+    )
+    .returning({ status: eventAttendees.status });
+
+  if (!attendee) {
+    return actionError("not_found");
+  }
+
+  return actionOk({ status: parsed.data.status });
 }

@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useToast } from "@/components/ui/Toast";
+import { updateEventRsvpAction } from "@/lib/events";
 
 export type RsvpStatus = "going" | "maybe" | "declined";
 
 type Props = {
+  eventId: string;
   initial: RsvpStatus;
   copy: {
     going: string;
@@ -18,14 +20,11 @@ type Props = {
 const ORDER: ReadonlyArray<RsvpStatus> = ["going", "maybe", "declined"];
 
 /**
- * Local-first RSVP toggle. Optimistic UI; a future server action (owned by
- * the events lib agent) can wire into `onChange` without changing the shape.
- *
- * Until then the choice is reflected immediately and confirmed via toast so
- * the demo flow stays believable.
+ * Optimistic RSVP toggle backed by event_attendees.
  */
-export function RsvpButtons({ initial, copy }: Props) {
+export function RsvpButtons({ eventId, initial, copy }: Props) {
   const [value, setValue] = useState<RsvpStatus>(initial);
+  const [pending, setPending] = useState(false);
   const toast = useToast();
 
   const labels: Record<RsvpStatus, string> = {
@@ -48,14 +47,28 @@ export function RsvpButtons({ initial, copy }: Props) {
             type="button"
             role="radio"
             aria-checked={active}
-            onClick={() => {
-              if (status === value) return;
+            disabled={pending}
+            onClick={async () => {
+              if (pending || status === value) return;
+              const previous = value;
+              setPending(true);
               setValue(status);
-              toast.push({
-                title: copy.saved,
-                description: labels[status],
-                variant: "success",
-              });
+              const result = await updateEventRsvpAction({ eventId, status });
+              setPending(false);
+              if (result.ok) {
+                toast.push({
+                  title: copy.saved,
+                  description: labels[status],
+                  variant: "success",
+                });
+              } else {
+                setValue(previous);
+                toast.push({
+                  title: "RSVP not saved",
+                  description: labels[previous],
+                  variant: "alert",
+                });
+              }
             }}
             className="text-[13px] font-semibold"
             style={{

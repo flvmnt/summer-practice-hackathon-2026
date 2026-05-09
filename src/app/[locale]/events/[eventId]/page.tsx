@@ -9,6 +9,7 @@ import {
   type WeatherKind,
 } from "@/lib/ai/captain-brief";
 import { getEventAction, getGroupAction } from "@/lib/chat";
+import { unreadCount } from "@/lib/notifications";
 import type { SportKey } from "@/lib/sports";
 import { getOpenMeteoForecast, type WeatherFit } from "@/lib/weather";
 
@@ -43,6 +44,7 @@ export default async function EventPage({
 
   const { event, attendees, messages, venueCandidates, venueVote, currentUserId } =
     result.data;
+  const unread = await unreadCount(currentUserId);
 
   // Captain check - query the group via the existing action so we don't touch
   // chat.ts. Falls back to "not captain" if group fetch fails.
@@ -277,6 +279,7 @@ export default async function EventPage({
       myVoteOptionIdx={venueVote?.selectedOptionIdx ?? null}
       voteOpen={venueVote ? venueVote.status === "open" : false}
       captainBrief={captainBrief}
+      unreadCount={unread}
     />
   );
 }

@@ -142,11 +142,18 @@ async function requireGroupMember(groupId: string) {
   return membership ? { user, membership } : null;
 }
 
-async function requireEventAttendee(eventId: string) {
+async function requireEventAttendee(
+  eventId: string,
+  options: { allowDeclined?: boolean } = {},
+) {
   const user = await getCurrentUser();
   if (!user) {
     return null;
   }
+
+  const allowedStatuses = options.allowDeclined
+    ? ["going", "maybe", "declined"]
+    : ["going", "maybe"];
 
   const [attendee] = await getDb()
     .select({
@@ -160,7 +167,7 @@ async function requireEventAttendee(eventId: string) {
       and(
         eq(eventAttendees.eventId, eventId),
         eq(eventAttendees.userId, user.id),
-        inArray(eventAttendees.status, ["going", "maybe"]),
+        inArray(eventAttendees.status, allowedStatuses),
       ),
     )
     .limit(1);
@@ -342,7 +349,7 @@ export async function getEventAction(input: {
     return actionError("validation");
   }
 
-  const auth = await requireEventAttendee(parsed.data.eventId);
+  const auth = await requireEventAttendee(parsed.data.eventId, { allowDeclined: true });
   if (!auth) {
     return actionError("unauthorized");
   }

@@ -263,7 +263,7 @@ export function EventDetailsPanel({
         >
           RSVP
         </div>
-        <RsvpButtons initial={initialRsvp} copy={copy.rsvp} />
+        <RsvpButtons eventId={event.id} initial={initialRsvp} copy={copy.rsvp} />
       </Card>
 
       {/* ICS export */}

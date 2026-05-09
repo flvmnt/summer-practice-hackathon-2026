@@ -100,6 +100,7 @@ type Props = {
   myVoteOptionIdx: number | null;
   voteOpen: boolean;
   captainBrief: { brief: CaptainBrief; source: "ai" | "fallback" } | null;
+  unreadCount: number;
 };
 
 export function EventScreen(props: Props) {
@@ -126,6 +127,7 @@ function EventScreenInner({
   myVoteOptionIdx,
   voteOpen,
   captainBrief,
+  unreadCount,
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -341,7 +343,7 @@ function EventScreenInner({
           >
             {statusLabel}
           </Pill>
-          <HeaderBell unreadCount={0} locale={locale} />
+          <HeaderBell unreadCount={unreadCount} locale={locale} />
         </div>
       </header>
 
