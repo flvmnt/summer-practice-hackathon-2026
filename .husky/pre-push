@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+echo "[pre-push] running pnpm check (lint + i18n + typecheck + test + build)..."
+echo "[pre-push] to bypass for emergencies, use: git push --no-verify"
+echo ""
+
+if ! pnpm check; then
+  echo ""
+  echo "[pre-push] FAILED. Push blocked."
+  echo "[pre-push] Fix the failing step above, or push with --no-verify if you must."
+  exit 1
+fi
+
+echo ""
+echo "[pre-push] OK. Push allowed."
