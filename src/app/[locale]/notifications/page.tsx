@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { NotificationInboxActions } from "@/components/notifications/NotificationInboxActions";
 import type {
@@ -96,13 +97,14 @@ export default async function NotificationsPage({
 
   return (
     <main
-      className="relative min-h-screen w-full"
+      className="relative min-h-screen w-full md:pl-[240px]"
       style={{
         background: "var(--bg)",
         color: "var(--ink)",
         paddingBottom: "calc(96px + env(safe-area-inset-bottom) + 16px)",
       }}
     >
+      <DesktopSidebar unreadCount={unread} />
       <header
         style={{
           position: "sticky",

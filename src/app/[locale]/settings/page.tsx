@@ -3,6 +3,7 @@ import { setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { HeaderBell } from "@/components/layout/HeaderBell";
+import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { InlineEditPanels } from "@/components/settings/InlineEditPanels";
 import { SettingsSection } from "@/components/settings/SettingsSection";
@@ -257,13 +258,14 @@ export default async function SettingsPage({
 
   return (
     <main
-      className="relative min-h-screen w-full"
+      className="relative min-h-screen w-full md:pl-[240px]"
       style={{
         background: "var(--surface-2)",
         color: "var(--ink)",
         paddingBottom: "calc(78px + env(safe-area-inset-bottom) + 16px)",
       }}
     >
+      <DesktopSidebar unreadCount={unread} />
       <header className="flex items-center gap-3 px-5 pt-6 md:hidden">
         <Link
           href={`/${locale}/today`}

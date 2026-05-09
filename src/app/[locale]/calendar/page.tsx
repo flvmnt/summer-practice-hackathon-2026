@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { HeaderBell } from "@/components/layout/HeaderBell";
+import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { IcsExportButton } from "@/components/event/IcsExportButton";
 import { Card } from "@/components/ui/Card";
@@ -88,7 +89,7 @@ export default async function CalendarPage({
 
   return (
     <main
-      className="relative min-h-screen w-full"
+      className="relative min-h-screen w-full md:pl-[240px]"
       style={{
         background: "var(--bg)",
         color: "var(--ink)",
@@ -252,6 +253,7 @@ export default async function CalendarPage({
         )}
       </div>
 
+      <DesktopSidebar unreadCount={unread} />
       <MobileTabBar />
     </main>
   );

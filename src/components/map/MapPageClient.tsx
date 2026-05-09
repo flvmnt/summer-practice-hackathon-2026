@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Glyph } from "@/components/ui/Glyph";
 import { IconButton } from "@/components/ui/IconButton";
 import { Input } from "@/components/ui/Input";
+import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
 import { HeaderBell } from "@/components/layout/HeaderBell";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { MapDeniedFallback } from "./MapDeniedFallback";
@@ -177,9 +178,10 @@ export function MapPageClient({
 
   return (
     <main
-      className="relative w-full"
+      className="relative w-full md:pl-[240px]"
       style={{ minHeight: "100dvh", background: "var(--bg)" }}
     >
+      <DesktopSidebar unreadCount={unreadCount} />
       <div className="mx-auto flex w-full max-w-6xl flex-col md:grid md:grid-cols-[320px_1fr] md:gap-0">
         {/* Sidebar (desktop) / top header (mobile) */}
         <aside
