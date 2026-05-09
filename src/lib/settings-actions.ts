@@ -5,7 +5,7 @@ import { z } from "zod";
 import { getDb } from "@/db";
 import { users } from "@/db/schema";
 import { actionError, actionOk, type ActionResult } from "@/lib/action-result";
-import { getCurrentUser } from "@/lib/auth-current-user";
+import { requireUserForAction } from "@/lib/auth-current-user";
 import {
   onboardingProfileInputSchema,
   type OnboardingProfileInput,

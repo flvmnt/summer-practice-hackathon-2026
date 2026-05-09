@@ -60,3 +60,4 @@ temp/
 *.tar
 *.tar.gz
 showup2move-planning-pack/
+.local-archive/

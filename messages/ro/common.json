@@ -800,15 +800,15 @@
     "navAria": "Secțiuni rubrică",
     "rubric": {
       "categories": {
-        "foundation": "Fundatie: autentificare + onboarding",
+        "foundation": "Fundație: autentificare + onboarding",
         "today_matching": "Today + Potrivire",
         "group_chat": "Grup + Chat",
         "events_voting": "Evenimente + Vot",
-        "maps_location": "Harti + Locatie",
-        "ai": "AI / Imbunatatiri inteligente",
-        "notifications_calendar": "Notificari + Calendar",
+        "maps_location": "Hărți + Locație",
+        "ai": "AI / Îmbunătățiri inteligente",
+        "notifications_calendar": "Notificări + Calendar",
         "i18n_sharing": "i18n + Distribuire",
-        "production_demo": "Productie + Demo"
+        "production_demo": "Producție + Demo"
       },
       "rows": {
         "auth-core": {
@@ -817,7 +817,7 @@
         },
         "profile-onboarding": {
           "label": "Onboarding profil + bio",
-          "note": "Nume complet, bio si campurile profilului public sunt salvate inainte de pasul cu sporturi."
+          "note": "Nume complet, bio și câmpurile profilului public sunt salvate înainte de pasul cu sporturi."
         },
         "skill-level": {
           "label": "Nivel de skill per sport",
@@ -944,10 +944,26 @@
           "note": "Mai întâi 360px; bottom nav; compozitoare sticky; screenshoturi Playwright pe lățimi diferite."
         },
         "judge-mode": {
-          "label": "Pagina dovada Judge Mode (acest ecran)",
-          "note": "Ruta protejata, live/seeded/fallback per rand, fără afirmatii false-green."
+          "label": "Pagină dovadă Judge Mode (acest ecran)",
+          "note": "Rută protejată, live/seeded/fallback per rând, fără afirmații false-green."
         }
       }
+    }
+  },
+  "walkthrough": {
+    "steps": {
+      "today": "Azi",
+      "groups": "Grupuri",
+      "group": "Grup",
+      "event": "Eveniment",
+      "vote": "Vot",
+      "calendar": "Calendar",
+      "judgeMode": "Judge Mode"
+    },
+    "nav": {
+      "aria": "Navigare prin demonstrația ghidată",
+      "previous": "Pasul anterior ({label})",
+      "next": "Pasul următor ({label})"
     }
   },
   "invitePreview": {

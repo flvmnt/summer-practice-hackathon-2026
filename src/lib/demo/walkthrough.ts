@@ -3,8 +3,12 @@ export const WALKTHROUGH_COOKIE_MAX_AGE = 60 * 60; // 1h
 
 export type WalkthroughStep = {
   id: string;
-  /** Display label shown in the step counter tooltip / aria-label. */
-  label: string;
+  /**
+   * i18n key (under `walkthrough.steps`) used for the step counter tooltip
+   * and aria-labels. The component resolves the label via next-intl so the
+   * scripted demo nav respects locale.
+   */
+  labelKey: "today" | "groups" | "group" | "event" | "vote" | "calendar" | "judgeMode";
   /**
    * Static path or a resolver path. Resolver paths point at /demo/step/<id>
    * which redirects to the actual demo entity once seed data is queried.
@@ -13,13 +17,13 @@ export type WalkthroughStep = {
 };
 
 export const WALKTHROUGH_STEPS: ReadonlyArray<WalkthroughStep> = [
-  { id: "today", label: "Today", href: (l) => `/${l}/today` },
-  { id: "groups", label: "Groups", href: (l) => `/${l}/groups` },
-  { id: "group", label: "Group", href: (l) => `/${l}/demo/step/group` },
-  { id: "event", label: "Event", href: (l) => `/${l}/demo/step/event` },
-  { id: "vote", label: "Vote", href: (l) => `/${l}/demo/step/event#vote` },
-  { id: "calendar", label: "Calendar", href: (l) => `/${l}/calendar` },
-  { id: "judge", label: "Judge Mode", href: (l) => `/${l}/demo` },
+  { id: "today", labelKey: "today", href: (l) => `/${l}/today` },
+  { id: "groups", labelKey: "groups", href: (l) => `/${l}/groups` },
+  { id: "group", labelKey: "group", href: (l) => `/${l}/demo/step/group` },
+  { id: "event", labelKey: "event", href: (l) => `/${l}/demo/step/event` },
+  { id: "vote", labelKey: "vote", href: (l) => `/${l}/demo/step/event#vote` },
+  { id: "calendar", labelKey: "calendar", href: (l) => `/${l}/calendar` },
+  { id: "judge", labelKey: "judgeMode", href: (l) => `/${l}/demo` },
 ];
 
 /**

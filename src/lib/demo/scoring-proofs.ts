@@ -383,7 +383,7 @@ export const RUBRIC_CATEGORIES: RubricCategory[] = [
         status: "live",
         evidence: "/today",
         evidenceLabel: "/today",
-        note: "360px-first; bottom nav; sticky composers; Playwright screenshots across widths.",
+        note: "360px-first; MobileTabBar bottom nav; sticky composers + DesktopSidebar on md+. Playwright runs desktop + Pixel-5 viewports.",
       },
       {
         id: "judge-mode",

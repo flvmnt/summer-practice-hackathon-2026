@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { Glyph } from "@/components/ui/Glyph";
@@ -21,6 +22,7 @@ type Props = {
  */
 export function WalkthroughNav({ locale }: Props) {
   const pathname = usePathname();
+  const t = useTranslations("walkthrough");
 
   const { currentIndex, prevHref, nextHref } = useMemo(() => {
     const idx = resolveStepIndex(pathname ?? "");
@@ -54,17 +56,23 @@ export function WalkthroughNav({ locale }: Props) {
 
   const total = WALKTHROUGH_STEPS.length;
   const stepNumber = currentIndex + 1;
-  const currentLabel = WALKTHROUGH_STEPS[currentIndex]?.label ?? "";
+  const currentLabel = t(`steps.${WALKTHROUGH_STEPS[currentIndex].labelKey}`);
+  const prevLabel = prevHref
+    ? t(`steps.${WALKTHROUGH_STEPS[currentIndex - 1].labelKey}`)
+    : "";
+  const nextLabel = nextHref
+    ? t(`steps.${WALKTHROUGH_STEPS[currentIndex + 1].labelKey}`)
+    : "";
 
   return (
     <div
-      aria-label="Demo walkthrough navigation"
+      aria-label={t("nav.aria")}
       className="pointer-events-none fixed inset-y-0 right-0 z-40 flex items-center pr-3"
     >
       <div className="pointer-events-auto flex flex-col items-center gap-2">
         <NavButton
           href={prevHref}
-          ariaLabel={`Previous step (${prevHref ? WALKTHROUGH_STEPS[currentIndex - 1].label : ""})`}
+          ariaLabel={t("nav.previous", { label: prevLabel })}
           disabled={!prevHref}
         >
           <Glyph.back size={20} />
@@ -85,7 +93,7 @@ export function WalkthroughNav({ locale }: Props) {
         </div>
         <NavButton
           href={nextHref}
-          ariaLabel={`Next step (${nextHref ? WALKTHROUGH_STEPS[currentIndex + 1].label : ""})`}
+          ariaLabel={t("nav.next", { label: nextLabel })}
           disabled={!nextHref}
         >
           <Glyph.arrow size={20} />

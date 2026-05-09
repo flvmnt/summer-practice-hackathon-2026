@@ -4,6 +4,7 @@ import {
   useActionState,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type FormEvent,
@@ -25,6 +26,8 @@ export type GroupChatFormCopy = {
   emptyTitle: string;
   emptyBody: string;
   captainAriaLabel: string;
+  liveLabel?: string;
+  reconnectingLabel?: string;
 };
 
 export type GroupChatFormMessage = {
@@ -64,6 +67,14 @@ function formatTime(iso: string): string {
   return `${hh}:${mm}`;
 }
 
+type StreamMessagePayload = {
+  id: string;
+  body: string;
+  kind: string;
+  createdAt: string;
+  user: { id: string; username: string; fullName: string } | null;
+};
+
 export function GroupChatForm({
   copy,
   groupId,
@@ -78,6 +89,10 @@ export function GroupChatForm({
   const [body, setBody] = useState("");
   const [keyboardOffset, setKeyboardOffset] = useState(0);
   const [clientId, setClientId] = useState<string>(() => makeClientId());
+  const [liveMessages, setLiveMessages] = useState<GroupChatFormMessage[]>([]);
+  const [streamStatus, setStreamStatus] = useState<"idle" | "live" | "reconnecting">(
+    "idle",
+  );
   const inputRef = useRef<HTMLInputElement>(null);
   const streamRef = useRef<HTMLDivElement>(null);
 
@@ -101,12 +116,101 @@ export function GroupChatForm({
     [body],
   );
 
+  // Merge server-rendered messages with anything we've received over SSE.
+  // Server messages are the source of truth on first paint; SSE only adds
+  // messages with createdAt > the latest server-rendered one. Dedup by id.
+  const mergedMessages = useMemo(() => {
+    if (liveMessages.length === 0) return messages;
+    const seen = new Set(messages.map((m) => m.id));
+    const fresh = liveMessages.filter((m) => !seen.has(m.id));
+    if (fresh.length === 0) return messages;
+    return [...messages, ...fresh];
+  }, [messages, liveMessages]);
+
   // Scroll the message stream to the bottom on new messages.
   useEffect(() => {
     const el = streamRef.current;
     if (!el) return;
     el.scrollTop = el.scrollHeight;
-  }, [messages.length]);
+  }, [mergedMessages.length]);
+
+  // SSE subscription. Source of truth is still the DB; this is purely a
+  // delivery channel for messages posted by other tabs/users. EventSource
+  // auto-reconnects on transport errors; we cap our own retry count and
+  // fall back to "polling-by-action" (the existing form submit refresh
+  // path) once exhausted.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (typeof EventSource === "undefined") return;
+
+    let source: EventSource | null = null;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    let retries = 0;
+    let cancelled = false;
+
+    // Cursor: latest server-rendered message timestamp (so SSE doesn't
+    // replay history we already painted).
+    const initialCursor =
+      messages.length > 0
+        ? messages[messages.length - 1].createdAt
+        : new Date().toISOString();
+    let cursor = initialCursor;
+
+    const open = () => {
+      if (cancelled) return;
+      const url = `/api/stream/messages?scope=group&groupId=${encodeURIComponent(
+        groupId,
+      )}&since=${encodeURIComponent(cursor)}`;
+      const es = new EventSource(url);
+      source = es;
+
+      es.addEventListener("open", () => {
+        retries = 0;
+        setStreamStatus("live");
+      });
+
+      es.addEventListener("message", (event) => {
+        try {
+          const payload = JSON.parse(
+            (event as MessageEvent).data,
+          ) as StreamMessagePayload;
+          cursor = payload.createdAt;
+          setLiveMessages((prev) => {
+            if (prev.some((m) => m.id === payload.id)) return prev;
+            return [...prev, payload];
+          });
+        } catch {
+          // ignore malformed payloads; next tick may recover
+        }
+      });
+
+      es.addEventListener("error", () => {
+        es.close();
+        source = null;
+        setStreamStatus("reconnecting");
+        if (cancelled) return;
+        if (retries >= 3) {
+          // Give up; the page-action submit + revalidation path still works.
+          setStreamStatus("idle");
+          return;
+        }
+        const delay = 800 * 2 ** retries;
+        retries += 1;
+        retryTimer = setTimeout(open, delay);
+      });
+    };
+
+    open();
+
+    return () => {
+      cancelled = true;
+      if (retryTimer) clearTimeout(retryTimer);
+      if (source) source.close();
+    };
+    // We intentionally don't depend on `messages` so the SSE doesn't churn
+    // every time a new message lands; the cursor closure handles drift.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupId]);
 
   // Sticky composer above the iOS keyboard via visualViewport math.
   useEffect(() => {
