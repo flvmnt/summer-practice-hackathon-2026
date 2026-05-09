@@ -1,12 +1,13 @@
 import { ImageResponse } from "next/og";
 
-// Next.js dynamic favicon. 32x32 PNG matching the in-app s2m wordmark:
-// dark "s" + accent "2" + dark "m" on a cream surface so the brand reads
-// the same in the address bar as it does on the landing page.
-export const size = { width: 32, height: 32 };
+// Next.js dynamic Apple touch icon. 180x180 PNG used when iOS users add the
+// site to their home screen. Same s2m wordmark as the favicon, scaled up so
+// the brand is readable on a phone tile and stays on-theme inside iOS's
+// rounded-rectangle mask (iOS applies the mask itself).
+export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 
-export default function Icon() {
+export default function AppleIcon() {
   return new ImageResponse(
     (
       <div
@@ -17,12 +18,11 @@ export default function Icon() {
           alignItems: "center",
           justifyContent: "center",
           background: "#f6f1e8",
-          fontSize: 22,
+          fontSize: 116,
           fontWeight: 800,
           letterSpacing: "-0.06em",
           fontFamily: "system-ui, sans-serif",
           color: "#0c0c0c",
-          borderRadius: 6,
         }}
       >
         s<span style={{ color: "#ff6a00" }}>2</span>m
