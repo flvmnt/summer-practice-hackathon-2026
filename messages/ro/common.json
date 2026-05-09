@@ -821,27 +821,27 @@
         },
         "skill-level": {
           "label": "Nivel de skill per sport",
-          "note": "1..5 niveluri per sport. Alimenteaza explicatia potrivirii pe skill."
+          "note": "1..5 niveluri per sport. Alimentează explicația potrivirii pe skill."
         },
         "location-onboarding": {
-          "label": "Onboarding locație + raza",
+          "label": "Onboarding locație + rază",
           "note": "lat/lng numerice plus maxDistanceKm. Privacy-safe, fără pin exact al casei."
         },
         "photo-upload": {
-          "label": "Incarcare + procesare poza profil",
-          "note": "Upload R2, verificare MIME, procesare WebP si salvare in profil sunt conectate; dovada cere R2 configurat."
+          "label": "Încărcare + procesare poză profil",
+          "note": "Upload R2, verificare MIME, procesare WebP și salvare în profil sunt conectate; dovada cere R2 configurat."
         },
         "today-availability": {
           "label": "Prompt Da/Nu ShowUpToday",
-          "note": "Cinci stări explicite: prompt, in coada, potrivit, fără prompt, indisponibil."
+          "note": "Cinci stări explicite: prompt, în coadă, potrivit, fără prompt, indisponibil."
         },
         "smart-matching": {
-          "label": "Potrivire inteligenta: sport + marime + proximitate",
-          "note": "Formare determinista a grupului după Da, in baza utilizatorilor seedati."
+          "label": "Potrivire inteligentă: sport + mărime + proximitate",
+          "note": "Formare deterministă a grupului după Da, în baza utilizatorilor seedați."
         },
         "match-confirmation": {
           "label": "Flux de confirmare a potrivirii",
-          "note": "Starea de potrivire apelează confirmMembershipAction inainte de deschiderea grupului."
+          "note": "Starea de potrivire apelează confirmMembershipAction înainte de deschiderea grupului."
         },
         "compatibility-explanation": {
           "label": "Explicație compatibilitate AI",
@@ -884,7 +884,7 @@
           "note": "Bază de date de terenuri seedată + sortare după distanță + intrare manuală de către căpitan ca fallback."
         },
         "maps-fallback": {
-          "label": "Harta MapLibre + lista fallback + direcții",
+          "label": "Hartă MapLibre + listă fallback + direcții",
           "note": "Încărcare lazy MapLibre; fallback listă când locația e refuzată; linkuri de direcții."
         },
         "weather-aware": {
@@ -1401,6 +1401,12 @@
       "aria": "Navigare prezentare demo",
       "previous": "Pasul anterior ({label})",
       "next": "Pasul urmator ({label})"
+    }
+  },
+  "chat": {
+    "connection": {
+      "live": "Live",
+      "reconnecting": "Se reconectează..."
     }
   }
 }
