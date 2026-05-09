@@ -159,7 +159,7 @@ export function MapVenueSheet({ venue, expanded, onToggleExpanded, labels }: Pro
                       rel="noopener noreferrer"
                       aria-label={`${labels.directions}: ${labels.directionsGoogle ?? DIRECTIONS_FALLBACK.google} (${venue.name})`}
                       className="btn-s2m btn-secondary inline-flex items-center justify-center gap-1 px-2 text-[12px]"
-                      style={{ minHeight: 44 }}
+                      style={{ minHeight: 44, minWidth: 0 }}
                     >
                       <span className="truncate">
                         {labels.directionsGoogle ?? DIRECTIONS_FALLBACK.google}
@@ -172,7 +172,7 @@ export function MapVenueSheet({ venue, expanded, onToggleExpanded, labels }: Pro
                       rel="noopener noreferrer"
                       aria-label={`${labels.directions}: ${labels.directionsApple ?? DIRECTIONS_FALLBACK.apple} (${venue.name})`}
                       className="btn-s2m btn-secondary inline-flex items-center justify-center gap-1 px-2 text-[12px]"
-                      style={{ minHeight: 44 }}
+                      style={{ minHeight: 44, minWidth: 0 }}
                     >
                       <span className="truncate">
                         {labels.directionsApple ?? DIRECTIONS_FALLBACK.apple}
@@ -185,7 +185,7 @@ export function MapVenueSheet({ venue, expanded, onToggleExpanded, labels }: Pro
                       rel="noopener noreferrer"
                       aria-label={`${labels.directions}: ${labels.directionsWaze ?? DIRECTIONS_FALLBACK.waze} (${venue.name})`}
                       className="btn-s2m btn-secondary inline-flex items-center justify-center gap-1 px-2 text-[12px]"
-                      style={{ minHeight: 44 }}
+                      style={{ minHeight: 44, minWidth: 0 }}
                     >
                       <span className="truncate">
                         {labels.directionsWaze ?? DIRECTIONS_FALLBACK.waze}
