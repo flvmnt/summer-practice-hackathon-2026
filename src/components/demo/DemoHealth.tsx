@@ -18,6 +18,9 @@ type Props = {
     aiCache: string;
     aiCacheEmpty: string;
     build: string;
+    seed: string;
+    aiCacheLabel: string;
+    ariaLabel: string;
   };
 };
 
@@ -56,7 +59,7 @@ export function DemoHealth({
     <div
       className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4"
       role="group"
-      aria-label="Demo environment status"
+      aria-label={copy.ariaLabel}
     >
       <StatusTile
         eyebrow={copy.health}
@@ -65,13 +68,13 @@ export function DemoHealth({
         variant={dbVariant}
       />
       <StatusTile
-        eyebrow="Demo seed"
+        eyebrow={copy.seed}
         body={seedLabel}
         pill={totalSeeded > 0 ? `${totalSeeded}` : "0"}
         variant={totalSeeded > 0 ? "field" : "default"}
       />
       <StatusTile
-        eyebrow="AI cache"
+        eyebrow={copy.aiCacheLabel}
         body={aiLabel}
         pill={aiCacheEntries > 0 ? `${aiCacheEntries}` : "0"}
         variant={aiCacheEntries > 0 ? "accent" : "default"}

@@ -6,9 +6,10 @@ import {
 type Props = {
   label: string;
   rows: ReadonlyArray<ScoringProof>;
+  statusLabels: Record<ScoringProof["status"], string>;
 };
 
-export function RubricSection({ label, rows }: Props) {
+export function RubricSection({ label, rows, statusLabels }: Props) {
   const subtotal = rows.reduce((acc, row) => acc + (row.points ?? 0), 0);
   return (
     <section className="flex flex-col gap-2">
@@ -28,7 +29,11 @@ export function RubricSection({ label, rows }: Props) {
       </div>
       <div className="flex flex-col gap-1.5">
         {rows.map((row) => (
-          <ScoringProofRow key={row.id} {...row} />
+          <ScoringProofRow
+            key={row.id}
+            {...row}
+            statusLabel={statusLabels[row.status]}
+          />
         ))}
       </div>
     </section>

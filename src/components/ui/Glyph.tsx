@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * ShowUp2Move — mono symbolic glyph family.
  * Single weight, single optical size — all 24×24 grid.

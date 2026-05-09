@@ -14,7 +14,10 @@ export type ScoringProof = {
   note?: string;
 };
 
-type Props = ScoringProof & { className?: string };
+type Props = ScoringProof & {
+  className?: string;
+  statusLabel?: string;
+};
 
 const statusMeta: Record<
   ScoringProofStatus,
@@ -50,6 +53,7 @@ export function ScoringProofRow({
   evidenceLabel,
   note,
   className,
+  statusLabel,
 }: Props) {
   const meta = statusMeta[status];
   const isExternal = evidence?.startsWith("http");
@@ -108,7 +112,7 @@ export function ScoringProofRow({
               }}
             />
           ) : null}
-          {meta.label}
+          {statusLabel ?? meta.label}
         </span>
         <span
           className="min-w-0 flex-1 truncate text-[13px] font-semibold"
