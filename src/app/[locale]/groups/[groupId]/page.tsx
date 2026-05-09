@@ -44,6 +44,7 @@ export default async function GroupPage({
   const sp = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("group");
+  const tConn = await getTranslations("chat.connection");
   const groupResult = await getGroupAction({ groupId });
 
   if (!groupResult.ok) {
@@ -131,6 +132,8 @@ export default async function GroupPage({
     ...formCopy,
     emptyTitle: t("chat.empty.title"),
     emptyBody: t("chat.empty.body"),
+    liveLabel: tConn("live"),
+    reconnectingLabel: tConn("reconnecting"),
   };
 
   /* ------------------ shared section renderers ------------------ */
