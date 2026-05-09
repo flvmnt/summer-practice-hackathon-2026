@@ -509,7 +509,6 @@ export function ProfileForm({
         secondaryLabel={t("back")}
         secondaryHref={`/${locale}`}
         primaryLabel={t("next")}
-        primaryIcon={<Glyph.arrow size={14} />}
         onPrimary={handleNext}
         primaryLoading={isPending}
       />
