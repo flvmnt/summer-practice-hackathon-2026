@@ -13,6 +13,7 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 export const demoRuns = pgTable("demo_runs", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -107,13 +108,18 @@ export const prompts = pgTable(
     demoRunId: uuid("demo_run_id").references(() => demoRuns.id, {
       onDelete: "cascade",
     }),
+    scopeKey: varchar("scope_key", { length: 80 }).notNull().default("prod"),
     windowDate: date("window_date").notNull(),
     windowSlot: varchar("window_slot", { length: 12 }).notNull(),
     messageText: text("message_text"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    uniqueIndex("prompt_date_slot_unique").on(table.windowDate, table.windowSlot),
+    uniqueIndex("prompt_scope_date_slot_unique").on(
+      table.scopeKey,
+      table.windowDate,
+      table.windowSlot,
+    ),
     index("prompts_demo_run_idx").on(table.demoRunId),
   ],
 );
@@ -136,6 +142,8 @@ export const availabilityResponses = pgTable(
     lat: decimal("lat", { precision: 9, scale: 6 }),
     lng: decimal("lng", { precision: 9, scale: 6 }),
     maxDistanceKm: smallint("max_distance_km"),
+    matchFailureReason: varchar("match_failure_reason", { length: 40 }),
+    lastMatchAttemptAt: timestamp("last_match_attempt_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -143,6 +151,69 @@ export const availabilityResponses = pgTable(
     uniqueIndex("availability_prompt_user_unique").on(table.promptId, table.userId),
     index("availability_user_idx").on(table.userId),
     index("availability_demo_run_idx").on(table.demoRunId),
+    index("availability_prompt_answer_idx").on(table.promptId, table.answer),
+  ],
+);
+
+export const groups = pgTable(
+  "groups",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    demoRunId: uuid("demo_run_id").references(() => demoRuns.id, {
+      onDelete: "cascade",
+    }),
+    promptId: uuid("prompt_id")
+      .notNull()
+      .references(() => prompts.id, { onDelete: "cascade" }),
+    sport: varchar("sport", { length: 40 }).notNull(),
+    city: varchar("city", { length: 100 }),
+    centerLat: decimal("center_lat", { precision: 9, scale: 6 }),
+    centerLng: decimal("center_lng", { precision: 9, scale: 6 }),
+    sizeTarget: smallint("size_target").notNull(),
+    status: varchar("status", { length: 20 }).notNull().default("active"),
+    captainUserId: uuid("captain_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("groups_prompt_idx").on(table.promptId),
+    index("groups_demo_run_idx").on(table.demoRunId),
+    index("groups_sport_idx").on(table.sport),
+    index("groups_center_lat_lng_idx").on(table.centerLat, table.centerLng),
+  ],
+);
+
+export const groupMembers = pgTable(
+  "group_members",
+  {
+    demoRunId: uuid("demo_run_id").references(() => demoRuns.id, {
+      onDelete: "cascade",
+    }),
+    groupId: uuid("group_id")
+      .notNull()
+      .references(() => groups.id, { onDelete: "cascade" }),
+    promptId: uuid("prompt_id")
+      .notNull()
+      .references(() => prompts.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    role: varchar("role", { length: 20 }).notNull().default("player"),
+    status: varchar("status", { length: 20 }).notNull().default("confirmed"),
+    joinedAt: timestamp("joined_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.groupId, table.userId] }),
+    uniqueIndex("group_members_active_prompt_user_unique")
+      .on(table.promptId, table.userId)
+      .where(sql`${table.status} in ('invited', 'confirmed')`),
+    uniqueIndex("group_members_one_captain_unique")
+      .on(table.groupId)
+      .where(sql`${table.role} = 'captain'`),
+    index("group_members_user_idx").on(table.userId),
+    index("group_members_prompt_idx").on(table.promptId),
+    index("group_members_demo_run_idx").on(table.demoRunId),
   ],
 );
 

@@ -4,13 +4,17 @@ import { Check, X } from "lucide-react";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { todayPromptFormAction, type TodayPromptFormState } from "@/lib/prompt-form-actions";
-import type { TodayPrompt, TodayResponse } from "@/lib/prompt";
+import type { TodayGroup, TodayPrompt, TodayResponse } from "@/lib/prompt";
 import type { SportKey } from "@/lib/sports";
 
 type TodayPromptCopy = {
   promptLabel: string;
   yes: string;
   no: string;
+  matchedTitle: string;
+  matchedBody: string;
+  noMatchTitle: string;
+  noMatchBody: string;
   queuedTitle: string;
   queuedBody: string;
   unavailableTitle: string;
@@ -26,19 +30,50 @@ const initialState: TodayPromptFormState = {};
 
 export function TodayPromptCard({
   copy,
+  group,
   maxDistanceKm,
   prompt,
   response,
   sports,
 }: {
   copy: TodayPromptCopy;
+  group: TodayGroup | null;
   maxDistanceKm: number;
   prompt: TodayPrompt;
   response: TodayResponse | null;
   sports: Array<{ sport: SportKey; level: number }>;
 }) {
   const [state, formAction] = useActionState(todayPromptFormAction, initialState);
-  const answered = state.answer ?? response?.answer;
+  const currentGroup = state.group ?? group;
+  const status =
+    state.state ??
+    (currentGroup
+      ? "matched"
+      : response?.answer === "no"
+        ? "unavailable"
+        : response?.lastMatchAttemptAt
+          ? "no_match"
+          : response?.answer === "yes"
+            ? "queued"
+            : undefined);
+  const statusCopy = {
+    matched: {
+      title: copy.matchedTitle,
+      body: copy.matchedBody,
+    },
+    queued: {
+      title: copy.queuedTitle,
+      body: copy.queuedBody,
+    },
+    no_match: {
+      title: copy.noMatchTitle,
+      body: copy.noMatchBody,
+    },
+    unavailable: {
+      title: copy.unavailableTitle,
+      body: copy.unavailableBody,
+    },
+  } as const;
 
   return (
     <section className="rounded-lg border border-[var(--line)] bg-[var(--panel-strong)] p-5 shadow-sm sm:p-7">
@@ -66,14 +101,18 @@ export function TodayPromptCard({
         </p>
       </div>
 
-      {answered ? (
+      {status ? (
         <div className="mt-6 rounded-md border border-[var(--line)] bg-[var(--mint)] p-4">
-          <h2 className="text-lg font-bold">
-            {answered === "yes" ? copy.queuedTitle : copy.unavailableTitle}
-          </h2>
+          <h2 className="text-lg font-bold">{statusCopy[status].title}</h2>
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-            {answered === "yes" ? copy.queuedBody : copy.unavailableBody}
+            {statusCopy[status].body}
           </p>
+          {currentGroup ? (
+            <p className="mt-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-[var(--navy)]">
+              {copy.sports[currentGroup.sport]}
+              {currentGroup.captainUserId ? " - captain selected" : ""}
+            </p>
+          ) : null}
         </div>
       ) : null}
 

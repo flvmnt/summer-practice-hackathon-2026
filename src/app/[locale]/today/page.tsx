@@ -59,6 +59,7 @@ export default async function TodayPlaceholderPage({
       </section>
       <TodayPromptCard
         copy={t.raw("card")}
+        group={todayState.data.group}
         maxDistanceKm={user.maxDistanceKm}
         prompt={todayState.data.prompt}
         response={todayState.data.response}

@@ -2,7 +2,7 @@
 
 import { and, eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { availabilityResponses, prompts, users } from "@/db/schema";
+import { availabilityResponses, groupMembers, groups, prompts, users } from "@/db/schema";
 import { actionError, actionOk, type ActionResult } from "@/lib/action-result";
 import {
   respondToPromptInputSchema,
@@ -10,9 +10,10 @@ import {
   type PromptSlot,
   type RespondToPromptInput,
 } from "@/lib/contracts/prompt";
+import { getCurrentUser } from "@/lib/auth-current-user";
+import { formGroupsForPromptAction } from "@/lib/matching";
 import { activePromptWindow } from "@/lib/prompt-window";
 import type { SportKey } from "@/lib/sports";
-import { getSession } from "@/lib/session";
 
 export type TodayPrompt = {
   id: string;
@@ -25,6 +26,14 @@ export type TodayResponse = {
   answer: PromptAnswer;
   sportPrefs: SportKey[] | null;
   maxDistanceKm: number | null;
+  matchFailureReason: string | null;
+  lastMatchAttemptAt: Date | null;
+};
+
+export type TodayGroup = {
+  id: string;
+  sport: SportKey;
+  captainUserId: string | null;
 };
 
 function defaultPromptMessage(slot: PromptSlot) {
@@ -53,13 +62,23 @@ function promptFromRow(row: {
   };
 }
 
-export async function getOrCreateActivePromptAction(): Promise<ActionResult<TodayPrompt>> {
+function promptScope(demoRunId: string | null) {
+  return demoRunId ? `demo:${demoRunId}` : "prod";
+}
+
+export async function getOrCreateActivePromptAction(
+  scope: { demoRunId?: string | null } = {},
+): Promise<ActionResult<TodayPrompt>> {
   const window = activePromptWindow();
   const messageText = defaultPromptMessage(window.windowSlot);
+  const demoRunId = scope.demoRunId ?? null;
+  const scopeKey = promptScope(demoRunId);
 
   const inserted = await getDb()
     .insert(prompts)
     .values({
+      demoRunId,
+      scopeKey,
       windowDate: window.windowDate,
       windowSlot: window.windowSlot,
       messageText,
@@ -86,6 +105,7 @@ export async function getOrCreateActivePromptAction(): Promise<ActionResult<Toda
     .from(prompts)
     .where(
       and(
+        eq(prompts.scopeKey, scopeKey),
         eq(prompts.windowDate, window.windowDate),
         eq(prompts.windowSlot, window.windowSlot),
       ),
@@ -100,13 +120,41 @@ export async function getOrCreateActivePromptAction(): Promise<ActionResult<Toda
 }
 
 async function currentUserId() {
-  const session = await getSession();
-  return session.userId ?? null;
+  const user = await getCurrentUser();
+  return user?.id ?? null;
+}
+
+async function loadActivePromptForResponse(promptId: string, demoRunId: string | null) {
+  const window = activePromptWindow();
+  const [prompt] = await getDb()
+    .select({
+      id: prompts.id,
+      demoRunId: prompts.demoRunId,
+      scopeKey: prompts.scopeKey,
+      windowDate: prompts.windowDate,
+      windowSlot: prompts.windowSlot,
+    })
+    .from(prompts)
+    .where(eq(prompts.id, promptId))
+    .limit(1);
+
+  if (!prompt) {
+    return null;
+  }
+
+  const sameWindow =
+    prompt.windowDate === window.windowDate && prompt.windowSlot === window.windowSlot;
+  const sameScope =
+    demoRunId === null
+      ? prompt.demoRunId === null && prompt.scopeKey === "prod"
+      : prompt.demoRunId === demoRunId && prompt.scopeKey === promptScope(demoRunId);
+
+  return sameWindow && sameScope ? prompt : null;
 }
 
 export async function respondToPromptAction(
   input: RespondToPromptInput,
-): Promise<ActionResult<{ state: "queued" | "unavailable" }>> {
+): Promise<ActionResult<{ state: "matched" | "queued" | "no_match" | "unavailable"; group?: TodayGroup }>> {
   const parsed = respondToPromptInputSchema.safeParse(input);
   if (!parsed.success) {
     return actionError("validation");
@@ -135,6 +183,11 @@ export async function respondToPromptAction(
     return actionError("unauthorized");
   }
 
+  const activePrompt = await loadActivePromptForResponse(parsed.data.promptId, user.demoRunId);
+  if (!activePrompt) {
+    return actionError("invalid_prompt");
+  }
+
   const responseValues = {
     demoRunId: user.demoRunId,
     promptId: parsed.data.promptId,
@@ -155,18 +208,50 @@ export async function respondToPromptAction(
       set: responseValues,
     });
 
-  return actionOk({ state: parsed.data.answer === "yes" ? "queued" : "unavailable" });
+  if (parsed.data.answer === "no") {
+    return actionOk({ state: "unavailable" });
+  }
+
+  const matchResult = await formGroupsForPromptAction({ promptId: parsed.data.promptId });
+  if (!matchResult.ok) {
+    return actionError(matchResult.error);
+  }
+
+  const matchedGroup = matchResult.data.groups.find((group) =>
+    group.memberUserIds.includes(userId),
+  );
+
+  if (matchedGroup) {
+    return actionOk({
+      state: "matched",
+      group: {
+        id: matchedGroup.id,
+        sport: matchedGroup.sport,
+        captainUserId: matchedGroup.captainUserId,
+      },
+    });
+  }
+
+  return actionOk({ state: "no_match" });
 }
 
 export async function getMyTodayStateAction(): Promise<
-  ActionResult<{ prompt: TodayPrompt; response: TodayResponse | null }>
+  ActionResult<{ prompt: TodayPrompt; response: TodayResponse | null; group: TodayGroup | null }>
 > {
   const userId = await currentUserId();
   if (!userId) {
     return actionError("unauthorized");
   }
 
-  const promptResult = await getOrCreateActivePromptAction();
+  const [user] = await getDb()
+    .select({ demoRunId: users.demoRunId })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  const promptResult = await getOrCreateActivePromptAction({
+    demoRunId: user?.demoRunId ?? null,
+  });
   if (!promptResult.ok) {
     return promptResult;
   }
@@ -176,12 +261,30 @@ export async function getMyTodayStateAction(): Promise<
       answer: availabilityResponses.answer,
       sportPrefs: availabilityResponses.sportPrefs,
       maxDistanceKm: availabilityResponses.maxDistanceKm,
+      matchFailureReason: availabilityResponses.matchFailureReason,
+      lastMatchAttemptAt: availabilityResponses.lastMatchAttemptAt,
     })
     .from(availabilityResponses)
     .where(
       and(
         eq(availabilityResponses.promptId, promptResult.data.id),
         eq(availabilityResponses.userId, userId),
+      ),
+    )
+    .limit(1);
+
+  const [group] = await getDb()
+    .select({
+      id: groups.id,
+      sport: groups.sport,
+      captainUserId: groups.captainUserId,
+    })
+    .from(groupMembers)
+    .innerJoin(groups, eq(groups.id, groupMembers.groupId))
+    .where(
+      and(
+        eq(groupMembers.promptId, promptResult.data.id),
+        eq(groupMembers.userId, userId),
       ),
     )
     .limit(1);
@@ -193,6 +296,15 @@ export async function getMyTodayStateAction(): Promise<
           answer: response.answer as PromptAnswer,
           sportPrefs: response.sportPrefs as SportKey[] | null,
           maxDistanceKm: response.maxDistanceKm,
+          matchFailureReason: response.matchFailureReason,
+          lastMatchAttemptAt: response.lastMatchAttemptAt,
+        }
+      : null,
+    group: group
+      ? {
+          id: group.id,
+          sport: group.sport as SportKey,
+          captainUserId: group.captainUserId,
         }
       : null,
   });

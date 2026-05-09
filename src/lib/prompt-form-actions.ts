@@ -1,12 +1,13 @@
 "use server";
 
-import { respondToPromptAction } from "@/lib/prompt";
+import { respondToPromptAction, type TodayGroup } from "@/lib/prompt";
 import { DISTANCE_OPTIONS_KM, SPORT_KEYS, type SportKey } from "@/lib/sports";
 
 export type TodayPromptFormState = {
   answer?: "yes" | "no";
   error?: string;
-  state?: "queued" | "unavailable";
+  group?: TodayGroup;
+  state?: "matched" | "queued" | "no_match" | "unavailable";
 };
 
 function stringField(formData: FormData, name: string) {
@@ -43,6 +44,7 @@ export async function todayPromptFormAction(
 
   return {
     answer,
+    group: result.data.group,
     state: result.data.state,
   };
 }
