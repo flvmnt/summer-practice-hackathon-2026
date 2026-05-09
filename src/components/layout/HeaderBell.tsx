@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Glyph } from "@/components/ui/Glyph";
 import { cn } from "@/lib/utils";
 
@@ -20,10 +21,11 @@ type Props = {
  */
 export function HeaderBell({ unreadCount, locale, className }: Props) {
   const router = useRouter();
+  const t = useTranslations("notifications.bell");
   const hasUnread = unreadCount > 0;
   const label = hasUnread
-    ? `Notifications, ${unreadCount} unread`
-    : "Notifications";
+    ? t("labelUnread", { count: unreadCount })
+    : t("label");
   const href = locale ? `/${locale}/notifications` : "/notifications";
 
   return (

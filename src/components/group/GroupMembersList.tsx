@@ -17,6 +17,7 @@ type Props = {
   members: ReadonlyArray<GroupMember>;
   captainUserId?: string | null;
   copy: {
+    membersAriaLabel: string;
     captainBadge: string;
     playerBadge: string;
     statusConfirmed: string;
@@ -60,7 +61,7 @@ export function GroupMembersList({
   return (
     <ul
       className={cn("flex flex-col gap-2", className)}
-      aria-label="Group members"
+      aria-label={copy.membersAriaLabel}
     >
       {members.map((member) => {
         const isCaptain =

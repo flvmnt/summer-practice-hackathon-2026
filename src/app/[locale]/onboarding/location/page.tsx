@@ -26,7 +26,21 @@ export default async function LocationOnboardingPage({
       style={{ background: "var(--bg)", color: "var(--ink)" }}
     >
       <LocationForm
-        copy={t.raw("form")}
+        copy={{
+          ...t.raw("form"),
+          headerTitle: t("headerTitle"),
+          headerSubtitle: t("headerSubtitle"),
+          cityLabel: t("cityLabel"),
+          useLocation: t("useLocation"),
+          locating: t("locating"),
+          locationDenied: t("locationDenied"),
+          locationError: t("locationError"),
+          locationOk: t("locationOk"),
+          distanceLabel: t("distanceLabel"),
+          radiusChip: t("radiusChip"),
+          next: t("next"),
+          back: t("back"),
+        }}
         defaultCity={user.city ?? "Timisoara"}
         defaultHomeLat={user.homeLat ?? "45.748900"}
         defaultHomeLng={user.homeLng ?? "21.208700"}

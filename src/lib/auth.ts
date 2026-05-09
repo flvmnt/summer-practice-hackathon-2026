@@ -35,7 +35,7 @@ import {
   type SignupInput,
 } from "@/lib/contracts/auth";
 import { getRequestIp } from "@/lib/request-ip";
-import { clearSession, saveUserSession } from "@/lib/session";
+import { clearSession, getSession, saveUserSession } from "@/lib/session";
 
 type AuthUserRow = {
   id: string;
@@ -253,6 +253,8 @@ export async function recoverAccountAction(
 }
 
 export async function logoutAction() {
+  const session = await getSession();
+  const locale = session.locale === "en" ? "en" : "ro";
   await clearSession();
-  redirect("/");
+  redirect(`/${locale}`);
 }

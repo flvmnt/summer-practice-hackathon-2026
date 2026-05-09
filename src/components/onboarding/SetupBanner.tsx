@@ -5,6 +5,12 @@ type Props = {
   total: number;
   nextLabel: string;
   nextHref: string;
+  copy: {
+    ariaLabel: string;
+    progress: string;
+    next: string;
+    continue: string;
+  };
   className?: string;
 };
 
@@ -13,6 +19,7 @@ export function SetupBanner({
   total,
   nextLabel,
   nextHref,
+  copy,
   className,
 }: Props) {
   const pct =
@@ -20,7 +27,7 @@ export function SetupBanner({
   return (
     <aside
       className={className}
-      aria-label="Profile setup progress"
+      aria-label={copy.ariaLabel}
       style={{
         background: "var(--surface)",
         border: "1px solid var(--line)",
@@ -35,13 +42,13 @@ export function SetupBanner({
             className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
             style={{ color: "var(--accent-deep)" }}
           >
-            {complete}/{total} setup complete
+            {copy.progress}
           </div>
           <div
             className="mt-1 truncate text-[13px] font-semibold"
             style={{ color: "var(--ink)" }}
           >
-            Next: {nextLabel}
+            {copy.next.replace("{label}", nextLabel)}
           </div>
         </div>
         <Link
@@ -53,7 +60,7 @@ export function SetupBanner({
             minHeight: 36,
           }}
         >
-          Continue setup
+          {copy.continue}
         </Link>
       </div>
       <div

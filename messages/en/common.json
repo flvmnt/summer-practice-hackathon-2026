@@ -171,7 +171,7 @@
       "photoRemove": "Remove",
       "photoUploading": "Uploading photo...",
       "photoUploaded": "Photo saved.",
-      "photoErrorType": "Pick an image file (JPG, PNG, WebP, or HEIC).",
+      "photoErrorType": "Pick an image file (JPG, PNG, or WebP).",
       "photoErrorUpload": "Upload failed. Try again or skip.",
       "fullName": "Full name",
       "fullNamePlaceholder": "Alex Ionescu",
@@ -298,8 +298,8 @@
       "optionalBody": "Skip this step and add one later from your profile.",
       "skipPrimary": "Skip for now. Open Today",
       "tryUploadLabel": "Try the photo upload",
-      "tryUploadDescription": "Pick a photo and run the AI sport check. The save step is still being polished, so you can preview here and finish without it.",
-      "previewOnly": "Local preview only. Use Skip to continue without saving.",
+      "tryUploadDescription": "Pick a photo, save it to your profile, and run the live AI sport check when Groq is configured.",
+      "previewOnly": "Uploading photo...",
       "errorImageType": "Pick an image file (JPG, PNG, or WebP).",
       "errorTooLarge": "That image is too large. Pick one under 8 MB.",
       "errorUnsupported": "Use a JPG, PNG, or WebP image.",
@@ -310,7 +310,7 @@
       "aiPicked": "AI picked",
       "aiPaused": "AI vision is offline.",
       "aiPausedSub": "We'll save the photo and you can analyze later.",
-      "aiUnavailable": "AI photo analysis is coming soon.",
+      "aiUnavailable": "AI photo analysis needs a configured Groq vision model. No fallback guesses were added.",
       "skip": "Skip",
       "finish": "Finish",
       "back": "Back"
@@ -328,6 +328,19 @@
     "back": "Back",
     "title": "ShowUpToday",
     "body": "Answer once for the active Romania prompt window. A Yes response queues you for deterministic matching in the next slice.",
+    "hello": "Hello,",
+    "photoSetup": "Add a photo",
+    "setup": {
+      "ariaLabel": "Profile setup progress",
+      "progress": "{complete}/{total} setup complete",
+      "next": "Next: {label}",
+      "continue": "Continue setup"
+    },
+    "promptHeadline": {
+      "morning": "ShowUpToday? Morning groups are forming.",
+      "afternoon": "ShowUpToday? Afternoon games are forming.",
+      "evening": "ShowUpToday? Evening groups are forming."
+    },
     "card": {
       "promptLabel": "Active prompt",
       "yes": "Yes, I can play",
@@ -414,7 +427,7 @@
     "searching": {
       "headline": "Matching you…",
       "matchingLabel": "Matching",
-      "aiLabel": "AI scoring",
+      "aiLabel": "Rule scoring",
       "aiDescription": "weighing skill, schedule and proximity",
       "range": {
         "nearby": "nearby {sport} players",
@@ -458,6 +471,12 @@
     "system": "System",
     "captainBadge": "Captain",
     "playerBadge": "Player",
+    "invited": {
+      "title": "You've been invited to this group",
+      "body": "Accept to join the match, or decline if it's not for you.",
+      "accept": "Accept",
+      "decline": "Decline"
+    },
     "achievement": {
       "firstMatchTitle": "First Match",
       "firstMatchBody": "Earned from a confirmed deterministic group match."
@@ -484,6 +503,7 @@
       "send": "Send message",
       "sending": "Sending",
       "genericError": "The message could not be sent. Check your session and try again.",
+      "captainAriaLabel": "Captain",
       "emptyTitle": "No group messages yet",
       "emptyBody": "Start with the first concrete plan: time, venue, or who can bring equipment."
     },
@@ -500,6 +520,7 @@
       "table_tennis": "Table tennis"
     },
     "tabs": {
+      "ariaLabel": "Group sections",
       "plan": "Plan",
       "chat": "Chat",
       "players": "Players"
@@ -526,6 +547,7 @@
       }
     },
     "players": {
+      "membersAriaLabel": "Group members",
       "confirmParticipation": "Confirm participation",
       "statusConfirmed": "Confirmed",
       "statusMaybe": "Maybe",
@@ -706,6 +728,7 @@
       "pillLabel": "Captain auto-suggest",
       "versionLabel": "auto · v1",
       "headline": "Suggested plan",
+      "todayAt": "Today, {time}",
       "reasoning": "8 members voted after 18:00, weather is clear, venue is closest to the group center.",
       "confirmPlan": "Confirm plan",
       "startVote": "Start vote",
@@ -729,12 +752,12 @@
       "seed": "Demo seed",
       "seedLoaded": "{users} users · {groups} groups · {events} events",
       "seedEmpty": "Empty",
-      "aiCache": "AI cache",
-      "aiCacheLoaded": "{count} entries cached",
+      "aiCache": "Runtime AI cache",
+      "aiCacheLoaded": "{count} runtime entries cached",
       "aiCacheEmpty": "Empty",
       "build": "Build",
       "seedEmptyHint": "Demo not seeded yet - run /api/demo/seed",
-      "aiCacheEmptyHint": "Cache warms after the first AI call"
+      "aiCacheEmptyHint": "Cache warms after the first live AI call"
     },
     "controls": {
       "seed": "Seed demo",
@@ -822,7 +845,7 @@
         },
         "compatibility-explanation": {
           "label": "AI compatibility explanation",
-          "note": "Compatibility score is surfaced on public profiles with deterministic fallback when AI is offline."
+          "note": "Public profiles call Groq-backed compatibility scoring when configured; no seeded AI output."
         },
         "group-screen": {
           "label": "Group screen with mobile tabs",
@@ -870,19 +893,19 @@
         },
         "ai-bio-extraction": {
           "label": "AI bio sport extraction",
-          "note": "Groq text extraction with deterministic keyword fallback when AI is offline."
+          "note": "Calls Groq text extraction on real profile bios when GROQ_API_KEY is configured; no seeded AI output."
         },
         "ai-photo-extraction": {
           "label": "AI photo sport extraction",
-          "note": "Photo analysis calls Groq vision when configured, with deterministic fallback suggestions."
+          "note": "Analyze button calls Groq vision on the uploaded image when configured; offline fallback returns no fake suggestions."
         },
         "ai-compatibility-score": {
           "label": "AI compatibility scoring (cached)",
-          "note": "Cached compatibility scoring is live on public profiles with deterministic safety floor."
+          "note": "Public profile match score is computed live, cached after the first Groq call, and never pre-seeded."
         },
         "ai-captain-brief": {
           "label": "AI Captain Brief (action summary)",
-          "note": "Captain summary panel consumes the Groq brief with deterministic fallback."
+          "note": "Event pages call Groq for the captain brief when configured; deterministic text is only an offline fallback."
         },
         "ai-recommendations": {
           "label": "Smart teammate recommendations",
@@ -988,6 +1011,19 @@
       "map": "the map"
     }
   },
+  "sidebar": {
+    "ariaLabel": "App",
+    "primaryAriaLabel": "Primary",
+    "notifications": "Notifications",
+    "notificationsWithCount": "Notifications, {count} unread",
+    "items": {
+      "today": "Today",
+      "groups": "Groups",
+      "create": "Create",
+      "map": "Map",
+      "profile": "Profile"
+    }
+  },
   "map": {
     "title": "Nearby venues",
     "subtitle": "Public pickup spots near you. Map needs your location to plot you exactly.",
@@ -1063,16 +1099,22 @@
     "back": "Back to Today"
   },
   "groupsList": {
+    "eyebrow": "Groups",
     "title": "Your groups",
     "subtitle": "Active groups you're a member of.",
+    "statsLabel": "Group stats",
+    "activeCount": "{count, plural, one {# active} other {# active}}",
+    "captainCount": "{count, plural, one {# captain} other {# captains}}",
     "captainBadge": "Captain",
     "openGroup": "Open",
     "memberCount": "{count}/{target} players",
     "emptyTitle": "No groups yet",
     "emptyBody": "Answer today's prompt to form your first group.",
-    "emptyAction": "Go to Today"
+    "emptyAction": "Go to Today",
+    "back": "Back to Today"
   },
   "eventsList": {
+    "eyebrow": "Events",
     "title": "Your events",
     "subtitle": "Upcoming and past events you're attending.",
     "upcoming": "Upcoming",
@@ -1182,7 +1224,7 @@
     "healthUnknown": "yellow",
     "seedLoaded": "{users} users · {groups} groups · {events} events",
     "seedEmpty": "Empty",
-    "aiCache": "{count} entries cached",
+    "aiCache": "{count} runtime entries cached",
     "aiCacheEmpty": "Empty",
     "build": "Build",
     "controls": {

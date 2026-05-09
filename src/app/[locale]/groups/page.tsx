@@ -1,8 +1,9 @@
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { GroupListItem } from "@/components/groups/GroupListItem";
 import { HeaderBell } from "@/components/layout/HeaderBell";
+import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Glyph } from "@/components/ui/Glyph";
@@ -15,59 +16,6 @@ import { SPORTS, type SportKey } from "@/lib/sports";
 
 export const dynamic = "force-dynamic";
 
-const COPY = {
-  en: {
-    title: "Your groups",
-    subtitle: "Active groups you're a member of.",
-    captain: "Captain",
-    open: "Open",
-    count: (n: number, t: number) => `${n}/${t} players`,
-    activeGroups: (n: number) => `${n} active`,
-    captainCount: (n: number) => (n === 1 ? "1 captain" : `${n} captains`),
-    emptyTitle: "No groups yet",
-    emptyBody: "Answer today's prompt to form your first group.",
-    emptyAction: "Go to Today",
-    statsLabel: "Group stats",
-    sportLabels: {
-      football: "Football",
-      basketball: "Basketball",
-      tennis: "Tennis",
-      volleyball: "Volleyball",
-      badminton: "Badminton",
-      running: "Running",
-      cycling: "Cycling",
-      yoga: "Yoga",
-      hiking: "Hiking",
-      table_tennis: "Table tennis",
-    } as Record<SportKey, string>,
-  },
-  ro: {
-    title: "Grupurile tale",
-    subtitle: "Grupurile active din care faci parte.",
-    captain: "Căpitan",
-    open: "Deschide",
-    count: (n: number, t: number) => `${n}/${t} jucători`,
-    activeGroups: (n: number) => `${n} active`,
-    captainCount: (n: number) => (n === 1 ? "1 căpitan" : `${n} căpitani`),
-    emptyTitle: "Niciun grup încă",
-    emptyBody: "Răspunde la promptul de azi pentru a forma primul grup.",
-    emptyAction: "Deschide Today",
-    statsLabel: "Statistici grupuri",
-    sportLabels: {
-      football: "Fotbal",
-      basketball: "Baschet",
-      tennis: "Tenis",
-      volleyball: "Volei",
-      badminton: "Badminton",
-      running: "Alergare",
-      cycling: "Ciclism",
-      yoga: "Yoga",
-      hiking: "Drumeție",
-      table_tennis: "Tenis de masă",
-    } as Record<SportKey, string>,
-  },
-};
-
 export default async function GroupsPage({
   params,
 }: Readonly<{
@@ -75,13 +23,14 @@ export default async function GroupsPage({
 }>) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations("groupsList");
+  const groupT = await getTranslations("group");
 
   const user = await getCurrentUser();
   if (!user) {
     redirect(`/${locale}/login`);
   }
 
-  const copy = COPY[locale];
   const [list, unread] = await Promise.all([
     getUserGroupsList(user.id),
     unreadCount(user.id),
@@ -90,7 +39,7 @@ export default async function GroupsPage({
 
   return (
     <main
-      className="relative min-h-screen w-full"
+      className="relative min-h-screen w-full md:pl-[240px]"
       style={{
         background: "var(--surface-2)",
         color: "var(--ink)",
@@ -111,13 +60,13 @@ export default async function GroupsPage({
               textTransform: "uppercase",
             }}
           >
-            {locale === "ro" ? "Grupuri" : "Groups"}
+            {t("eyebrow")}
           </div>
           <h1
             className="display"
             style={{ fontSize: 26, lineHeight: 1.05, marginTop: 2 }}
           >
-            {copy.title}
+            {t("title")}
           </h1>
         </div>
         <HeaderBell unreadCount={unread} locale={locale} />
@@ -129,28 +78,28 @@ export default async function GroupsPage({
             className="display"
             style={{ fontSize: 36, lineHeight: 1.05, color: "var(--ink)" }}
           >
-            {copy.title}
+            {t("title")}
           </h1>
           <p
             className="mt-2 text-[14px]"
             style={{ color: "var(--ink-muted)", lineHeight: 1.5 }}
           >
-            {copy.subtitle}
+            {t("subtitle")}
           </p>
         </header>
 
         {list.length > 0 ? (
           <div
             className="mb-3 flex flex-wrap items-center gap-2"
-            aria-label={copy.statsLabel}
+            aria-label={t("statsLabel")}
           >
             <Pill icon={<Glyph.groups size={11} />}>
-              {copy.activeGroups(list.length)}
+              {t("activeCount", { count: list.length })}
             </Pill>
             {captainCount > 0 ? (
               <span style={{ color: "var(--accent)" }}>
                 <Pill icon={<Glyph.crown size={11} />} variant="accent">
-                  {copy.captainCount(captainCount)}
+                  {t("captainCount", { count: captainCount })}
                 </Pill>
               </span>
             ) : null}
@@ -160,10 +109,10 @@ export default async function GroupsPage({
         {list.length === 0 ? (
           <EmptyState
             glyph={<Glyph.groups size={28} />}
-            title={copy.emptyTitle}
-            body={copy.emptyBody}
+            title={t("emptyTitle")}
+            body={t("emptyBody")}
             action={{
-              label: copy.emptyAction,
+              label: t("emptyAction"),
               href: `/${locale}/today`,
             }}
           />
@@ -175,15 +124,19 @@ export default async function GroupsPage({
                   href={`/${locale}/groups/${group.id}`}
                   sport={group.sport}
                   sportLabel={
-                    copy.sportLabels[group.sport] ?? SPORTS[group.sport].kind
+                    groupT(`sports.${group.sport as SportKey}`) ??
+                    SPORTS[group.sport].kind
                   }
                   memberCount={group.memberCount}
                   sizeTarget={group.capacity}
                   members={group.members}
                   isCaptain={group.isCaptain}
-                  captainBadgeLabel={copy.captain}
-                  openLabel={copy.open}
-                  countLabel={copy.count(group.memberCount, group.capacity)}
+                  captainBadgeLabel={t("captainBadge")}
+                  openLabel={t("openGroup")}
+                  countLabel={t("memberCount", {
+                    count: group.memberCount,
+                    target: group.capacity,
+                  })}
                 />
               </li>
             ))}
@@ -197,11 +150,12 @@ export default async function GroupsPage({
             style={{ minHeight: 40, padding: "8px 14px", fontSize: 13 }}
           >
             <Glyph.back size={16} />
-            {locale === "ro" ? "Înapoi la Today" : "Back to Today"}
+            {t("back")}
           </Link>
         </div>
       </div>
 
+      <DesktopSidebar unreadCount={unread} />
       <MobileTabBar />
     </main>
   );

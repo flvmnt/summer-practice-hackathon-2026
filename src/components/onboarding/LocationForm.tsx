@@ -32,6 +32,18 @@ type LocationFormCopy = {
   successTitle: string;
   successBody: string;
   continue: string;
+  headerTitle: string;
+  headerSubtitle: string;
+  cityLabel: string;
+  useLocation: string;
+  locating: string;
+  locationDenied: string;
+  locationError: string;
+  locationOk: string;
+  distanceLabel: string;
+  radiusChip: string;
+  next: string;
+  back: string;
 };
 
 const initialState: OnboardingLocationFormState = {};
@@ -144,15 +156,15 @@ export function LocationForm({
   const distanceLabel = Number.isInteger(distanceKm)
     ? distanceKm.toFixed(1)
     : distanceKm.toFixed(1);
-  const cityForChip = city.trim() || "your city";
+  const cityForChip = city.trim() || copy.cityPlaceholder;
 
   return (
     <div className="flex w-full flex-col">
       <WizardMobileHeader
         step={3}
         total={3}
-        title="Where can you play?"
-        subtitle="City and how far you'll travel"
+        title={copy.headerTitle}
+        subtitle={copy.headerSubtitle}
       />
 
       <form ref={formRef} action={() => submit()} className="mt-5 flex flex-col gap-4">
@@ -163,7 +175,7 @@ export function LocationForm({
             className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
             style={{ color: "var(--ink-muted)" }}
           >
-            City
+            {copy.cityLabel}
           </label>
           <div className="flex flex-wrap items-stretch gap-2">
             <Input
@@ -187,7 +199,7 @@ export function LocationForm({
               style={{ minHeight: 48, color: "var(--accent-deep)" }}
             >
               <MapPin size={16} />
-              {geoStatus === "loading" ? "Locating…" : "Use my location"}
+              {geoStatus === "loading" ? copy.locating : copy.useLocation}
             </Button>
           </div>
           {cityError ? (
@@ -205,7 +217,7 @@ export function LocationForm({
               className="text-sm"
               style={{ color: "var(--ink-muted)" }}
             >
-              Location denied - type your city manually.
+              {copy.locationDenied}
             </span>
           ) : null}
           {geoStatus === "error" ? (
@@ -214,7 +226,7 @@ export function LocationForm({
               className="text-sm"
               style={{ color: "var(--ink-muted)" }}
             >
-              Couldn&apos;t read your location - type your city manually.
+              {copy.locationError}
             </span>
           ) : null}
           {geoStatus === "ok" ? (
@@ -223,7 +235,7 @@ export function LocationForm({
               className="text-sm"
               style={{ color: "var(--field)" }}
             >
-              Got it. We&apos;ll use this for distance only.
+              {copy.locationOk}
             </span>
           ) : null}
         </div>
@@ -263,7 +275,7 @@ export function LocationForm({
               className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
               style={{ color: "var(--ink-muted)" }}
             >
-              How far will you travel?
+              {copy.distanceLabel}
             </span>
             <span
               className="mono"
@@ -280,7 +292,7 @@ export function LocationForm({
                 className="ml-1"
                 style={{ fontSize: 12, color: "var(--ink-muted)" }}
               >
-                km
+                {copy.km}
               </span>
             </span>
           </div>
@@ -291,7 +303,7 @@ export function LocationForm({
             min={SLIDER_MIN}
             max={SLIDER_MAX}
             step={SLIDER_STEP}
-            ariaLabel="Maximum travel distance in kilometres"
+            ariaLabel={copy.maxDistance}
           />
 
           <div
@@ -302,9 +314,9 @@ export function LocationForm({
               color: "var(--ink-muted)",
             }}
           >
-            <span>1 km</span>
-            <span>5 km</span>
-            <span>10 km</span>
+            <span>1 {copy.km}</span>
+            <span>5 {copy.km}</span>
+            <span>10 {copy.km}</span>
           </div>
         </div>
 
@@ -325,7 +337,9 @@ export function LocationForm({
         >
           <MapPin size={14} />
           <span>
-            Within <span style={{ fontFamily: "var(--f-mono)", color: "var(--ink)" }}>{distanceLabel} km</span> of {cityForChip}
+            {copy.radiusChip
+              .replace("{distance}", distanceLabel)
+              .replace("{city}", cityForChip)}
           </span>
         </div>
 
@@ -346,11 +360,11 @@ export function LocationForm({
       </form>
 
       <WizardStickyActionBar
-        primaryLabel={pending ? copy.pending : "Next"}
+        primaryLabel={pending ? copy.pending : copy.next}
         primaryDisabled={!canContinue}
         primaryLoading={pending}
         onPrimary={submit}
-        secondaryLabel="Back"
+        secondaryLabel={copy.back}
         secondaryHref={`/${locale}/onboarding/sports`}
       />
     </div>

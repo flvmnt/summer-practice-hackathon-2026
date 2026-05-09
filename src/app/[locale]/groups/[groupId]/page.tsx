@@ -11,6 +11,7 @@ import { GroupMembersList } from "@/components/group/GroupMembersList";
 import { GroupTabs, type GroupTabId } from "@/components/group/GroupTabs";
 import { TeamBalancePanel } from "@/components/group/TeamBalancePanel";
 import { HeaderBell } from "@/components/layout/HeaderBell";
+import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { Card } from "@/components/ui/Card";
 import { Glyph } from "@/components/ui/Glyph";
@@ -59,20 +60,12 @@ export default async function GroupPage({
     (member) => member.userId === groupResult.data.currentUserId,
   );
   const showInvitedActions = viewerMembership?.status === "invited";
-  const invitedCopy =
-    locale === "ro"
-      ? {
-          title: "Ai fost invitat în acest grup",
-          body: "Acceptă pentru a te alătura, sau refuză dacă nu îți convine.",
-          accept: "Acceptă",
-          decline: "Refuză",
-        }
-      : {
-          title: "You've been invited to this group",
-          body: "Accept to join the match, or decline if it's not for you.",
-          accept: "Accept",
-          decline: "Decline",
-        };
+  const invitedCopy = t.raw("invited") as {
+    title: string;
+    body: string;
+    accept: string;
+    decline: string;
+  };
   const showTeamBalance = SPORTS[group.sport].evenTeams && members.length >= 2;
   const sportLabel = t(`sports.${group.sport as SportKey}`);
   const currentTab = readTab(sp.tab);
@@ -106,10 +99,10 @@ export default async function GroupPage({
     label: string;
     value?: string;
   }> = [
-    { icon: <Glyph.pin size={12} />, label: "Within distance gate", value: "5 km" },
-    { icon: <Glyph.spark size={12} />, label: `Same sport · ${sportLabel}` },
-    { icon: <Glyph.pulse size={12} />, label: "Skill mix balanced" },
-    { icon: <Glyph.groups size={12} />, label: "Group size fit" },
+    { icon: <Glyph.pin size={12} />, label: t("plan.reason.distance"), value: "5 km" },
+    { icon: <Glyph.spark size={12} />, label: `${t("plan.reason.sport")} · ${sportLabel}` },
+    { icon: <Glyph.pulse size={12} />, label: t("plan.reason.skill") },
+    { icon: <Glyph.groups size={12} />, label: t("plan.reason.size") },
   ];
 
   const eventDateLabel = upcomingEvent
@@ -121,11 +114,12 @@ export default async function GroupPage({
     : null;
 
   const membersCopy = {
+    membersAriaLabel: t("players.membersAriaLabel"),
     captainBadge: t("captainBadge"),
     playerBadge: t("playerBadge"),
-    statusConfirmed: "Confirmed",
-    statusMaybe: "Maybe",
-    statusPending: "Pending",
+    statusConfirmed: t("players.statusConfirmed"),
+    statusMaybe: t("players.statusMaybe"),
+    statusPending: t("players.statusPending"),
   };
 
   const formCopy = t.raw("form") as {
@@ -133,11 +127,12 @@ export default async function GroupPage({
     send: string;
     sending: string;
     genericError: string;
+    captainAriaLabel: string;
   };
   const chatCopy = {
     ...formCopy,
-    emptyTitle: t("emptyChat"),
-    emptyBody: "Say where and when works for you.",
+    emptyTitle: t("chat.empty.title"),
+    emptyBody: t("chat.empty.body"),
   };
 
   /* ------------------ shared section renderers ------------------ */
@@ -170,7 +165,12 @@ export default async function GroupPage({
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <form action={confirmMembershipAction}>
+            <form
+              action={async (formData) => {
+                "use server";
+                await confirmMembershipAction(formData);
+              }}
+            >
               <input type="hidden" name="groupId" value={group.id} />
               <button
                 type="submit"
@@ -180,7 +180,12 @@ export default async function GroupPage({
                 {invitedCopy.accept}
               </button>
             </form>
-            <form action={declineMembershipAction}>
+            <form
+              action={async (formData) => {
+                "use server";
+                await declineMembershipAction(formData);
+              }}
+            >
               <input type="hidden" name="groupId" value={group.id} />
               <button
                 type="submit"
@@ -226,14 +231,18 @@ export default async function GroupPage({
           suggestedVenue={
             upcomingEvent?.title
               ? { name: upcomingEvent.title }
-              : { name: "Pick a venue", sub: "Tap to suggest" }
+              : {
+                  name: t("plan.event.pickVenue"),
+                  sub: t("plan.event.tapToSuggest"),
+                }
           }
+          viewerIsCaptain={isCaptain}
           suggestedTime={eventDateLabel}
           weather={null}
         />
       ) : null}
 
-      <FormationTimeline reasons={formationReasons} title="Why this group?" />
+      <FormationTimeline reasons={formationReasons} title={t("plan.whyThisGroup")} />
 
       <Card variant="card" className="flex flex-col gap-3 p-4">
         <header className="flex items-center gap-2">
@@ -263,6 +272,7 @@ export default async function GroupPage({
             confirmed={confirmedMembers.length}
             maybe={maybeMembers.length}
             no={noMembers.length}
+            copy={t.raw("plan.event") as EventProposalCopy}
           />
         ) : isCaptain ? (
           <CreateGroupEventForm
@@ -319,9 +329,10 @@ export default async function GroupPage({
 
   return (
     <main
-      className="min-h-screen has-mobile-tabbar"
+      className="min-h-screen has-mobile-tabbar md:pl-[240px]"
       style={{ background: "var(--surface-2)" }}
     >
+      <DesktopSidebar unreadCount={unread} />
       {/* Mobile header - sticky so count + captain stay above the fold */}
       <div className="sticky top-0 z-10 md:hidden">
         <GroupHeader
@@ -339,7 +350,12 @@ export default async function GroupPage({
       <GroupTabs
         chat={chatSection}
         current={currentTab}
-        labels={{ plan: "Plan", chat: "Chat", players: "Players" }}
+        ariaLabel={t("tabs.ariaLabel")}
+        labels={{
+          plan: t("tabs.plan"),
+          chat: t("tabs.chat"),
+          players: t("tabs.players"),
+        }}
         plan={planSection}
         players={playersSection}
       />
@@ -459,15 +475,19 @@ export default async function GroupPage({
                 suggestedVenue={
                   upcomingEvent?.title
                     ? { name: upcomingEvent.title }
-                    : { name: "Pick a venue", sub: "Tap to suggest" }
+                    : {
+                        name: t("plan.event.pickVenue"),
+                        sub: t("plan.event.tapToSuggest"),
+                      }
                 }
+                viewerIsCaptain={isCaptain}
                 weather={null}
               />
             ) : null}
 
             <FormationTimeline
               reasons={formationReasons}
-              title="Why this group?"
+              title={t("plan.whyThisGroup")}
             />
 
             <div className="flex flex-col gap-2">
@@ -484,6 +504,7 @@ export default async function GroupPage({
                   label={eventDateLabel}
                   maybe={maybeMembers.length}
                   no={noMembers.length}
+                  copy={t.raw("plan.event") as EventProposalCopy}
                 />
               ) : isCaptain ? (
                 <CreateGroupEventForm
@@ -517,13 +538,22 @@ export default async function GroupPage({
   );
 }
 
+type EventProposalCopy = {
+  proposed: string;
+  going: string;
+  maybe: string;
+  no: string;
+};
+
 function EventProposalRow({
+  copy,
   confirmed,
   href,
   label,
   maybe,
   no,
 }: {
+  copy: EventProposalCopy;
   confirmed: number;
   href: string;
   label: string | null;
@@ -543,7 +573,7 @@ function EventProposalRow({
       >
         <Glyph.clock size={16} />
         <span className="text-[13px] font-semibold">
-          {label ?? "Event proposed"}
+          {label ?? copy.proposed}
         </span>
         <span
           aria-hidden
@@ -556,14 +586,14 @@ function EventProposalRow({
       <div className="flex flex-wrap gap-2">
         <Link href={href}>
           <Pill icon={<Glyph.check size={12} />} variant="field">
-            Going · {confirmed}
+            {copy.going.replace("{count}", String(confirmed))}
           </Pill>
         </Link>
         <Link href={href}>
-          <Pill variant="alt">Maybe · {maybe}</Pill>
+          <Pill variant="alt">{copy.maybe.replace("{count}", String(maybe))}</Pill>
         </Link>
         <Link href={href}>
-          <Pill variant="alt">No · {no}</Pill>
+          <Pill variant="alt">{copy.no.replace("{count}", String(no))}</Pill>
         </Link>
       </div>
     </div>

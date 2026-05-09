@@ -24,6 +24,7 @@ export type GroupChatFormCopy = {
   genericError: string;
   emptyTitle: string;
   emptyBody: string;
+  captainAriaLabel: string;
 };
 
 export type GroupChatFormMessage = {
@@ -151,6 +152,7 @@ export function GroupChatForm({
               message={message}
               currentUserId={currentUserId}
               captainUserId={captainUserId}
+              captainAriaLabel={copy.captainAriaLabel}
             />
           ))
         )}
@@ -240,9 +242,15 @@ type RowProps = {
   message: GroupChatFormMessage;
   currentUserId: string;
   captainUserId?: string | null;
+  captainAriaLabel: string;
 };
 
-function MessageRow({ message, currentUserId, captainUserId }: RowProps) {
+function MessageRow({
+  message,
+  currentUserId,
+  captainUserId,
+  captainAriaLabel,
+}: RowProps) {
   if (message.user === null) {
     return <SystemMessage body={message.body} />;
   }
@@ -271,7 +279,7 @@ function MessageRow({ message, currentUserId, captainUserId }: RowProps) {
           <span className="font-semibold">{message.user.fullName}</span>
           {isCaptain ? (
             <span
-              aria-label="Captain"
+              aria-label={captainAriaLabel}
               style={{ color: "var(--accent)", display: "inline-flex" }}
             >
               <Glyph.crown size={12} />

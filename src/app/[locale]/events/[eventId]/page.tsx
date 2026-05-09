@@ -110,9 +110,9 @@ export default async function EventPage({
   const copy: EventScreenCopy = {
     back: t("back"),
     tabs: {
-      details: locale === "ro" ? "Detalii" : "Details",
-      chat: locale === "ro" ? "Chat eveniment" : "Event chat",
-      vote: locale === "ro" ? "Vot" : "Vote",
+      details: t("tabs.details"),
+      chat: t("tabs.chat"),
+      vote: t("tabs.vote"),
     },
     details: {
       sportLabel: t("title", { sport: sportLabel }),
@@ -134,20 +134,18 @@ export default async function EventPage({
           })
         : "",
       directions: t("directions"),
-      copyInvite: locale === "ro" ? "Copiază invitația" : "Copy invite",
-      inviteCopied: locale === "ro" ? "Invitație copiată" : "Invite copied",
-      inviteCopyError:
-        locale === "ro" ? "Nu s-a putut copia" : "Could not copy",
+      copyInvite: t("copyInvite"),
+      inviteCopied: t("inviteCopied"),
+      inviteCopyError: t("inviteCopyError"),
       ics: t("calendar"),
-      icsToast:
-        locale === "ro" ? "Calendar descărcat" : "Calendar downloaded",
+      icsToast: t("icsToast"),
       rsvp: {
         going: t("attendeeStatuses.going"),
         maybe: t("attendeeStatuses.maybe"),
         no: t("attendeeStatuses.declined"),
-        saved: locale === "ro" ? "RSVP actualizat" : "RSVP updated",
+        saved: t("rsvp.saved"),
       },
-      mapPreviewLabel: locale === "ro" ? "Previzualizare hartă" : "Map preview",
+      mapPreviewLabel: t("mapPreviewLabel"),
       priceTier: recommended
         ? t(`priceTiers.${recommended.priceTier}`)
         : "",
@@ -160,25 +158,16 @@ export default async function EventPage({
       form: t.raw("form"),
     },
     vote: {
-      title:
-        locale === "ro"
-          ? "Vot: alegeți o locație"
-          : "Vote: choose a venue",
-      closeVote: locale === "ro" ? "Închide votul" : "Close vote",
-      closedNotice:
-        locale === "ro" ? "Votul este închis." : "Voting is closed.",
+      title: t("vote.title"),
+      closeVote: t("vote.closeVote"),
+      closedNotice: t("vote.closedNotice"),
     },
     captainReveal: {
-      pillLabel:
-        locale === "ro" ? "Sugestie auto pentru căpitan" : "Captain auto-suggest",
-      versionLabel: "auto · v1",
-      headline: locale === "ro" ? "Plan sugerat" : "Suggested plan",
-      whenRange:
-        locale === "ro" ? `Astăzi, ${whenRange}` : `Today, ${whenRange}`,
-      reasoning:
-        locale === "ro"
-          ? "8 membri au votat după 18:00, vremea este senină, iar locația este cea mai apropiată de centrul grupului."
-          : "8 members voted after 18:00, weather is clear, venue is closest to the group center.",
+      pillLabel: t("captainReveal.pillLabel"),
+      versionLabel: t("captainReveal.versionLabel"),
+      headline: t("captainReveal.headline"),
+      whenRange: t("captainReveal.todayAt", { time: whenRange }),
+      reasoning: t("captainReveal.reasoning"),
       recommendedSubLine: recommended
         ? [
             recommended.distanceKm ? `${recommended.distanceKm} km` : null,
@@ -198,14 +187,11 @@ export default async function EventPage({
             .filter(Boolean)
             .join(" · "),
         ),
-      confirmPlan: locale === "ro" ? "Confirmă planul" : "Confirm plan",
-      startVote: locale === "ro" ? "Pornește votul" : "Start vote",
-      suggestSomethingElse:
-        locale === "ro" ? "Sugerează altceva" : "Suggest something else",
-      suggestSomethingElseToast:
-        locale === "ro" ? "În curând" : "Coming soon",
-      confirmedToast:
-        locale === "ro" ? "Plan confirmat" : "Plan confirmed",
+      confirmPlan: t("captainReveal.confirmPlan"),
+      startVote: t("captainReveal.startVote"),
+      suggestSomethingElse: t("captainReveal.suggestSomethingElse"),
+      suggestSomethingElseToast: t("captainReveal.suggestSomethingElseToast"),
+      confirmedToast: t("captainReveal.confirmedToast"),
     },
     captainBrief: {
       header: t("captainBrief.header"),

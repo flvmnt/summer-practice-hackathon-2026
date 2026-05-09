@@ -178,7 +178,9 @@ export async function GET(
   const env = getServerEnv();
   const baseUrl = env.PUBLIC_BASE_URL ?? new URL(request.url).origin;
   const url = new URL(request.url);
-  const locale = localeSchema.catch("ro").parse(url.searchParams.get("locale") ?? "ro");
+  const locale = localeSchema
+    .catch(user.locale)
+    .parse(url.searchParams.get("locale") ?? user.locale);
   const eventUrl = `${baseUrl}/${locale}/events/${event.id}`;
   const groupUrl = `${baseUrl}/${locale}/groups/${event.groupId}`;
   const body = buildIcsCalendar({

@@ -5,7 +5,6 @@ import { CreateEventForm } from "@/components/events/CreateEventForm";
 import { CreateGroupEventForm } from "@/components/group/CreateGroupEventForm";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { Card } from "@/components/ui/Card";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { Glyph } from "@/components/ui/Glyph";
 import { Pill } from "@/components/ui/Pill";
 import type { AppLocale } from "@/i18n/routing";

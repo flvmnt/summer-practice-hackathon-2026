@@ -10,6 +10,7 @@ export type GroupTabId = "plan" | "chat" | "players";
 type Props = {
   current: GroupTabId;
   labels: Record<GroupTabId, string>;
+  ariaLabel: string;
   plan: ReactNode;
   chat: ReactNode;
   players: ReactNode;
@@ -26,6 +27,7 @@ type Props = {
 export function GroupTabs({
   current,
   labels,
+  ariaLabel,
   plan,
   chat,
   players,
@@ -72,7 +74,7 @@ export function GroupTabs({
         }}
       >
         <Tabs<GroupTabId>
-          ariaLabel="Group sections"
+          ariaLabel={ariaLabel}
           value={current}
           onChange={handleChange}
           items={items}

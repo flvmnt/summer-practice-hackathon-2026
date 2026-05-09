@@ -1,8 +1,9 @@
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { EventListItem, type RsvpStatusLite } from "@/components/events/EventListItem";
 import { HeaderBell } from "@/components/layout/HeaderBell";
+import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Glyph } from "@/components/ui/Glyph";
@@ -12,33 +13,6 @@ import { getUserEventsList, type UserEventsFilter } from "@/lib/events";
 import { unreadCount } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
-
-const COPY = {
-  en: {
-    title: "Your events",
-    subtitle: "Upcoming and past events you're attending.",
-    upcoming: "Upcoming",
-    past: "Past",
-    all: "All",
-    create: "Create event",
-    emptyTitle: "No events yet",
-    emptyBody: "Create one or wait for today's match.",
-    emptyAction: "Create event",
-    rsvp: { going: "Going", maybe: "Maybe", declined: "Declined" },
-  },
-  ro: {
-    title: "Evenimentele tale",
-    subtitle: "Evenimente viitoare și trecute la care participi.",
-    upcoming: "Viitoare",
-    past: "Trecute",
-    all: "Toate",
-    create: "Creează eveniment",
-    emptyTitle: "Niciun eveniment",
-    emptyBody: "Creează unul sau așteaptă matchul de azi.",
-    emptyAction: "Creează eveniment",
-    rsvp: { going: "Vin", maybe: "Poate", declined: "Refuzat" },
-  },
-};
 
 function readFilter(value: string | string[] | undefined): UserEventsFilter {
   const raw = Array.isArray(value) ? value[0] : value;
@@ -56,13 +30,13 @@ export default async function EventsPage({
   const { locale } = await params;
   const sp = await searchParams;
   setRequestLocale(locale);
+  const t = await getTranslations("eventsList");
 
   const user = await getCurrentUser();
   if (!user) {
     redirect(`/${locale}/login`);
   }
 
-  const copy = COPY[locale];
   const filter = readFilter(sp.filter);
   const [all, unread] = await Promise.all([
     getUserEventsList(user.id, "all"),
@@ -85,14 +59,14 @@ export default async function EventsPage({
   });
 
   const filterChips: Array<{ id: UserEventsFilter; label: string; count: number }> = [
-    { id: "upcoming", label: copy.upcoming, count: upcoming.length },
-    { id: "past", label: copy.past, count: past.length },
-    { id: "all", label: copy.all, count: all.length },
+    { id: "upcoming", label: t("upcoming"), count: upcoming.length },
+    { id: "past", label: t("past"), count: past.length },
+    { id: "all", label: t("all"), count: all.length },
   ];
 
   return (
     <main
-      className="relative min-h-screen w-full"
+      className="relative min-h-screen w-full md:pl-[240px]"
       style={{
         background: "var(--surface-2)",
         color: "var(--ink)",
@@ -113,13 +87,13 @@ export default async function EventsPage({
               textTransform: "uppercase",
             }}
           >
-            {locale === "ro" ? "Evenimente" : "Events"}
+            {t("eyebrow")}
           </div>
           <h1
             className="display"
             style={{ fontSize: 26, lineHeight: 1.05, marginTop: 2 }}
           >
-            {copy.title}
+            {t("title")}
           </h1>
         </div>
         <div className="flex items-center gap-2">
@@ -127,7 +101,7 @@ export default async function EventsPage({
           <Link
             href={`/${locale}/events/new`}
             className="grid place-items-center"
-            aria-label={copy.create}
+            aria-label={t("createNew")}
             style={{
               width: 40,
               height: 40,
@@ -148,13 +122,13 @@ export default async function EventsPage({
               className="display"
               style={{ fontSize: 36, lineHeight: 1.05, color: "var(--ink)" }}
             >
-              {copy.title}
+              {t("title")}
             </h1>
             <p
               className="mt-2 text-[14px]"
               style={{ color: "var(--ink-muted)", lineHeight: 1.5 }}
             >
-              {copy.subtitle}
+              {t("subtitle")}
             </p>
           </div>
           <Link
@@ -163,7 +137,7 @@ export default async function EventsPage({
             style={{ minHeight: 44, padding: "10px 16px", fontSize: 14 }}
           >
             <Glyph.plus size={16} />
-            {copy.create}
+            {t("createNew")}
           </Link>
         </header>
 
@@ -212,10 +186,10 @@ export default async function EventsPage({
         {visible.length === 0 ? (
           <EmptyState
             glyph={<Glyph.cal size={28} />}
-            title={copy.emptyTitle}
-            body={copy.emptyBody}
+            title={t("emptyTitle")}
+            body={t("emptyBody")}
             action={{
-              label: copy.emptyAction,
+              label: t("emptyAction"),
               href: `/${locale}/events/new`,
             }}
           />
@@ -230,7 +204,7 @@ export default async function EventsPage({
                   whenLabel={dateFmt.format(new Date(event.whenAt))}
                   venueLabel={event.venueLabel}
                   rsvp={event.rsvp as RsvpStatusLite}
-                  rsvpLabels={copy.rsvp}
+                  rsvpLabels={t.raw("rsvp")}
                   past={event.isPast}
                 />
               </li>
@@ -239,6 +213,7 @@ export default async function EventsPage({
         )}
       </div>
 
+      <DesktopSidebar unreadCount={unread} />
       <MobileTabBar />
     </main>
   );

@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
 import { HeaderBell } from "@/components/layout/HeaderBell";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { SetupBanner } from "@/components/onboarding/SetupBanner";
@@ -57,16 +58,26 @@ export default async function TodayPage({
   // We don't have a photoUrl on the onboarding state - the optional step is
   // always surfaced until the user closes it / wires up presence detection.
   const showSetup = true;
+  const setupCopy = {
+    ariaLabel: t("setup.ariaLabel"),
+    progress: t("setup.progress", {
+      complete: requiredComplete,
+      total: totalSteps,
+    }),
+    next: t("setup.next", { label: t("photoSetup") }),
+    continue: t("setup.continue"),
+  };
 
   return (
     <main
-      className="relative min-h-screen w-full"
+      className="relative min-h-screen w-full md:pl-[240px]"
       style={{
         background: "var(--bg)",
         color: "var(--ink)",
         paddingBottom: "calc(78px + env(safe-area-inset-bottom) + 16px)",
       }}
     >
+      <DesktopSidebar unreadCount={unread} />
       {/* Mobile header */}
       <header
         className="flex items-center justify-between px-5 pt-5 md:hidden"
@@ -97,7 +108,7 @@ export default async function TodayPage({
                 textTransform: "uppercase",
               }}
             >
-              Hello,
+              {t("hello")}
             </div>
             <div
               className="display truncate"
@@ -112,7 +123,7 @@ export default async function TodayPage({
             className="pill"
             style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
           >
-            <Glyph.sun size={14} /> 21° clear
+            <Glyph.sun size={14} /> {t("weather.clear")}
           </span>
           <HeaderBell unreadCount={unread} locale={locale} />
         </div>
@@ -170,8 +181,9 @@ export default async function TodayPage({
                 <SetupBanner
                   complete={requiredComplete}
                   total={totalSteps}
-                  nextLabel="Add a photo"
+                  nextLabel={t("photoSetup")}
                   nextHref={`/${locale}/onboarding/profile`}
+                  copy={setupCopy}
                 />
               </div>
             ) : null}
@@ -184,8 +196,9 @@ export default async function TodayPage({
                 <SetupBanner
                   complete={requiredComplete}
                   total={totalSteps}
-                  nextLabel="Add a photo"
+                  nextLabel={t("photoSetup")}
                   nextHref={`/${locale}/onboarding/profile`}
+                  copy={setupCopy}
                 />
               </div>
             ) : null}
@@ -195,8 +208,14 @@ export default async function TodayPage({
               locale={locale}
               maxDistanceKm={user.maxDistanceKm}
               prompt={todayState.data.prompt}
+              promptHeadline={t(
+                `promptHeadline.${todayState.data.prompt.windowSlot}`,
+              )}
               response={todayState.data.response}
               sports={user.sports}
+              windowLabel={t("windowLabel")}
+              weatherLabel={t("weather.clear")}
+              nearbyLabel={t("nearby.label")}
             />
           </section>
         </div>

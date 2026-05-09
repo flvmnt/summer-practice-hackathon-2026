@@ -2,30 +2,29 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Glyph, type GlyphName } from "@/components/ui/Glyph";
 import { cn } from "@/lib/utils";
 
 export type MobileTab = {
   id: string;
   href: string;
-  label: string;
   glyph: GlyphName;
   /** If set, mark active when pathname starts with one of these prefixes (in addition to exact match). */
   match?: ReadonlyArray<string>;
 };
 
 const DEFAULT_TABS: ReadonlyArray<MobileTab> = [
-  { id: "today", href: "/today", label: "Today", glyph: "today" },
+  { id: "today", href: "/today", glyph: "today" },
   {
     id: "groups",
     href: "/groups",
-    label: "Groups",
     glyph: "groups",
     match: ["/groups", "/events"],
   },
-  { id: "create", href: "/events/new", label: "Create", glyph: "plus" },
-  { id: "map", href: "/map", label: "Map", glyph: "map" },
-  { id: "profile", href: "/settings", label: "Profile", glyph: "profile" },
+  { id: "create", href: "/events/new", glyph: "plus" },
+  { id: "map", href: "/map", glyph: "map" },
+  { id: "profile", href: "/settings", glyph: "profile" },
 ];
 
 type Props = {
@@ -49,9 +48,10 @@ function hrefFor(pathname: string, href: string) {
 
 export function MobileTabBar({ tabs = DEFAULT_TABS, className }: Props) {
   const pathname = usePathname() ?? "/";
+  const t = useTranslations("sidebar");
   return (
     <nav
-      aria-label="Primary"
+      aria-label={t("primaryAriaLabel")}
       className={cn("grid md:hidden", className)}
       style={{
         position: "fixed",
@@ -71,12 +71,13 @@ export function MobileTabBar({ tabs = DEFAULT_TABS, className }: Props) {
       {tabs.map((tab) => {
         const Icon = Glyph[tab.glyph];
         const active = isActive(pathname, tab);
+        const label = t(`items.${tab.id}`);
         return (
           <Link
             key={tab.id}
             href={hrefFor(pathname, tab.href)}
             aria-current={active ? "page" : undefined}
-            aria-label={tab.label}
+            aria-label={label}
             className={cn(
               "flex flex-col items-center justify-center gap-1",
             )}
@@ -92,7 +93,7 @@ export function MobileTabBar({ tabs = DEFAULT_TABS, className }: Props) {
             }}
           >
             <Icon size={22} />
-            <span>{tab.label}</span>
+            <span>{label}</span>
           </Link>
         );
       })}

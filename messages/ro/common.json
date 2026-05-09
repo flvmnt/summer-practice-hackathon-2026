@@ -171,7 +171,7 @@
       "photoRemove": "Șterge",
       "photoUploading": "Se încarcă poza...",
       "photoUploaded": "Poza salvată.",
-      "photoErrorType": "Alege un fișier imagine (JPG, PNG, WebP sau HEIC).",
+      "photoErrorType": "Alege un fișier imagine (JPG, PNG sau WebP).",
       "photoErrorUpload": "Încărcarea a eșuat. Încearcă din nou sau sari peste.",
       "fullName": "Nume complet",
       "fullNamePlaceholder": "Alex Ionescu",
@@ -328,6 +328,19 @@
     "back": "Înapoi",
     "title": "ShowUpToday",
     "body": "Răspunde o singură dată pentru fereastra activă din România. Un răspuns „Da” te pune în coadă pentru potrivirea deterministă din următoarea felie.",
+    "hello": "Salut,",
+    "photoSetup": "Adaugă o poză",
+    "setup": {
+      "ariaLabel": "Progres configurare profil",
+      "progress": "{complete}/{total} pași completați",
+      "next": "Următorul pas: {label}",
+      "continue": "Continuă configurarea"
+    },
+    "promptHeadline": {
+      "morning": "ShowUpToday? Se formează grupurile de dimineață.",
+      "afternoon": "ShowUpToday? Se formează jocurile de după-amiază.",
+      "evening": "ShowUpToday? Se formează grupurile de seară."
+    },
     "card": {
       "promptLabel": "Prompt activ",
       "yes": "Da, pot juca",
@@ -414,7 +427,7 @@
     "searching": {
       "headline": "Te potrivim…",
       "matchingLabel": "Potrivire",
-      "aiLabel": "Scor AI",
+      "aiLabel": "Scor pe reguli",
       "aiDescription": "cântărește nivel, program și distanță",
       "range": {
         "nearby": "jucători {sport} în apropiere",
@@ -490,6 +503,7 @@
       "send": "Trimite mesaj",
       "sending": "Se trimite",
       "genericError": "Mesajul nu a putut fi trimis. Verifică sesiunea și încearcă din nou.",
+      "captainAriaLabel": "Căpitan",
       "emptyTitle": "Nu există încă mesaje în grup",
       "emptyBody": "Începe cu primul plan concret: oră, locație sau cine poate aduce echipament."
     },
@@ -714,6 +728,7 @@
       "pillLabel": "Sugestie auto pentru căpitan",
       "versionLabel": "auto · v1",
       "headline": "Plan sugerat",
+      "todayAt": "Astăzi, {time}",
       "reasoning": "8 membri au votat după 18:00, vremea este senină, iar locația este cea mai apropiată de centrul grupului.",
       "confirmPlan": "Confirmă planul",
       "startVote": "Pornește votul",
@@ -737,12 +752,12 @@
       "seed": "Seed demo",
       "seedLoaded": "{users} useri · {groups} grupuri · {events} evenimente",
       "seedEmpty": "Gol",
-      "aiCache": "Cache AI",
-      "aiCacheLoaded": "{count} intrări în cache",
+      "aiCache": "Cache AI runtime",
+      "aiCacheLoaded": "{count} intrări runtime în cache",
       "aiCacheEmpty": "Gol",
       "build": "Build",
       "seedEmptyHint": "Demo nepopulat încă - rulează /api/demo/seed",
-      "aiCacheEmptyHint": "Cache-ul se umple după primul apel AI"
+      "aiCacheEmptyHint": "Cache-ul se umple după primul apel AI live"
     },
     "controls": {
       "seed": "Populează demo",
@@ -1099,6 +1114,7 @@
     "back": "Înapoi la Today"
   },
   "eventsList": {
+    "eyebrow": "Evenimente",
     "title": "Evenimentele tale",
     "subtitle": "Evenimente viitoare și trecute la care participi.",
     "upcoming": "Viitoare",
@@ -1208,7 +1224,7 @@
     "healthUnknown": "galben",
     "seedLoaded": "{users} useri · {groups} grupuri · {events} evenimente",
     "seedEmpty": "Gol",
-    "aiCache": "{count} intrări în cache",
+    "aiCache": "{count} intrări runtime în cache",
     "aiCacheEmpty": "Gol",
     "build": "Build",
     "controls": {

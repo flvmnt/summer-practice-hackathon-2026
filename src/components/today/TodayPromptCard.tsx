@@ -179,6 +179,7 @@ function TodayBody({
   sports,
   formStatus,
   formError,
+  promptHeadline,
   windowLabel,
   weatherLabel,
   nearbyLabel,
@@ -191,6 +192,7 @@ function TodayBody({
   sports: Array<{ sport: SportKey; level: number }>;
   formStatus: TodayPromptFormState["state"] | undefined;
   formError?: string;
+  promptHeadline: string;
   windowLabel: string;
   weatherLabel: string;
   nearbyLabel: string;
@@ -214,7 +216,7 @@ function TodayBody({
 
   const primarySport = sports[0]?.sport;
   const sportLabel = group ? copy.sports[group.sport] : primarySport ? copy.sports[primarySport] : "";
-  const headline = prompt.messageText ?? "ShowUpToday?";
+  const headline = promptHeadline || prompt.messageText || "ShowUpToday?";
 
   // Locale-aware elapsed for the queued card.
   const [now, setNow] = useState<number>(() => Date.now());
@@ -285,7 +287,7 @@ function TodayBody({
               active: true,
             },
           ]}
-          aiLabel="AI scoring"
+          aiLabel="Rule scoring"
           aiDescription="weighing skill, schedule and proximity"
         />
       ) : null}
@@ -426,16 +428,24 @@ export function TodayPromptCard({
   locale,
   maxDistanceKm,
   prompt,
+  promptHeadline,
   response,
   sports,
+  windowLabel,
+  weatherLabel,
+  nearbyLabel,
 }: {
   copy: TodayPromptCopy;
   group: TodayGroup | null;
   locale: string;
   maxDistanceKm: number;
   prompt: TodayPrompt;
+  promptHeadline: string;
   response: TodayResponse | null;
   sports: Array<{ sport: SportKey; level: number }>;
+  windowLabel: string;
+  weatherLabel: string;
+  nearbyLabel: string;
 }) {
   const [formState, formAction] = useActionState(
     todayPromptFormAction,
@@ -452,10 +462,6 @@ export function TodayPromptCard({
       }
     : response;
 
-  const windowLabel = "Live · today";
-  const weatherLabel = "Clear, 18°C";
-  const nearbyLabel = "playing today";
-
   return (
     <form action={formAction} className="contents">
       <TodayBody
@@ -467,6 +473,7 @@ export function TodayPromptCard({
         sports={sports}
         formStatus={formState.state}
         formError={formState.error}
+        promptHeadline={promptHeadline}
         windowLabel={windowLabel}
         weatherLabel={weatherLabel}
         nearbyLabel={nearbyLabel}

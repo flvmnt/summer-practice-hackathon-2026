@@ -1,7 +1,8 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 export default async function LocaleNotFound() {
+  const locale = await getLocale();
   const t = await getTranslations("notFound");
 
   return (
@@ -13,7 +14,7 @@ export default async function LocaleNotFound() {
         </p>
         <Link
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-[var(--accent)] px-4 font-semibold text-[var(--on-accent)]"
-          href="/ro"
+          href={`/${locale}`}
         >
           {t("back")}
         </Link>
