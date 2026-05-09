@@ -8,6 +8,7 @@ export type CurrentUser = {
   id: string;
   username: string;
   fullName: string;
+  bio: string | null;
   isAdmin: boolean;
   locale: "ro" | "en";
 };
@@ -24,6 +25,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
       id: users.id,
       username: users.username,
       fullName: users.fullName,
+      bio: users.bio,
       isAdmin: users.isAdmin,
       locale: users.locale,
       bannedAt: users.bannedAt,
@@ -42,6 +44,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     id: user.id,
     username: user.username,
     fullName: user.fullName,
+    bio: user.bio,
     isAdmin: user.isAdmin,
     locale: user.locale === "en" ? "en" : "ro",
   };

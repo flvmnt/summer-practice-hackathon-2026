@@ -114,8 +114,28 @@
   },
   "onboarding": {
     "profile": {
+      "back": "Inapoi",
+      "eyebrow": "Onboarding",
       "title": "Onboarding-ul de profil urmeaza.",
-      "body": "Contul este pregatit. Urmatoarea felie din Faza 1 adauga nume complet, bio, sporturi, poza de profil si locatie inainte de orice revendicare pentru potrivire."
+      "body": "Adauga datele de identitate pe care le vad membrii grupului inainte de sporturi, poza, locatie si potrivire.",
+      "cardTitle": "Profil public",
+      "cardBody": "Aceste informatii sunt vizibile pentru grupurile potrivite si membrii evenimentelor.",
+      "form": {
+        "fullName": "Nume complet",
+        "fullNamePlaceholder": "Alex Ionescu",
+        "bio": "Bio scurt",
+        "bioPlaceholder": "Ce joci, cand esti de obicei liber si ce fel de grup ti se potriveste?",
+        "submit": "Salveaza profilul",
+        "pending": "Se salveaza profilul",
+        "genericError": "Verifica datele si incearca din nou.",
+        "unauthorized": "Autentifica-te din nou inainte sa salvezi profilul.",
+        "fullNameRequired": "Introdu un nume real cu litere, spatii, apostrofuri sau cratime.",
+        "fullNameInvalid": "Foloseste litere, spatii, apostrofuri sau cratime pentru nume.",
+        "bioRequired": "Adauga un bio scurt inainte sa continui.",
+        "successTitle": "Profil salvat",
+        "successBody": "Sporturile, poza de profil si locatia sunt urmatorii pasi de onboarding.",
+        "continue": "Continua la Today"
+      }
     }
   },
   "today": {

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   fullNameSchema,
   loginInputSchema,
+  onboardingProfileInputSchema,
   recoveryCodeSchema,
   signupInputSchema,
   usernameSchema,
@@ -38,5 +39,21 @@ describe("auth contracts", () => {
 
   it("does not validate login with a blank password", () => {
     expect(() => loginInputSchema.parse({ username: "ana", password: "" })).toThrow();
+  });
+
+  it("requires profile onboarding identity and bio", () => {
+    expect(
+      onboardingProfileInputSchema.parse({
+        fullName: "Ana Popescu",
+        bio: "Tennis after work, beginner-friendly groups preferred.",
+      }),
+    ).toEqual({
+      fullName: "Ana Popescu",
+      bio: "Tennis after work, beginner-friendly groups preferred.",
+    });
+
+    expect(() =>
+      onboardingProfileInputSchema.parse({ fullName: "Ana Popescu", bio: "" }),
+    ).toThrow();
   });
 });

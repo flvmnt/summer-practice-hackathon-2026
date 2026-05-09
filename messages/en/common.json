@@ -114,8 +114,28 @@
   },
   "onboarding": {
     "profile": {
+      "back": "Back",
+      "eyebrow": "Onboarding",
       "title": "Profile onboarding is next.",
-      "body": "The account is ready. The next Phase 1 slice adds full name, bio, sports, profile photo, and location before matching claims start."
+      "body": "Add the identity fields that group members see before sports, photo, location, and matching are enabled.",
+      "cardTitle": "Public profile",
+      "cardBody": "This is visible to matched groups and event members.",
+      "form": {
+        "fullName": "Full name",
+        "fullNamePlaceholder": "Alex Ionescu",
+        "bio": "Short bio",
+        "bioPlaceholder": "What do you play, when are you usually free, and what kind of group feels right?",
+        "submit": "Save profile",
+        "pending": "Saving profile",
+        "genericError": "Check the details and try again.",
+        "unauthorized": "Log in again before saving your profile.",
+        "fullNameRequired": "Enter a real name using letters, spaces, apostrophes, or hyphens.",
+        "fullNameInvalid": "Use letters, spaces, apostrophes, or hyphens for the name.",
+        "bioRequired": "Add a short bio before continuing.",
+        "successTitle": "Profile saved",
+        "successBody": "Sports, profile photo, and location are the next onboarding steps.",
+        "continue": "Continue to Today"
+      }
     }
   },
   "today": {
