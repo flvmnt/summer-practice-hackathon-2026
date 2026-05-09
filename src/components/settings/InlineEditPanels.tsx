@@ -33,11 +33,11 @@ type Copy = {
   noBio: string;
   fullNameRequired: string;
   bioRequired: string;
-  bioCharsLeft: (n: number) => string;
+  bioCharsLeft: string;
   sportsEmpty: string;
   sportsHint: string;
   sportsRequired: string;
-  sportsLevel: (n: number) => string;
+  sportsLevel: string;
   sportLabels: Record<SportKey, string>;
   cityLabel: string;
   latLabel: string;
@@ -426,7 +426,7 @@ function ProfileEditor({
             className="mono text-[10px]"
             style={{ color: "var(--ink-muted)" }}
           >
-            {copy.bioCharsLeft(remaining)}
+            {copy.bioCharsLeft.replace("{n}", String(remaining))}
           </p>
         ) : null}
       </div>
@@ -558,7 +558,7 @@ function SportsEditor({
                     fontWeight: 700,
                   }}
                 >
-                  {copy.sportsLevel(s.level)}
+                  {copy.sportsLevel.replace("{n}", String(s.level))}
                 </span>
               </Pill>
             ))}
