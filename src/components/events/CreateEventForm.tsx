@@ -143,27 +143,29 @@ function CreateEventFormInner({
           onChange={(e) => setVenueQuery(e.target.value)}
         />
 
-        {selectedVenue ? (
-          <div className="flex flex-col gap-1.5">
-            <div
-              className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
-              style={{ color: "var(--ink-muted)" }}
-            >
-              {copy.selectedVenue}
+        <div aria-live="polite">
+          {selectedVenue ? (
+            <div className="flex flex-col gap-1.5">
+              <div
+                className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
+                style={{ color: "var(--ink-muted)" }}
+              >
+                {copy.selectedVenue}
+              </div>
+              <VenueRow
+                name={selectedVenue.name}
+                sub={selectedVenue.city}
+                primary
+                weather={(() => {
+                  const Icon = Glyph[SPORT_GLYPH[selectedVenue.sport] ?? "pin"];
+                  return <Icon size={18} />;
+                })()}
+                actionLabel="Change"
+                onAction={() => setSelectedVenue(null)}
+              />
             </div>
-            <VenueRow
-              name={selectedVenue.name}
-              sub={selectedVenue.city}
-              primary
-              weather={(() => {
-                const Icon = Glyph[SPORT_GLYPH[selectedVenue.sport] ?? "pin"];
-                return <Icon size={18} />;
-              })()}
-              actionLabel="Change"
-              onAction={() => setSelectedVenue(null)}
-            />
-          </div>
-        ) : null}
+          ) : null}
+        </div>
 
         {!selectedVenue && filteredVenues.length > 0 ? (
           <div className="flex flex-col gap-1.5">
