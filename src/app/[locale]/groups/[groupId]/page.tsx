@@ -17,6 +17,10 @@ import { Glyph } from "@/components/ui/Glyph";
 import { Pill } from "@/components/ui/Pill";
 import type { AppLocale } from "@/i18n/routing";
 import { getGroupAction } from "@/lib/chat";
+import {
+  confirmMembershipAction,
+  declineMembershipAction,
+} from "@/lib/match-confirm-actions";
 import { unreadCount } from "@/lib/notifications";
 import { SPORTS, type SportKey } from "@/lib/sports";
 
@@ -51,6 +55,24 @@ export default async function GroupPage({
   const members = groupResult.data.members;
   const captain = members.find((member) => member.userId === group.captainUserId);
   const isCaptain = groupResult.data.currentUserId === group.captainUserId;
+  const viewerMembership = members.find(
+    (member) => member.userId === groupResult.data.currentUserId,
+  );
+  const showInvitedActions = viewerMembership?.status === "invited";
+  const invitedCopy =
+    locale === "ro"
+      ? {
+          title: "Ai fost invitat în acest grup",
+          body: "Acceptă pentru a te alătura, sau refuză dacă nu îți convine.",
+          accept: "Acceptă",
+          decline: "Refuză",
+        }
+      : {
+          title: "You've been invited to this group",
+          body: "Accept to join the match, or decline if it's not for you.",
+          accept: "Accept",
+          decline: "Decline",
+        };
   const showTeamBalance = SPORTS[group.sport].evenTeams && members.length >= 2;
   const sportLabel = t(`sports.${group.sport as SportKey}`);
   const currentTab = readTab(sp.tab);
@@ -122,6 +144,56 @@ export default async function GroupPage({
 
   const planSection = (
     <div className="flex flex-col gap-3 px-4 py-4 md:p-0">
+      {showInvitedActions ? (
+        <Card variant="card" className="flex flex-col gap-3 p-4">
+          <div className="flex items-start gap-3">
+            <span
+              aria-hidden
+              className="grid h-9 w-9 place-items-center"
+              style={{
+                background: "var(--accent-soft)",
+                color: "var(--accent-deep)",
+                borderRadius: 10,
+                flex: "none",
+              }}
+            >
+              <Glyph.spark size={18} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold">{invitedCopy.title}</p>
+              <p
+                className="mt-1 text-[13px] leading-snug"
+                style={{ color: "var(--ink-muted)" }}
+              >
+                {invitedCopy.body}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <form action={confirmMembershipAction}>
+              <input type="hidden" name="groupId" value={group.id} />
+              <button
+                type="submit"
+                className="btn-s2m"
+                style={{ minHeight: 44, fontSize: 14, padding: "10px 18px" }}
+              >
+                {invitedCopy.accept}
+              </button>
+            </form>
+            <form action={declineMembershipAction}>
+              <input type="hidden" name="groupId" value={group.id} />
+              <button
+                type="submit"
+                className="btn-s2m btn-secondary"
+                style={{ minHeight: 44, fontSize: 14, padding: "10px 18px" }}
+              >
+                {invitedCopy.decline}
+              </button>
+            </form>
+          </div>
+        </Card>
+      ) : null}
+
       {hasFirstMatch ? (
         <Card className="flex items-start gap-3 p-4" variant="card">
           <span
