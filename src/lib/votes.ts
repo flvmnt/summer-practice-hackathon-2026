@@ -1,8 +1,13 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db";
-import { eventAttendees, voteChoices, votes } from "@/db/schema";
+import {
+  eventAttendees,
+  eventVenueCandidates,
+  voteChoices,
+  votes,
+} from "@/db/schema";
 import { actionError, actionOk, type ActionResult } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth-current-user";
 import {
@@ -30,6 +35,7 @@ export async function castVenueVoteAction(
       and(
         eq(eventAttendees.eventId, parsed.data.eventId),
         eq(eventAttendees.userId, user.id),
+        inArray(eventAttendees.status, ["going", "maybe"]),
       ),
     )
     .limit(1);
@@ -49,6 +55,18 @@ export async function castVenueVoteAction(
 
   if (!vote || vote.status !== "open") {
     return actionError("not_found");
+  }
+
+  const candidates = await getDb()
+    .select({
+      eventId: eventVenueCandidates.eventId,
+    })
+    .from(eventVenueCandidates)
+    .where(eq(eventVenueCandidates.eventId, parsed.data.eventId))
+    .orderBy(asc(eventVenueCandidates.rank));
+
+  if (!candidates[parsed.data.optionIdx]) {
+    return actionError("validation");
   }
 
   await getDb()

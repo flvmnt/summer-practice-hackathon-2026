@@ -1,4 +1,10 @@
-import { CalendarDays, MapPinned, MessageSquareText, UsersRound } from "lucide-react";
+import {
+  CalendarDays,
+  CalendarPlus,
+  MapPinned,
+  MessageSquareText,
+  UsersRound,
+} from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -55,6 +61,13 @@ export default async function EventPage({
           <p className="rounded-md bg-[var(--cloud)] px-3 py-2 font-semibold">
             {t("status", { status: t(`statuses.${event.status}`) })}
           </p>
+          <Link
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-[var(--court)] px-4 text-sm font-semibold text-white"
+            href={`/api/events/${event.id}/ics?locale=${locale}`}
+          >
+            <CalendarPlus aria-hidden="true" size={18} />
+            {t("calendar")}
+          </Link>
         </div>
       </section>
 

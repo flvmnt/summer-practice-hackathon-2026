@@ -1,6 +1,6 @@
 "use server";
 
-import { and, asc, desc, eq, isNull } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNull } from "drizzle-orm";
 import { getDb } from "@/db";
 import {
   eventAttendees,
@@ -144,12 +144,15 @@ async function requireEventAttendee(eventId: string) {
     .select({
       eventId: eventAttendees.eventId,
       status: eventAttendees.status,
+      demoRunId: events.demoRunId,
     })
     .from(eventAttendees)
+    .innerJoin(events, eq(events.id, eventAttendees.eventId))
     .where(
       and(
         eq(eventAttendees.eventId, eventId),
         eq(eventAttendees.userId, user.id),
+        inArray(eventAttendees.status, ["going", "maybe"]),
       ),
     )
     .limit(1);
@@ -482,6 +485,8 @@ export async function postMessageAction(
       and(
         eq(messages.userId, auth.user.id),
         eq(messages.clientId, parsed.data.clientId),
+        eq(messages.scopeType, "group"),
+        eq(messages.groupId, parsed.data.groupId),
       ),
     )
     .limit(1);
@@ -529,6 +534,7 @@ export async function postEventMessageAction(
   const inserted = await getDb()
     .insert(messages)
     .values({
+      demoRunId: auth.attendee.demoRunId,
       scopeType: "event",
       eventId: parsed.data.eventId,
       userId: auth.user.id,
@@ -563,5 +569,39 @@ export async function postEventMessageAction(
     });
   }
 
-  return actionError("internal");
+  const [existing] = await getDb()
+    .select({
+      id: messages.id,
+      body: messages.body,
+      kind: messages.kind,
+      createdAt: messages.createdAt,
+    })
+    .from(messages)
+    .where(
+      and(
+        eq(messages.userId, auth.user.id),
+        eq(messages.clientId, parsed.data.clientId),
+        eq(messages.scopeType, "event"),
+        eq(messages.eventId, parsed.data.eventId),
+      ),
+    )
+    .limit(1);
+
+  if (!existing) {
+    return actionError("internal");
+  }
+
+  return actionOk({
+    message: {
+      id: existing.id,
+      body: existing.body,
+      kind: existing.kind,
+      createdAt: existing.createdAt.toISOString(),
+      user: {
+        id: auth.user.id,
+        username: auth.user.username,
+        fullName: auth.user.fullName,
+      },
+    },
+  });
 }

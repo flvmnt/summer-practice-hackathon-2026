@@ -206,7 +206,12 @@ export async function createGroupEventAction(
       userId: groupMembers.userId,
     })
     .from(groupMembers)
-    .where(eq(groupMembers.groupId, parsed.data.groupId));
+    .where(
+      and(
+        eq(groupMembers.groupId, parsed.data.groupId),
+        eq(groupMembers.status, "confirmed"),
+      ),
+    );
 
   const whenAt = defaultEventTime();
   const copy = eventCopy(user.locale, group.sport);

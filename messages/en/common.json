@@ -283,6 +283,7 @@
     "duration": "Duration: {minutes} min",
     "venuePending": "Venue to be confirmed",
     "status": "Status: {status}",
+    "calendar": "Add to calendar",
     "chatTitle": "Event chat",
     "attendeesTitle": "Attendees",
     "venuesTitle": "Venue vote",

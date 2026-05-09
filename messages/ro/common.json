@@ -283,6 +283,7 @@
     "duration": "Durată: {minutes} min",
     "venuePending": "Locația urmează să fie confirmată",
     "status": "Status: {status}",
+    "calendar": "Adaugă în calendar",
     "chatTitle": "Chat de eveniment",
     "attendeesTitle": "Participanți",
     "venuesTitle": "Vot pentru locație",
