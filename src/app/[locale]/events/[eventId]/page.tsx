@@ -36,6 +36,7 @@ export default async function EventPage({
   const { locale, eventId } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("event");
+  const tConn = await getTranslations("chat.connection");
   const result = await getEventAction({ eventId });
 
   if (!result.ok) {
@@ -155,6 +156,8 @@ export default async function EventPage({
       title: t("chatTitle"),
       empty: t("emptyChat"),
       system: t("system"),
+      liveLabel: tConn("live"),
+      reconnectingLabel: tConn("reconnecting"),
       form: t.raw("form"),
     },
     vote: {

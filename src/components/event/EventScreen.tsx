@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Glyph } from "@/components/ui/Glyph";
 import { IconButton } from "@/components/ui/IconButton";
@@ -35,6 +35,8 @@ export type EventScreenCopy = {
     title: string;
     empty: string;
     system: string;
+    liveLabel?: string;
+    reconnectingLabel?: string;
     form: {
       messagePlaceholder: string;
       send: string;
@@ -133,6 +135,101 @@ function EventScreenInner({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  // SSE delivery for the event-scoped chat. Source of truth is still the DB;
+  // this is a delivery channel for messages posted by other tabs/users.
+  const [liveMessages, setLiveMessages] = useState<Message[]>([]);
+  const [streamStatus, setStreamStatus] = useState<
+    "idle" | "live" | "reconnecting"
+  >("idle");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (typeof EventSource === "undefined") return;
+
+    let source: EventSource | null = null;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    let retries = 0;
+    let cancelled = false;
+
+    const initialCursor =
+      messages.length > 0
+        ? messages[messages.length - 1].createdAt
+        : new Date().toISOString();
+    let cursor = initialCursor;
+
+    const open = () => {
+      if (cancelled) return;
+      const url = `/api/stream/messages?scope=event&eventId=${encodeURIComponent(
+        event.id,
+      )}&since=${encodeURIComponent(cursor)}`;
+      const es = new EventSource(url);
+      source = es;
+
+      es.addEventListener("open", () => {
+        retries = 0;
+        setStreamStatus("live");
+      });
+
+      es.addEventListener("message", (ev) => {
+        try {
+          const payload = JSON.parse((ev as MessageEvent).data) as {
+            id: string;
+            body: string;
+            createdAt: string;
+            user: { id: string; fullName: string } | null;
+          };
+          cursor = payload.createdAt;
+          setLiveMessages((prev) => {
+            if (prev.some((m) => m.id === payload.id)) return prev;
+            return [
+              ...prev,
+              {
+                id: payload.id,
+                body: payload.body,
+                createdAt: payload.createdAt,
+                user: payload.user,
+              },
+            ];
+          });
+        } catch {
+          // ignore malformed payloads
+        }
+      });
+
+      es.addEventListener("error", () => {
+        es.close();
+        source = null;
+        setStreamStatus("reconnecting");
+        if (cancelled) return;
+        if (retries >= 3) {
+          setStreamStatus("idle");
+          return;
+        }
+        const delay = 800 * 2 ** retries;
+        retries += 1;
+        retryTimer = setTimeout(open, delay);
+      });
+    };
+
+    open();
+
+    return () => {
+      cancelled = true;
+      if (retryTimer) clearTimeout(retryTimer);
+      if (source) source.close();
+    };
+    // Subscribe once per eventId; the cursor closure handles message drift.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [event.id]);
+
+  const mergedMessages = useMemo(() => {
+    if (liveMessages.length === 0) return messages;
+    const seen = new Set(messages.map((m) => m.id));
+    const fresh = liveMessages.filter((m) => !seen.has(m.id));
+    if (fresh.length === 0) return messages;
+    return [...messages, ...fresh];
+  }, [messages, liveMessages]);
+
   const switchTo = useCallback(
     (tab: "details" | "chat" | "vote") => {
       const params = new URLSearchParams(
@@ -203,11 +300,45 @@ function EventScreenInner({
         minHeight: 360,
       }}
     >
+      {streamStatus !== "idle" &&
+      (copy.chat.liveLabel || copy.chat.reconnectingLabel) ? (
+        <div
+          className="mono flex items-center gap-1.5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em]"
+          style={{
+            color:
+              streamStatus === "live" ? "var(--field)" : "var(--ink-muted)",
+            background: "var(--surface)",
+            borderBottom: "1px solid var(--line)",
+          }}
+          aria-live="polite"
+          role="status"
+        >
+          <span
+            aria-hidden
+            style={{
+              display: "inline-block",
+              width: 8,
+              height: 8,
+              borderRadius: 999,
+              background:
+                streamStatus === "live"
+                  ? "var(--field)"
+                  : "var(--ink-muted)",
+              opacity: streamStatus === "live" ? 1 : 0.6,
+            }}
+          />
+          <span>
+            {streamStatus === "live"
+              ? (copy.chat.liveLabel ?? "Live")
+              : (copy.chat.reconnectingLabel ?? "Reconnecting...")}
+          </span>
+        </div>
+      ) : null}
       <div
         className="flex-1 overflow-y-auto"
         style={{ padding: 12, display: "flex", flexDirection: "column", gap: 8 }}
       >
-        {messages.length === 0 ? (
+        {mergedMessages.length === 0 ? (
           <p
             className="self-center text-center text-[13px]"
             style={{ color: "var(--ink-muted)", padding: "32px 12px" }}
@@ -215,7 +346,7 @@ function EventScreenInner({
             {copy.chat.empty}
           </p>
         ) : (
-          messages.map((m) => {
+          mergedMessages.map((m) => {
             const isMine = m.user?.id === currentUserId;
             const name = m.user?.fullName ?? copy.chat.system;
             return (
