@@ -71,6 +71,13 @@
       "when": 1778323664166,
       "tag": "0009_flaky_lord_tyger",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1778324490998,
+      "tag": "0010_black_mauler",
+      "breakpoints": true
     }
   ]
 }

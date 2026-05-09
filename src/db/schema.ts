@@ -441,6 +441,32 @@ export const messages = pgTable(
   ],
 );
 
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    demoRunId: uuid("demo_run_id").references(() => demoRuns.id, {
+      onDelete: "cascade",
+    }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: varchar("type", { length: 40 }).notNull(),
+    title: varchar("title", { length: 160 }).notNull(),
+    body: text("body"),
+    href: text("href"),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("notifications_user_created_idx").on(table.userId, table.createdAt),
+    index("notifications_user_unread_idx")
+      .on(table.userId, table.createdAt)
+      .where(sql`${table.readAt} is null`),
+    index("notifications_demo_run_idx").on(table.demoRunId),
+  ],
+);
+
 export const authRateLimits = pgTable(
   "auth_rate_limits",
   {
