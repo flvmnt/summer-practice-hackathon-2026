@@ -78,3 +78,28 @@ export async function requireAdmin(): Promise<CurrentUser> {
   }
   return user;
 }
+
+/**
+ * Discriminated-union variant of `requireUser` for server actions.
+ *
+ * `requireUser` throws on no-user, which would cross the server-action
+ * boundary as an exception (forbidden by AGENTS.md). This helper resolves
+ * to the canonical `{ ok: false, error: "unauthorized" }` shape so callers
+ * can return it directly (custom-shape callers) or feed it to
+ * `actionError(auth.error)` (standard `ActionResult` callers).
+ *
+ * The compile-time win: any future caller that forgets the null guard
+ * gets a type error from the discriminated union, instead of silently
+ * leaking `null` past `getCurrentUser()`.
+ */
+export type RequireUserForActionResult =
+  | { ok: true; user: CurrentUser }
+  | { ok: false; error: "unauthorized" };
+
+export async function requireUserForAction(): Promise<RequireUserForActionResult> {
+  const user = await getCurrentUser();
+  if (!user) {
+    return { ok: false, error: "unauthorized" } as const;
+  }
+  return { ok: true, user } as const;
+}
