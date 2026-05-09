@@ -54,14 +54,15 @@ function DemoControlsInner({ locale, copy }: Props) {
         ok?: boolean;
         error?: string;
         note?: string;
-        data?: { users?: number; groups?: number; events?: number };
+        seeded?: { users?: number; groups?: number; events?: number };
       };
       if (res.ok && body.ok) {
-        const users = body.data?.users ?? 0;
-        const groups = body.data?.groups ?? 0;
+        const users = body.seeded?.users ?? 0;
+        const groups = body.seeded?.groups ?? 0;
+        const events = body.seeded?.events ?? 0;
         toast.push({
           title: copy.toastSeedOk,
-          description: `${users} users · ${groups} groups`,
+          description: `${users} users · ${groups} groups · ${events} events`,
           variant: "success",
         });
       } else {
@@ -151,7 +152,6 @@ function DemoControlsInner({ locale, copy }: Props) {
           textDecoration: "none",
         }}
       >
-        <Glyph.arrow size={18} />
         {copy.scriptedFlow}
       </Link>
 

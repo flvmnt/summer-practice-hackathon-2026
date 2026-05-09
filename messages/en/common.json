@@ -774,7 +774,158 @@
       "i18n_sharing": "i18n + Sharing",
       "production_demo": "Production + Demo"
     },
-    "navAria": "Rubric sections"
+    "navAria": "Rubric sections",
+    "rubric": {
+      "categories": {
+        "foundation": "Foundation: auth + onboarding",
+        "today_matching": "Today + Matching",
+        "group_chat": "Group + Chat",
+        "events_voting": "Events + Voting",
+        "maps_location": "Maps + Location",
+        "ai": "AI / Smart Enhancements",
+        "notifications_calendar": "Notifications + Calendar",
+        "i18n_sharing": "i18n + Sharing",
+        "production_demo": "Production + Demo"
+      },
+      "rows": {
+        "auth-core": {
+          "label": "Auth: signup + login + recovery",
+          "note": "iron-session + bcryptjs + recovery code; full login/recover routes wired."
+        },
+        "profile-onboarding": {
+          "label": "Profile + bio onboarding",
+          "note": "Full name, bio, public profile fields persisted before sports gate."
+        },
+        "skill-level": {
+          "label": "Per-sport skill level",
+          "note": "1..5 levels per sport. Drives matching skill-fit explanation."
+        },
+        "location-onboarding": {
+          "label": "Location + radius onboarding",
+          "note": "Numeric lat/lng plus maxDistanceKm. Privacy-safe, no exact home pin shown."
+        },
+        "photo-upload": {
+          "label": "Profile photo upload + processing",
+          "note": "R2 upload, MIME sniffing, WebP processing, and profile row persistence are wired; proof requires configured R2 env."
+        },
+        "today-availability": {
+          "label": "ShowUpToday Yes/No prompt",
+          "note": "Five explicit states: prompt, queued, matched, no-prompt, unavailable."
+        },
+        "smart-matching": {
+          "label": "Smart matching: sport + size + proximity",
+          "note": "Deterministic group formation after Yes against seeded users."
+        },
+        "match-confirmation": {
+          "label": "Match confirmation flow",
+          "note": "Matched state calls confirmMembershipAction before opening the group."
+        },
+        "compatibility-explanation": {
+          "label": "AI compatibility explanation",
+          "note": "Compatibility score is surfaced on public profiles with deterministic fallback when AI is offline."
+        },
+        "group-screen": {
+          "label": "Group screen with mobile tabs",
+          "note": "Plan / Chat / Players tabs; captain pill; team-balance panel."
+        },
+        "group-chat": {
+          "label": "Group chat realtime (SSE)",
+          "note": "Persisted group chat is live. SSE stream proof is still pending."
+        },
+        "manual-event": {
+          "label": "Captain group event creation",
+          "note": "Group-linked event creation is wired; standalone public events stay out of scope."
+        },
+        "event-chat": {
+          "label": "Event-scoped chat (separate from group)",
+          "note": "Keyed by eventId; isolated from group chat."
+        },
+        "captain-assignment": {
+          "label": "Automatic captain assignment",
+          "note": "Deterministic earliest-response captain assignment is persisted on the group."
+        },
+        "auto-event-setup": {
+          "label": "Auto-event setup + AI Captain Brief",
+          "note": "Event details call generateCaptainBrief with deterministic fallback when Groq is offline."
+        },
+        "voting": {
+          "label": "Group voting / polling",
+          "note": "Live vote counts; captain manual decision fallback."
+        },
+        "team-balance": {
+          "label": "Team balancing by skill",
+          "note": "Snake-draft balanced teams panel."
+        },
+        "venue-suggestions": {
+          "label": "Venue suggestions with distance + price confidence",
+          "note": "Seeded venue database + distance sorting + manual event location fallback."
+        },
+        "maps-fallback": {
+          "label": "MapLibre map + list fallback + directions",
+          "note": "Lazy MapLibre load; denied-location list fallback; directions links."
+        },
+        "weather-aware": {
+          "label": "Weather-aware recommendations (Open-Meteo)",
+          "note": "Open-Meteo with rain/wind/cold rules; cached fallback if API stalls."
+        },
+        "ai-bio-extraction": {
+          "label": "AI bio sport extraction",
+          "note": "Groq text extraction with deterministic keyword fallback when AI is offline."
+        },
+        "ai-photo-extraction": {
+          "label": "AI photo sport extraction",
+          "note": "Photo analysis calls Groq vision when configured, with deterministic fallback suggestions."
+        },
+        "ai-compatibility-score": {
+          "label": "AI compatibility scoring (cached)",
+          "note": "Cached compatibility scoring is live on public profiles with deterministic safety floor."
+        },
+        "ai-captain-brief": {
+          "label": "AI Captain Brief (action summary)",
+          "note": "Captain summary panel consumes the Groq brief with deterministic fallback."
+        },
+        "ai-recommendations": {
+          "label": "Smart teammate recommendations",
+          "note": "Ranked candidate suggestions land with invite drawer in Wave 3."
+        },
+        "notifications": {
+          "label": "Persistent notification center",
+          "note": "Persistent rows + read/unread; header bell entry point."
+        },
+        "calendar-export": {
+          "label": ".ics calendar export",
+          "note": "Server route + in-screen client export; folded lines."
+        },
+        "achievements": {
+          "label": "First Match achievement",
+          "note": "Only First Match is claimed; Showed Up 3 Times stays unclaimed until real attendance exists."
+        },
+        "i18n": {
+          "label": "RO/EN multi-language (next-intl)",
+          "note": "Locale prefix always; RO default; full message coverage."
+        },
+        "invite-share": {
+          "label": "Public invite link + share",
+          "note": "Privacy-safe preview; no chat / attendees / votes exposed."
+        },
+        "deployable-shell": {
+          "label": "Deployable Railway shell + /api/health",
+          "note": "Railway service; health probes db connectivity."
+        },
+        "clean-architecture": {
+          "label": "Clean architecture + zod contracts",
+          "note": "src/app + src/lib + src/db boundaries; zod-validated server actions."
+        },
+        "responsive-mobile": {
+          "label": "Responsive mobile-first UI",
+          "note": "360px-first; bottom nav; sticky composers; Playwright screenshots across widths."
+        },
+        "judge-mode": {
+          "label": "Judge Mode proof page (this screen)",
+          "note": "Guarded route, live/seeded/fallback per row, no false-green claims."
+        }
+      }
+    }
   },
   "invitePreview": {
     "back": "Back to ShowUp2Move",

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Glyph } from "@/components/ui/Glyph";
 import { cn } from "@/lib/utils";
 
 export type ScoringProofStatus = "live" | "seeded" | "fallback" | "pending";
@@ -72,7 +71,6 @@ export function ScoringProofRow({
         style={{ color: "var(--accent-deep)" }}
       >
         {evidenceLabel ?? "evidence"}
-        <Glyph.arrow size={12} />
       </a>
     ) : (
       <Link
@@ -81,7 +79,6 @@ export function ScoringProofRow({
         style={{ color: "var(--accent-deep)" }}
       >
         {evidenceLabel ?? "evidence"}
-        <Glyph.arrow size={12} />
       </Link>
     )
   ) : null;

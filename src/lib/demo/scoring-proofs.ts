@@ -419,8 +419,7 @@ export function summarizeRubric(
       const points = row.points ?? 0;
       byStatus[row.status].count += 1;
       byStatus[row.status].points += points;
-      // pending rows don't count toward claimed
-      if (row.status !== "pending") {
+      if (row.status === "live" || row.status === "seeded") {
         totalClaimed += points;
       }
     }

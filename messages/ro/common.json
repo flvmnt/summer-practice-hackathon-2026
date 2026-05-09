@@ -774,7 +774,158 @@
       "i18n_sharing": "i18n + Partajare",
       "production_demo": "Producție + Demo"
     },
-    "navAria": "Secțiuni rubrică"
+    "navAria": "Secțiuni rubrică",
+    "rubric": {
+      "categories": {
+        "foundation": "Fundatie: autentificare + onboarding",
+        "today_matching": "Today + Potrivire",
+        "group_chat": "Grup + Chat",
+        "events_voting": "Evenimente + Vot",
+        "maps_location": "Harti + Locatie",
+        "ai": "AI / Imbunatatiri inteligente",
+        "notifications_calendar": "Notificari + Calendar",
+        "i18n_sharing": "i18n + Distribuire",
+        "production_demo": "Productie + Demo"
+      },
+      "rows": {
+        "auth-core": {
+          "label": "Autentificare: cont + login + recuperare",
+          "note": "iron-session + bcryptjs + cod de recuperare; toate rutele login/recover sunt conectate."
+        },
+        "profile-onboarding": {
+          "label": "Onboarding profil + bio",
+          "note": "Nume complet, bio si campurile profilului public sunt salvate inainte de pasul cu sporturi."
+        },
+        "skill-level": {
+          "label": "Nivel de skill per sport",
+          "note": "1..5 niveluri per sport. Alimenteaza explicatia potrivirii pe skill."
+        },
+        "location-onboarding": {
+          "label": "Onboarding locatie + raza",
+          "note": "lat/lng numerice plus maxDistanceKm. Privacy-safe, fara pin exact al casei."
+        },
+        "photo-upload": {
+          "label": "Incarcare + procesare poza profil",
+          "note": "Upload R2, verificare MIME, procesare WebP si salvare in profil sunt conectate; dovada cere R2 configurat."
+        },
+        "today-availability": {
+          "label": "Prompt Da/Nu ShowUpToday",
+          "note": "Cinci stari explicite: prompt, in coada, potrivit, fara prompt, indisponibil."
+        },
+        "smart-matching": {
+          "label": "Potrivire inteligenta: sport + marime + proximitate",
+          "note": "Formare determinista a grupului dupa Da, in baza utilizatorilor seedati."
+        },
+        "match-confirmation": {
+          "label": "Flux de confirmare a potrivirii",
+          "note": "Starea de potrivire apeleaza confirmMembershipAction inainte de deschiderea grupului."
+        },
+        "compatibility-explanation": {
+          "label": "Explicatie compatibilitate AI",
+          "note": "Scorul de compatibilitate apare pe profilurile publice, cu fallback determinist cand AI-ul lipseste."
+        },
+        "group-screen": {
+          "label": "Ecran grup cu taburi mobile",
+          "note": "Taburi Plan / Chat / Jucatori; pastila capitan; panou echilibru echipe."
+        },
+        "group-chat": {
+          "label": "Chat de grup realtime (SSE)",
+          "note": "Chatul de grup persistent este live. Dovada streamului SSE ramane in lucru."
+        },
+        "manual-event": {
+          "label": "Creare eveniment de grup de catre capitan",
+          "note": "Crearea evenimentelor legate de grup este conectata; evenimentele publice raman in afara scopului."
+        },
+        "event-chat": {
+          "label": "Chat pe eveniment (separat de grup)",
+          "note": "Cheie eventId; izolat de chatul de grup."
+        },
+        "captain-assignment": {
+          "label": "Atribuire automata a capitanului",
+          "note": "Selectia determinista a capitanului (cel mai rapid raspuns) este salvata pe grup."
+        },
+        "auto-event-setup": {
+          "label": "Setare automata eveniment + Brief Capitan AI",
+          "note": "Pagina de eveniment apeleaza generateCaptainBrief cu fallback determinist cand Groq nu raspunde."
+        },
+        "voting": {
+          "label": "Vot / sondaj de grup",
+          "note": "Voturi live numarate; capitanul poate decide manual ca fallback."
+        },
+        "team-balance": {
+          "label": "Echilibrare echipe dupa skill",
+          "note": "Panou cu echipe echilibrate prin snake-draft."
+        },
+        "venue-suggestions": {
+          "label": "Sugestii terenuri cu distanta + nivel de pret",
+          "note": "Baza de date de terenuri seedata + sortare dupa distanta + intrare manuala de catre capitan ca fallback."
+        },
+        "maps-fallback": {
+          "label": "Harta MapLibre + lista fallback + directii",
+          "note": "Incarcare lazy MapLibre; fallback lista cand locatia e refuzata; linkuri de directii."
+        },
+        "weather-aware": {
+          "label": "Recomandari in functie de vreme (Open-Meteo)",
+          "note": "Open-Meteo cu reguli pentru ploaie/vant/frig; fallback din cache daca API-ul intarzie."
+        },
+        "ai-bio-extraction": {
+          "label": "Extragere AI sporturi din bio",
+          "note": "Extragere text Groq cu fallback determinist pe cuvinte cheie cand AI-ul lipseste."
+        },
+        "ai-photo-extraction": {
+          "label": "Extragere AI sporturi din poza",
+          "note": "Analiza pozei apeleaza Groq vision cand e configurat, cu sugestii deterministe ca fallback."
+        },
+        "ai-compatibility-score": {
+          "label": "Scor compatibilitate AI (cache)",
+          "note": "Scorul de compatibilitate cache-uit este live pe profilurile publice, cu prag determinist de siguranta."
+        },
+        "ai-captain-brief": {
+          "label": "Brief Capitan AI (rezumat actiuni)",
+          "note": "Panoul de rezumat al capitanului consuma briefingul Groq, cu fallback determinist."
+        },
+        "ai-recommendations": {
+          "label": "Recomandari inteligente coechipieri",
+          "note": "Sugestiile rankate ajung cu sertarul de invitatii in Valul 3."
+        },
+        "notifications": {
+          "label": "Centru persistent de notificari",
+          "note": "Randuri persistente + citit/necitit; intrare prin clopotelul din header."
+        },
+        "calendar-export": {
+          "label": "Export calendar .ics",
+          "note": "Ruta server + export client in pagina; linii pliate."
+        },
+        "achievements": {
+          "label": "Realizare First Match",
+          "note": "Doar First Match este revendicata; Showed Up 3 Times ramane nerevendicata pana la prezenta reala."
+        },
+        "i18n": {
+          "label": "Multi-limba RO/EN (next-intl)",
+          "note": "Prefix de locale mereu; RO implicit; acoperire completa a mesajelor."
+        },
+        "invite-share": {
+          "label": "Link public de invitatie + distribuire",
+          "note": "Previzualizare privacy-safe; chat / participanti / voturi nu sunt expuse."
+        },
+        "deployable-shell": {
+          "label": "Shell Railway + /api/health",
+          "note": "Serviciu Railway; health verifica conectivitatea bazei de date."
+        },
+        "clean-architecture": {
+          "label": "Arhitectura curata + contracte zod",
+          "note": "Limite src/app + src/lib + src/db; server actions validate cu zod."
+        },
+        "responsive-mobile": {
+          "label": "UI mobile-first responsive",
+          "note": "Mai intai 360px; bottom nav; compozitoare sticky; screenshoturi Playwright pe latimi diferite."
+        },
+        "judge-mode": {
+          "label": "Pagina dovada Judge Mode (acest ecran)",
+          "note": "Ruta protejata, live/seeded/fallback per rand, fara afirmatii false-green."
+        }
+      }
+    }
   },
   "invitePreview": {
     "back": "Înapoi la ShowUp2Move",

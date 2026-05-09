@@ -25,8 +25,7 @@ import {
   recordAuthFailure,
 } from "@/lib/auth-rate-limit";
 import {
-  canReadDemoEndpoint,
-  isDemoModeEnabled,
+  canMutateDemoEndpoint,
   isDemoSeedEnabled,
 } from "@/lib/demo/guard";
 import { DEMO_RUN_LABEL } from "../../../../../scripts/seed-demo";
@@ -44,7 +43,7 @@ function demoBucket(action: "seed" | "reset", ip: string) {
 }
 
 export async function POST(request: Request) {
-  if (!isDemoModeEnabled() && !canReadDemoEndpoint(request)) {
+  if (!(await canMutateDemoEndpoint(request))) {
     return NextResponse.json(
       { ok: false, error: "not_found" },
       { status: 404 },
