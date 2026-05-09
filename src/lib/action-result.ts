@@ -2,6 +2,7 @@ export type ActionError = {
   ok: false;
   error: string;
   fieldErrors?: Record<string, string>;
+  retryAfterSeconds?: number;
 };
 
 export type ActionSuccess<TData = undefined> = TData extends undefined
@@ -20,6 +21,19 @@ export function actionOk<TData>(data?: TData): { ok: true } | { ok: true; data: 
   return { ok: true, data };
 }
 
-export function actionError(error: string, fieldErrors?: Record<string, string>): ActionError {
-  return fieldErrors ? { ok: false, error, fieldErrors } : { ok: false, error };
+export function actionError(
+  error: string,
+  options?: {
+    fieldErrors?: Record<string, string>;
+    retryAfterSeconds?: number;
+  },
+): ActionError {
+  return {
+    ok: false,
+    error,
+    ...(options?.fieldErrors ? { fieldErrors: options.fieldErrors } : {}),
+    ...(options?.retryAfterSeconds !== undefined
+      ? { retryAfterSeconds: options.retryAfterSeconds }
+      : {}),
+  };
 }

@@ -1,5 +1,7 @@
 import "server-only";
+import { getIronSession } from "iron-session";
 import type { SessionOptions } from "iron-session";
+import { cookies } from "next/headers";
 import { getServerEnv } from "@/lib/env";
 import type { AppLocale } from "@/i18n/routing";
 
@@ -33,4 +35,26 @@ export function getSessionOptions(): SessionOptions {
       path: "/",
     },
   };
+}
+
+export async function getSession() {
+  return getIronSession<SessionData>(await cookies(), getSessionOptions());
+}
+
+export type SessionUser = Required<Pick<SessionData, "userId" | "username" | "isAdmin">> &
+  Pick<SessionData, "fullName" | "locale">;
+
+export async function saveUserSession(user: SessionUser) {
+  const session = await getSession();
+  session.userId = user.userId;
+  session.username = user.username;
+  session.fullName = user.fullName;
+  session.isAdmin = user.isAdmin;
+  session.locale = user.locale;
+  await session.save();
+}
+
+export async function clearSession() {
+  const session = await getSession();
+  session.destroy();
 }
