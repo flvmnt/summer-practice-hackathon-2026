@@ -30,7 +30,8 @@
   --field-ink: #FFFFFF;
   --alert: #C8331E;
   --alert-soft: #FBE3DD;
-  --warn-token: #B8741B;
+  --warn: #B8741B;
+  --warn-token: var(--warn);
   --warn-soft: #F8ECCC;
   --on-accent: #1A0A03;
 
@@ -75,7 +76,6 @@
   --accent-strong: var(--ink);       /* used as strong text on accent surfaces */
   --background: var(--bg);
   --foreground: var(--ink);
-  --warn: var(--accent);             /* coral was warn - sodium-orange now stands in */
   --danger: var(--alert);
   --muted: var(--ink-muted);
   --page-max: 1120px;
@@ -109,7 +109,8 @@
   --field-ink: #07110D;
   --alert: #FB7185;
   --alert-soft: rgba(251,113,133,0.16);
-  --warn-token: #FBBF24;
+  --warn: #FBBF24;
+  --warn-token: var(--warn);
   --warn-soft: rgba(251,191,36,0.18);
   --on-accent: #07110D;
 }
@@ -137,7 +138,8 @@
   --field-ink: #14110D;
   --alert: #E07A5F;
   --alert-soft: rgba(224,122,95,0.16);
-  --warn-token: #E1B43A;
+  --warn: #E1B43A;
+  --warn-token: var(--warn);
   --warn-soft: rgba(225,180,58,0.18);
   --on-accent: #14110D;
 }
