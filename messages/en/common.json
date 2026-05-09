@@ -1386,5 +1386,11 @@
     },
     "stub": "Stub data · TODO",
     "back": "Today"
+  },
+  "chat": {
+    "connection": {
+      "live": "Live",
+      "reconnecting": "Reconnecting..."
+    }
   }
 }
