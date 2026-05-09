@@ -1,4 +1,4 @@
-# 03 — Trends & Stagnation Audit
+# 03 - Trends & Stagnation Audit
 
 ## Velocity
 
@@ -6,7 +6,7 @@
 - **Total commits**: 38 (1.6 commits/hour avg, with spikes 12:30–13:20)
 - **Pace**: Steady high velocity; 3–4 commits per 30min during peak
 
-## File Churn — Top 10 Hotspots
+## File Churn - Top 10 Hotspots
 
 | File | Commits | Domain |
 |---|---|---|
@@ -27,7 +27,7 @@
 - `src/lib/auth-*.ts`: 4+4 = 8 commits across auth → verify session lifecycle is stable
 - `src/app/[locale]/events/[eventId]/page.tsx`: 4 commits → event feature scope creep risk
 
-## Stagnation Map — Top 5 Least-Touched Rows (28-row rubric)
+## Stagnation Map - Top 5 Least-Touched Rows (28-row rubric)
 
 Rank by commits ascending; zero-touched rows signal demo risk:
 
@@ -107,10 +107,10 @@ create src/lib/groq-bio.ts & groq-vision.ts
 ```
 
 **Files to create (concrete demo-ready path)**:
-- `src/lib/upload-actions.ts` — R2 upload + validation
-- `src/lib/groq-bio.ts` — Bio extraction with cache
-- `src/lib/groq-vision.ts` — Photo vision with cache
-- `src/components/onboarding/PhotoUploadForm.tsx` — UI
+- `src/lib/upload-actions.ts` - R2 upload + validation
+- `src/lib/groq-bio.ts` - Bio extraction with cache
+- `src/lib/groq-vision.ts` - Photo vision with cache
+- `src/components/onboarding/PhotoUploadForm.tsx` - UI
 - Database: `ai_cache` table already exists (commit b7abe93); migrate if needed
 
 **Time to demo-ready**: ~45min (upload handler → groq wrapper → UI → seed).

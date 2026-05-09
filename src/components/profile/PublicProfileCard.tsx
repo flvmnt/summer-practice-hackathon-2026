@@ -29,7 +29,7 @@ export type PublicProfileCardProps = {
 
 /**
  * Public profile header card. Renders avatar, name, username, bio, city,
- * sport chips. No exact location is ever surfaced — only city.
+ * sport chips. No exact location is ever surfaced - only city.
  */
 export function PublicProfileCard({
   fullName,

@@ -130,7 +130,7 @@ export async function uploadProfilePhotoAction(
 
   // Delete replaced R2 objects after the new row has committed. Best-effort:
   // a stale object is preferable to failing a successful upload. The new key
-  // is excluded as a safety belt — `profile_photos.object_key` is unique so
+  // is excluded as a safety belt - `profile_photos.object_key` is unique so
   // a collision is impossible, but defending against future schema changes
   // costs nothing here.
   for (const oldKey of replacedKeys) {

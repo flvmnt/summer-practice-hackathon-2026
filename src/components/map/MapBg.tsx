@@ -10,7 +10,7 @@ type Props = {
 };
 
 /**
- * Stylized abstract map background — buildings, streets, park, radius ring.
+ * Stylized abstract map background - buildings, streets, park, radius ring.
  * Ported from screens.jsx `MapBg`. Used as a placeholder before MapLibre is
  * wired up by agent A10.
  */

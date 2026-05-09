@@ -17,11 +17,11 @@ export type EventChatFormCopy = {
 const initialState: EventChatFormState = {};
 
 /**
- * Direction B event chat composer — pill-shaped surface, accent send button,
+ * Direction B event chat composer - pill-shaped surface, accent send button,
  * matches the canvas `ChatScreen` composer used by the group chat counterpart.
  *
  * Scoped to a single eventId; messages are persisted on the event-scoped chat
- * thread (separate from the group chat thread — see chat.ts).
+ * thread (separate from the group chat thread - see chat.ts).
  */
 export function EventChatForm({
   copy,

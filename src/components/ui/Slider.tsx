@@ -131,7 +131,7 @@ const SLIDER_THUMB_CSS = `
 let stylesInjected = false;
 
 function SliderThumbStyles() {
-  // Inject once per page lifetime; a static literal — no untrusted content.
+  // Inject once per page lifetime; a static literal - no untrusted content.
   if (typeof document !== "undefined" && !stylesInjected) {
     const id = "su-slider-thumb-styles";
     if (!document.getElementById(id)) {

@@ -3,7 +3,7 @@ import { Glyph } from "@/components/ui/Glyph";
 import { Pill } from "@/components/ui/Pill";
 
 /**
- * Live demo cards — three CSS mockups showing the product mechanics.
+ * Live demo cards - three CSS mockups showing the product mechanics.
  * NOT real screenshots; just compact layouts to anchor "this is real".
  */
 

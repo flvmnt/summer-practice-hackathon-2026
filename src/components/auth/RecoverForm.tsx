@@ -115,7 +115,7 @@ export function RecoverForm({
       : "identify";
 
   if (state.newRecoveryCode) {
-    // Step 3 — success
+    // Step 3 - success
     return (
       <div className="grid gap-5">
         <StepRail active={3} steps={steps} />

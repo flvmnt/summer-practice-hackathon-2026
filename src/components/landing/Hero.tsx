@@ -171,7 +171,7 @@ export function Hero({ locale, demoEnabled }: Props) {
             </div>
           </div>
 
-          {/* Hero side card — captain-crown moment */}
+          {/* Hero side card - captain-crown moment */}
           <div className="hidden lg:block">
             <div
               style={{

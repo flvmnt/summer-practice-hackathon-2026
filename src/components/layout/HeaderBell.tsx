@@ -12,7 +12,7 @@ type Props = {
 };
 
 /**
- * Header bell — small client component that lives in every authed top bar.
+ * Header bell - small client component that lives in every authed top bar.
  *
  * Renders an icon button with `Glyph.bell`. When `unreadCount > 0`, an accent
  * dot sits in the upper-right corner with an `--ink` ring (per spec

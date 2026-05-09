@@ -1,4 +1,4 @@
-# OWASP A05: Security Misconfiguration — HTTP Headers, CSP & CSRF Audit
+# OWASP A05: Security Misconfiguration - HTTP Headers, CSP & CSRF Audit
 
 **Date:** 2026-05-09  
 **File:** `next.config.ts`, `src/lib/session.ts`  

@@ -101,7 +101,7 @@ const COPY = {
       publicHint: "Anyone with your username link can see your public profile.",
       privateHint: "Only members of your groups can see your profile.",
       approxLocationBody:
-        "We always round and jitter your home — it never appears precisely on the map.",
+        "We always round and jitter your home - it never appears precisely on the map.",
       sportLabels: {
         football: "Football",
         basketball: "Basketball",
@@ -190,7 +190,7 @@ const COPY = {
       publicHint: "Oricine cu linkul tău de username îți vede profilul public.",
       privateHint: "Doar membrii grupurilor tale îți văd profilul.",
       approxLocationBody:
-        "Locația ta de acasă este mereu rotunjită — nu apare niciodată exact.",
+        "Locația ta de acasă este mereu rotunjită - nu apare niciodată exact.",
       sportLabels: {
         football: "Fotbal",
         basketball: "Baschet",

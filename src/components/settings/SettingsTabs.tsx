@@ -33,7 +33,7 @@ function buildHref(
 }
 
 /**
- * Settings tabs — horizontal pill row on mobile, vertical sidebar on desktop.
+ * Settings tabs - horizontal pill row on mobile, vertical sidebar on desktop.
  * URL-persisted via `?section=`. Active tab uses var(--accent) underline per
  * Direction B brand.
  */

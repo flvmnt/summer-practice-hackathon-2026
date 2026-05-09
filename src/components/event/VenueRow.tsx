@@ -13,7 +13,7 @@ type Props = {
 };
 
 /**
- * VenueRow — used in CaptainAutoEventReveal sheet.
+ * VenueRow - used in CaptainAutoEventReveal sheet.
  * `primary` highlights the recommended row; `warn` marks weather caution.
  */
 export function VenueRow({

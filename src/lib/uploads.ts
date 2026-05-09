@@ -85,7 +85,7 @@ export function validateImage(buffer: Uint8Array): ValidatedImage {
  * EXIF/ICC/XMP metadata. Returns the encoded buffer.
  *
  * Using sharp's default behavior for `.webp()` plus an explicit `withMetadata`
- * call with no args ensures no metadata travels with the image — important
+ * call with no args ensures no metadata travels with the image - important
  * because phone uploads commonly carry GPS EXIF.
  */
 export async function reencodeProfilePhoto(buffer: Uint8Array): Promise<Buffer> {

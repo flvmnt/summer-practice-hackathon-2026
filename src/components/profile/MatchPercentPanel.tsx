@@ -13,7 +13,7 @@ export type MatchPercentPanelProps = {
 };
 
 /**
- * Compatibility readout for the public profile. Uses placeholder logic — the
+ * Compatibility readout for the public profile. Uses placeholder logic - the
  * `percent` and `breakdown` come from the page-level computation. A real
  * compatibility scoring lib lives behind a TODO until matching agent A* lands.
  */

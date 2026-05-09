@@ -24,7 +24,7 @@ function stripInternalPort(response: Response, request: NextRequest): Response {
       response.headers.set("location", url.toString());
     }
   } catch {
-    // Non-URL Location header — leave it alone.
+    // Non-URL Location header - leave it alone.
   }
 
   return response;

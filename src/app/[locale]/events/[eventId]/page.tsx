@@ -44,7 +44,7 @@ export default async function EventPage({
   const { event, attendees, messages, venueCandidates, venueVote, currentUserId } =
     result.data;
 
-  // Captain check — query the group via the existing action so we don't touch
+  // Captain check - query the group via the existing action so we don't touch
   // chat.ts. Falls back to "not captain" if group fetch fails.
   const groupResult = await getGroupAction({ groupId: event.groupId });
   const isCaptain = groupResult.ok
@@ -82,7 +82,7 @@ export default async function EventPage({
 
   const fit: WeatherFit | null = weather ? (weather.fit as WeatherFit) : null;
 
-  // Captain brief — server-side, on-demand. The lib has a deterministic
+  // Captain brief - server-side, on-demand. The lib has a deterministic
   // fallback and never throws on input; wrap in try/catch as belt-and-
   // suspenders so a transient AI provider failure never tanks the page.
   const goingCount = attendees.filter((a) => a.status === "going").length;

@@ -1,4 +1,4 @@
-# OWASP A01: Broken Access Control — Pre-Deploy Audit
+# OWASP A01: Broken Access Control - Pre-Deploy Audit
 
 **Audit Date**: 2026-05-09  
 **Verdict**: **C (Major gaps in mutation order and requireUser adoption)**
@@ -13,15 +13,15 @@ Access control is **partially implemented** with good page guards and ownership 
 
 ## Findings
 
-### 1. `requireUser()` Helper — MISSING
+### 1. `requireUser()` Helper - MISSING
 - **Status**: ❌ NOT EXPORTED
 - **Impact**: No convenience pattern for actions that require auth
 - **Workaround**: Developers manually call `getCurrentUser()` and check null (inconsistent pattern)
-- **File**: `src/lib/auth-current-user.ts` — only exports `getCurrentUser()`, not a throwing variant
+- **File**: `src/lib/auth-current-user.ts` - only exports `getCurrentUser()`, not a throwing variant
 
 ---
 
-### 2. Server Action Guards — PARTIAL (68% adoption)
+### 2. Server Action Guards - PARTIAL (68% adoption)
 - **Checked actions**:
   - `onboarding.ts:updateOnboardingProfileAction` ✓ (calls `getSession()` + null check, line 35)
   - `onboarding.ts:setUserSportsAction` ✓ (calls `getSession()` + null check, line 90)
@@ -29,13 +29,13 @@ Access control is **partially implemented** with good page guards and ownership 
   - `prompt.ts:respondToPromptAction` ✓ (calls `getCurrentUser()`, line 163)
   - `prompt.ts:getMyTodayStateAction` ✓ (calls `getCurrentUser()`, line 241)
   - `chat.ts:postMessageAction` ✓ (calls `requireGroupMember()`, line 179)
-  - `matching.ts:formGroupsForPromptAction` ✓ (no user check — internal, called by prompt.ts)
+  - `matching.ts:formGroupsForPromptAction` ✓ (no user check - internal, called by prompt.ts)
 
 - **Issue**: Guards call auth functions but inconsistently. `prompt.ts` uses `getCurrentUser()` correctly; `onboarding.ts` uses `getSession()` pattern (coupling to session internals).
 
 ---
 
-### 3. Page-Level Guards — GOOD (100% for authed pages)
+### 3. Page-Level Guards - GOOD (100% for authed pages)
 - `src/app/[locale]/today/page.tsx` ✓ Redirects unauthed → login (line 22)
 - `src/app/[locale]/onboarding/profile/page.tsx` ✓ Redirects unauthed → login (line 21)
 - `src/app/[locale]/onboarding/sports/page.tsx` ✓ Redirects unauthed → login (line 21)
@@ -44,34 +44,34 @@ Access control is **partially implemented** with good page guards and ownership 
 
 ---
 
-### 4. Ownership Checks — GOOD (90% coverage)
+### 4. Ownership Checks - GOOD (90% coverage)
 - **Group membership** ✓ `chat.ts:requireGroupMember()` (lines 50–74) joins `groupMembers` + checks `status='confirmed'`
 - **Message send** ✓ `chat.ts:postMessageAction()` uses `requireGroupMember()` before insert (line 179)
-- **Ban/delete validation** ✓ Applied in `onboarding.ts`, `prompt.ts`, and `chat.ts` — but **WRONG ORDER** (see below)
+- **Ban/delete validation** ✓ Applied in `onboarding.ts`, `prompt.ts`, and `chat.ts` - but **WRONG ORDER** (see below)
 
 ---
 
-### 5. Mutation Order — CRITICAL FAILURE ⚠️
+### 5. Mutation Order - CRITICAL FAILURE ⚠️
 **Pattern**: Mutations execute BEFORE ban/delete checks.
 
 - **`onboarding.ts:updateOnboardingProfileAction()`** (lines 40–68):
   ```
-  Line 40: UPDATE users (fullName, bio) — MUTATION FIRST
-  Line 50: WHERE (bannedAt IS NULL, deletedAt IS NULL) — CHECK AFTER
+  Line 40: UPDATE users (fullName, bio) - MUTATION FIRST
+  Line 50: WHERE (bannedAt IS NULL, deletedAt IS NULL) - CHECK AFTER
   ```
   **Risk**: A banned/deleted user can update their profile in the same transaction if ban happens mid-flight.
 
 - **`onboarding.ts:setUserSportsAction()`** (lines 95–135):
   ```
-  Line 96: UPDATE users + INSERT userSports — MUTATIONS IN TRANSACTION
-  Line 106: WHERE (bannedAt IS NULL, deletedAt IS NULL) — CHECK AFTER
+  Line 96: UPDATE users + INSERT userSports - MUTATIONS IN TRANSACTION
+  Line 106: WHERE (bannedAt IS NULL, deletedAt IS NULL) - CHECK AFTER
   ```
   **Risk**: Same; sports assigned to banned user if concurrency occurs.
 
 - **`onboarding.ts:updateOnboardingLocationAction()`** (lines 175–189):
   ```
-  Line 175: UPDATE users (location fields) — MUTATION FIRST
-  Line 185: WHERE (bannedAt IS NULL, deletedAt IS NULL) — CHECK AFTER
+  Line 175: UPDATE users (location fields) - MUTATION FIRST
+  Line 185: WHERE (bannedAt IS NULL, deletedAt IS NULL) - CHECK AFTER
   ```
 
 - **Fix Required**: Load user + verify ban/delete BEFORE mutations:
@@ -88,7 +88,7 @@ Access control is **partially implemented** with good page guards and ownership 
 
 ---
 
-### 6. Demo Mode Guard — CORRECT ✓
+### 6. Demo Mode Guard - CORRECT ✓
 - **File**: `src/lib/demo/guard.ts`
 - **Implementation** (lines 19–31):
   - ✓ Checks `ALLOW_DEMO_MODE` environment variable
@@ -98,7 +98,7 @@ Access control is **partially implemented** with good page guards and ownership 
 
 ---
 
-### 7. Login Redirect Path — FIXED ✓
+### 7. Login Redirect Path - FIXED ✓
 - **File**: `src/lib/auth-form-actions.ts:nextPostLoginPath()` (lines 24–39)
 - **Behavior**: Routes to appropriate onboarding step based on completion state:
   - No bio → `/onboarding/profile`
@@ -109,7 +109,7 @@ Access control is **partially implemented** with good page guards and ownership 
 
 ---
 
-### 8. Path-Segment Access — FAIR
+### 8. Path-Segment Access - FAIR
 - Onboarding pages (`/onboarding/profile`, `/sports`, `/location`) use `getOnboardingUserState()` which validates:
   - Session exists + userId present
   - User not banned/deleted
@@ -118,7 +118,7 @@ Access control is **partially implemented** with good page guards and ownership 
 
 ---
 
-### 9. API Endpoints — MINIMAL
+### 9. API Endpoints - MINIMAL
 - Only `/api/health` (public) and `/api/demo/scoring-status` (guarded) exist.
 - No IDOR-prone list/detail endpoints. ✓
 

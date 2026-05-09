@@ -1,4 +1,4 @@
-# 🏆 Hackathon Challenge — ShowUp2Move
+# 🏆 Hackathon Challenge - ShowUp2Move
 
 ## 🚀 Local setup
 
@@ -10,7 +10,7 @@
 4. Install deps, migrate, run dev server:
    `pnpm install && pnpm db:migrate && pnpm dev`
 
-The dev server boots at <http://localhost:3000>. Required env vars are listed in `.env.example` with comments. AI, R2, and email keys are optional for local development — deterministic fallbacks are wired in their absence.
+The dev server boots at <http://localhost:3000>. Required env vars are listed in `.env.example` with comments. AI, R2, and email keys are optional for local development - deterministic fallbacks are wired in their absence.
 
 ---
 
@@ -24,7 +24,7 @@ Build a **smart social sports-matching platform** that helps people quickly orga
 
 Modern schedules make it difficult to maintain fixed sports groups or recurring activities. People want to stay active, but coordinating with others takes too much effort.
 
-Your challenge is to build **ShowUp2Move** — a platform that enables users to:
+Your challenge is to build **ShowUp2Move** - a platform that enables users to:
 
 - describe themselves quickly,
 - specify sports preferences,

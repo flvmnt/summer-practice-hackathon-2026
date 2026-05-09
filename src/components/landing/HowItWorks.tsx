@@ -24,7 +24,7 @@ const STEPS: ReadonlyArray<Step> = [
     num: "03",
     glyph: "today",
     title: "ShowUpToday?",
-    body: "One tap each morning. Yes — we look for nearby players right now.",
+    body: "One tap each morning. Yes - we look for nearby players right now.",
   },
   {
     num: "04",

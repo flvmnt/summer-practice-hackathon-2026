@@ -1,4 +1,4 @@
-# ShowUp2Move — Planning Specs
+# ShowUp2Move - Planning Specs
 
 Single source of truth for what we're building, why, how, and in what order.
 
@@ -29,17 +29,17 @@ Read in order on first pass. After that, jump to whatever you need.
 
 ## TL;DR
 
-- **What:** sports group-matching platform — describe yourself, set sports, answer "ShowUpToday?", get matched, chat, show up.
+- **What:** sports group-matching platform - describe yourself, set sports, answer "ShowUpToday?", get matched, chat, show up.
 - **Stack:** Next.js 16 App Router + Drizzle + Postgres + iron-session + Groq + Tailwind 4 + shadcn/ui. One process. Deploys to Railway.
-- **Auth:** curbe-pattern — username + password + one-time recovery code (no email required).
+- **Auth:** curbe-pattern - username + password + one-time recovery code (no email required).
 - **AI:** Groq for sport extraction, compatibility scoring, recommendations, and AI Captain Brief. Model IDs are env-configurable because Groq permissions can vary by project.
 - **Realtime:** SSE for chat & prompts (no socket.io, no Redis).
 - **Scoring target:** **~13,000-13,700 / 16,600 max** with no fake credit. Wearables count only if a real OAuth/import path or clearly accepted demo fixture ships. See [00-overview.md §5](00-overview.md#5-scoring-strategy).
 
 ## Reference projects
 
-- **`curbe`** — profile + auth shape (iron-session, recovery code, Drizzle, server actions).
-- **`Glamingo` / `Cadentra`** — code-organization discipline (zod everywhere, lib/ split, contracts pattern, lint/format/test gates).
+- **`curbe`** - profile + auth shape (iron-session, recovery code, Drizzle, server actions).
+- **`Glamingo` / `Cadentra`** - code-organization discipline (zod everywhere, lib/ split, contracts pattern, lint/format/test gates).
 
 ## Current decisions after review
 
@@ -54,5 +54,5 @@ Read in order on first pass. After that, jump to whatever you need.
 
 - ASCII diagrams over images. Render fine in any markdown viewer.
 - "MUST", "SHOULD", "MAY" follow RFC 2119.
-- Code samples are illustrative — they live in specs, not in source. Source comes later.
+- Code samples are illustrative - they live in specs, not in source. Source comes later.
 - Every cross-doc link is relative.

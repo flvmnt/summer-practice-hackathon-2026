@@ -1,11 +1,11 @@
-# 02 — Phase 1: Auth & Profiles Audit
+# 02 - Phase 1: Auth & Profiles Audit
 
 Audit date: 2026-05-09
 Specs: `docs/specs/12-implementation-plan.md` §3 · `docs/specs/04-auth-and-profile.md` · `docs/specs/06-ui-flows.md` (§5–§6)
 
 ## Headline
 
-Phase 1 is **mostly DONE for auth + profile + onboarding shell**, but **PARTIAL/MISSING for the photo pipeline**. Auth, sessions, recovery codes, signup→onboarding routing, sport selection, location, and settings ship cleanly. The R2 adapter, sharp re-encoder, and `uploadProfilePhotoAction` server action are all written — but **no UI surface calls them**, so profile-photo upload is dead code from a user POV. AI analysis status (`profile_photos.ai_status`/`ai_suggestions`) is schema-only: nothing reads or writes those columns. The E2E "signup → onboarding → /today" path runs end-to-end, but there is no Playwright test that proves it (only a visual screenshot harness exists).
+Phase 1 is **mostly DONE for auth + profile + onboarding shell**, but **PARTIAL/MISSING for the photo pipeline**. Auth, sessions, recovery codes, signup→onboarding routing, sport selection, location, and settings ship cleanly. The R2 adapter, sharp re-encoder, and `uploadProfilePhotoAction` server action are all written - but **no UI surface calls them**, so profile-photo upload is dead code from a user POV. AI analysis status (`profile_photos.ai_status`/`ai_suggestions`) is schema-only: nothing reads or writes those columns. The E2E "signup → onboarding → /today" path runs end-to-end, but there is no Playwright test that proves it (only a visual screenshot harness exists).
 
 ## Verdict Table
 
@@ -17,19 +17,19 @@ Phase 1 is **mostly DONE for auth + profile + onboarding shell**, but **PARTIAL/
 | 2 | iron-session | DONE | `src/lib/session.ts:1-63`; cookie name `showup2move_session`, httpOnly, sameSite lax, 30-day maxAge, secret-required-in-prod guard at `:24` |
 | 3a | Signup | DONE | `src/lib/auth.ts:100-150` (`signupAction`); UI `src/components/auth/SignupForm.tsx:52-129`; recovery-code reveal `src/components/auth/RecoveryCodeReveal.tsx:54-258`; route `src/app/[locale]/signup/page.tsx:7-127` |
 | 3b | Login | DONE | `src/lib/auth.ts:152-190`; UI `src/components/auth/LoginForm.tsx`; redirect to next missing step in `src/lib/auth-form-actions.ts:24-39` |
-| 3c | Logout | PARTIAL | `src/lib/auth.ts:255-258` (`logoutAction`) exists but has zero callers in `src/components` (grep miss). No UI button anywhere. Settings page `src/app/[locale]/settings/page.tsx:1-461` exposes profile/sports/location/privacy/reminders/integrations — no logout |
+| 3c | Logout | PARTIAL | `src/lib/auth.ts:255-258` (`logoutAction`) exists but has zero callers in `src/components` (grep miss). No UI button anywhere. Settings page `src/app/[locale]/settings/page.tsx:1-461` exposes profile/sports/location/privacy/reminders/integrations - no logout |
 | 3d | Recovery | DONE | `src/lib/auth.ts:192-253`; UI `src/components/auth/RecoverForm.tsx`; route `src/app/[locale]/recover/page.tsx`; rotates code + re-saves session `:223-251`; recovery code generator `src/lib/recovery.ts:6-18` (format `SM2M-XXXX-XXXX`) |
 | 4 | Profile settings | DONE | `src/app/[locale]/settings/page.tsx:1-461` w/ tabs profile/sports/location/privacy/reminders/integrations; actions in `src/lib/settings-actions.ts:42-150` (basics, sports, location, visibility); inline edit panels `src/components/settings/InlineEditPanels.tsx` |
 | 5a | Onboarding shell + URL persistence | DONE | Path-persisted steps `/onboarding/{profile,sports,location,photo}` at `src/app/[locale]/onboarding/*/page.tsx`; nextPostLoginPath redirects per missing step `src/lib/auth-form-actions.ts:24-39`; `/today` re-checks at `src/app/[locale]/today/page.tsx:33-43` |
 | 5b | Progress banner / 4-dot ratchet | DONE | `src/components/onboarding/WizardMobileHeader.tsx:33-47` renders 4 progress pips per step; setup banner `src/components/onboarding/SetupBanner.tsx:12-77` shown on `/today` `src/app/[locale]/today/page.tsx:160-183` |
 | 5c | Sticky mobile actions (above keyboard) | DONE | `src/components/onboarding/WizardStickyActionBar.tsx:29-131`; visualViewport keyboard offset math at `:43-61` ports the Glamingo pattern |
-| 6a | Sport selection | DONE | `src/components/onboarding/SportsForm.tsx:75-298` (6-tile grid); `src/lib/onboarding.ts:82-152` (`setUserSportsAction`); writes `userSports` rows via `src/db/schema.ts:61-80`. ⚠ `padel` tile silently maps to `tennis` on submit (`SportsForm.tsx:42-49`) — schema-locked, but a fake demo signal |
+| 6a | Sport selection | DONE | `src/components/onboarding/SportsForm.tsx:75-298` (6-tile grid); `src/lib/onboarding.ts:82-152` (`setUserSportsAction`); writes `userSports` rows via `src/db/schema.ts:61-80`. ⚠ `padel` tile silently maps to `tennis` on submit (`SportsForm.tsx:42-49`) - schema-locked, but a fake demo signal |
 | 6b | Skill levels | DONE | 3-tier segmented control beginner/casual/pro → numeric 1/3/5 in `SportsForm.tsx:52-56`; persisted to `user_sports.level` and aggregated to `users.skillLevel` (avg) in `src/lib/onboarding.ts:99-103` |
-| 7a | Photo upload | MISSING (UI) | Server-side path is complete (`src/lib/upload-actions.ts:21-115` `uploadProfilePhotoAction`), but `src/components/onboarding/PhotoForm.tsx:74-87` only sets a local `URL.createObjectURL` preview and a banner saying "Photo uploads are being wired up". `Finish` button at `:127-132` no-ops to `/today`. Settings has no photo panel either. The action has zero callers — confirmed via `grep -rn uploadProfilePhotoAction src` |
+| 7a | Photo upload | MISSING (UI) | Server-side path is complete (`src/lib/upload-actions.ts:21-115` `uploadProfilePhotoAction`), but `src/components/onboarding/PhotoForm.tsx:74-87` only sets a local `URL.createObjectURL` preview and a banner saying "Photo uploads are being wired up". `Finish` button at `:127-132` no-ops to `/today`. Settings has no photo panel either. The action has zero callers - confirmed via `grep -rn uploadProfilePhotoAction src` |
 | 7b | Photo resizing | DONE (lib only) | `src/lib/uploads.ts:91-97` re-encodes to 512×512 webp via `sharp`, strips EXIF (rotate-then-strip pattern); MIME sniffing via magic bytes `:20-59`; 8 MiB cap `:8`; rejects non PNG/JPEG/WEBP (HEIC announced in UI but rejected by validator) |
 | 8 | R2 upload adapter | DONE (lib only) | `src/lib/r2.ts:23-72` lazy S3Client singleton; bucket/endpoint/keys from env; forcePathStyle for R2 quirks; `src/lib/uploads.ts:103-123` `writeToR2` writes object with immutable cache-control |
 | 9a | Profile photo rows | PARTIAL | Schema present `src/db/schema.ts:82-103` (`profile_photos` with userId/url/objectKey/aiStatus/aiSuggestions); `upload-actions.ts:64-67` inserts a row inside a transaction and bumps `users.photo_url`. But because no UI calls the action, no rows are ever inserted in practice |
-| 9b | AI analysis status | MISSING | `profile_photos.ai_status` defaults to `'pending'` (`src/db/schema.ts:94`) but **no code transitions it** — `grep -rn "ai_status\|aiStatus\|aiSuggestions" src` returns only the schema definition. No analyze action reads, updates, or links to this column. PhotoForm's "Analyze with AI" is a 520ms `setTimeout` stub in `PhotoForm.tsx:48-103` that returns hard-coded `[tennis 76%, running 62%, football 58%]` and persists nothing |
+| 9b | AI analysis status | MISSING | `profile_photos.ai_status` defaults to `'pending'` (`src/db/schema.ts:94`) but **no code transitions it** - `grep -rn "ai_status\|aiStatus\|aiSuggestions" src` returns only the schema definition. No analyze action reads, updates, or links to this column. PhotoForm's "Analyze with AI" is a 520ms `setTimeout` stub in `PhotoForm.tsx:48-103` that returns hard-coded `[tennis 76%, running 62%, football 58%]` and persists nothing |
 
 ### Phase 1 "Done when" gate
 
@@ -61,7 +61,7 @@ Phase 1 is **mostly DONE for auth + profile + onboarding shell**, but **PARTIAL/
 | Full-name validation Unicode + apostrophe + hyphen | DONE | `src/lib/contracts/auth.ts:22-28` regex `^[\p{L}\p{M}' -]+$` with letter-required refine |
 | Recovery code shown once after signup | DONE | `RecoveryCodeReveal.tsx` requires copy/download/checkbox → continue (`:61,242-256`); routes to `/onboarding/profile` |
 | Recovery code rendered as monospace tiles | PARTIAL | Tiles render at `RecoveryCodeReveal.tsx:158-178` but spec §5.1 example uses 5 blocks (`RX-7Q-K9-VB-2T`); generator emits `SM2M-XXXX-XXXX` → only 3 visible blocks. Functional, but visually diverges from the canvas screen 01 spec |
-| Continue gated by saved-it interaction | DONE | `RecoveryCodeReveal.tsx:61` `canContinue = copied || downloaded || confirmed` (spec says checkbox is the hard gate; current code is more lenient — copy alone unlocks it) |
+| Continue gated by saved-it interaction | DONE | `RecoveryCodeReveal.tsx:61` `canContinue = copied || downloaded || confirmed` (spec says checkbox is the hard gate; current code is more lenient - copy alone unlocks it) |
 | Recovery code never logged | DONE | No `console.log`/telemetry references the code; only used in `signupAction` return value and reveal component state |
 | Onboarding 4 steps locked: profile, sports, location, photo | DONE | Routes at `src/app/[locale]/onboarding/{profile,sports,location,photo}/page.tsx` |
 | Required = profile + sports + location; photo optional | DONE | `auth-form-actions.ts:26-39` uses bio/sports/city/lat/lng to gate; photo never enforced. `today/page.tsx:33-43` enforces same gates |
@@ -81,8 +81,8 @@ Rate limiting is policy-driven (`src/lib/auth-rate-limit.ts`, with covering test
 
 ### Onboarding wizard
 
-- `ProfileForm.tsx:108-499`: Step 1, fullName + bio + AI sport suggestions. The AI button calls `localBioSuggest` (a deterministic regex stub) — no real Groq call yet (Groq belongs to Phase 4). On `Next`, picked sports are passed through query string `?suggested=` to the next step (`:208-213`).
-- `SportsForm.tsx:75-298`: Step 2. 6 tile grid w/ per-sport segmented level control; submits via hidden inputs to `onboardingSportsFormAction`. Padel tile maps to tennis on submit — flagged in code (`:42-49`) as a deterministic-first fallback until schema accepts padel.
+- `ProfileForm.tsx:108-499`: Step 1, fullName + bio + AI sport suggestions. The AI button calls `localBioSuggest` (a deterministic regex stub) - no real Groq call yet (Groq belongs to Phase 4). On `Next`, picked sports are passed through query string `?suggested=` to the next step (`:208-213`).
+- `SportsForm.tsx:75-298`: Step 2. 6 tile grid w/ per-sport segmented level control; submits via hidden inputs to `onboardingSportsFormAction`. Padel tile maps to tennis on submit - flagged in code (`:42-49`) as a deterministic-first fallback until schema accepts padel.
 - `LocationForm.tsx`: Step 3. City + geolocation button + slider. Snapping divergence noted above.
 - `PhotoForm.tsx:63-409`: Step 4. Drop zone + AI analyze button. **All photo persistence is stubbed.** `handleFile` (`:74-87`) creates a local blob URL and shows a banner. `handleFinish` (`:127-132`) just navigates to `/today`. The component holds `picked: Set<SportKey>` (`:71`) but never sends it to the server.
 
@@ -96,7 +96,7 @@ The library code in `src/lib/r2.ts`, `src/lib/uploads.ts`, and `src/lib/upload-a
 
 ### AI analysis status
 
-`profile_photos.ai_status` (`schema.ts:94`) and `profile_photos.ai_suggestions` (`:95`) are **schema-only**. No code path reads or updates them. The PhotoForm's "Analyze with AI" button calls a 520ms `setTimeout` (`PhotoForm.tsx:91-103`) that returns hard-coded suggestions and never touches the DB. Spec §3 item 9 explicitly lists "Store profile photo rows and AI analysis status" — both halves are inert without UI wiring.
+`profile_photos.ai_status` (`schema.ts:94`) and `profile_photos.ai_suggestions` (`:95`) are **schema-only**. No code path reads or updates them. The PhotoForm's "Analyze with AI" button calls a 520ms `setTimeout` (`PhotoForm.tsx:91-103`) that returns hard-coded suggestions and never touches the DB. Spec §3 item 9 explicitly lists "Store profile photo rows and AI analysis status" - both halves are inert without UI wiring.
 
 ### Settings parity
 

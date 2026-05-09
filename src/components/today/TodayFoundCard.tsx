@@ -44,7 +44,7 @@ const DEFAULT_REASONS: ReadonlyArray<FormationReason> = [
 ];
 
 /**
- * State C — matched into a group.
+ * State C - matched into a group.
  */
 export function TodayFoundCard({
   groupId,

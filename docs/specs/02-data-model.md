@@ -1,4 +1,4 @@
-# 02 — Data Model
+# 02 - Data Model
 
 ## 1. ER diagram (ASCII)
 
@@ -90,7 +90,7 @@
 > In actual Drizzle code, declare tables in dependency order (for example `events` before event-scoped `messages`) or split references cleanly; the snippets below prioritize readability.
 
 ```ts
-// users — curbe-pattern with sport extensions
+// users - curbe-pattern with sport extensions
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   username: varchar('username', { length: 30 }).notNull().unique(),
@@ -151,7 +151,7 @@ export const pushSubscriptions = pgTable('push_subscriptions', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [uniqueIndex('push_endpoint_unique').on(t.endpoint)]);
 
-// prompts — one per (date, slot). slot = morning|afternoon|evening
+// prompts - one per (date, slot). slot = morning|afternoon|evening
 export const prompts = pgTable('prompts', {
   id: uuid('id').primaryKey().defaultRandom(),
   windowDate: date('window_date').notNull(),
@@ -172,7 +172,7 @@ export const availabilityResponses = pgTable('availability_responses', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [uniqueIndex('availability_unique').on(t.promptId, t.userId)]);
 
-// groups — formed by matching engine; persists across the prompt window
+// groups - formed by matching engine; persists across the prompt window
 export const groups = pgTable('groups', {
   id: uuid('id').primaryKey().defaultRandom(),
   promptId: uuid('prompt_id').references(() => prompts.id, { onDelete: 'set null' }),

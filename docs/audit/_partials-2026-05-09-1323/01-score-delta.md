@@ -16,7 +16,7 @@
 | 1.3 | Clean architecture | 13-scoring-coverage §1 + 01-architecture | 400 | None; `src/app`, `src/lib`, contracts, no server logic in components |
 | 1.4 | Responsive/mobile UI | 13-scoring-coverage §1 + 06-ui-flows | 200 | Dirty worktree has 30+ UI components untracked; committed code shows 2 responsive patterns but full audit deferred to judge Lighthouse run |
 | 2.1 | Registration/login | 13-scoring-coverage §2 + 04-auth-and-profile | 800 | None; iron-session + bcryptjs (`b3c6645` bumped cost to 12) + recovery code implemented |
-| 2.2 | Profile creation | 13-scoring-coverage §2 + 04-auth-and-profile | 600 | Partial; onboarding routes wired (bio, city, sports, skill in schema.ts) but no UI verification in committed code—dirty worktree has forms |
+| 2.2 | Profile creation | 13-scoring-coverage §2 + 04-auth-and-profile | 600 | Partial; onboarding routes wired (bio, city, sports, skill in schema.ts) but no UI verification in committed code-dirty worktree has forms |
 | 2.3 | Sports preferences | 13-scoring-coverage §2 + 04-auth-and-profile | 600 | Partial; `userSports` table with per-sport `level` exists; no UI in HEAD |
 | 2.4 | Profile photo upload | 13-scoring-coverage §2 + 04-auth-and-profile | 200 | Major blocker: schema has `profilePhotos` table but no upload route, no R2 integration, no sharp re-encode in committed code |
 | 2.5 | Skill level/preferences | 13-scoring-coverage §2 + 04-auth-and-profile | 400 | Partial; `skillLevel` in users table + per-sport in userSports; matching checks skill but UI not in HEAD |

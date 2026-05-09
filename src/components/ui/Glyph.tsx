@@ -1,6 +1,6 @@
 /**
- * ShowUp2Move — mono symbolic glyph family.
- * Single weight, single optical size — all 24×24 grid.
+ * ShowUp2Move - mono symbolic glyph family.
+ * Single weight, single optical size - all 24×24 grid.
  * Stroke from CSS (currentColor) so they recolor with brand swap.
  *
  * Ported from ShowUp2Move/icons.jsx (Direction B canvas).
@@ -215,7 +215,7 @@ export const Glyph = {
       "M12 3 c-3 3 -4.5 6 -4.5 9 s 1.5 6 4.5 9",
     ],
   }),
-  // sport — single family of mono glyphs
+  // sport - single family of mono glyphs
   football: make({
     paths: [
       "M12 21 a9 9 0 1 0 0 -18 a9 9 0 1 0 0 18",

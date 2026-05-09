@@ -28,7 +28,7 @@ const SPORT_LABEL: Record<SportKey, string> = {
 };
 
 /**
- * Inner map renderer — tries MapLibre when a public tile key is configured,
+ * Inner map renderer - tries MapLibre when a public tile key is configured,
  * otherwise falls back to the abstract `MapBg` SVG with venue pins translated
  * from lat/lon to viewport coordinates. Always client-only.
  *

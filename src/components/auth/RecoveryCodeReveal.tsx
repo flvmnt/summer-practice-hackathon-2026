@@ -32,7 +32,7 @@ type Props = {
 };
 
 /**
- * RecoveryCodeReveal — design canvas screen 01.
+ * RecoveryCodeReveal - design canvas screen 01.
  *
  * Renders the recovery code as 5 separate mono tiles. Continue button is a
  * hard gate: disabled until the user either copies, downloads, OR ticks the

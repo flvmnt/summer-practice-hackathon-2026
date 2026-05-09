@@ -1,11 +1,11 @@
-# 12 — Testing Strategy Audit
+# 12 - Testing Strategy Audit
 
 Audit date: 2026-05-09
 Specs: `docs/specs/09-testing-strategy.md`
 
 ## Headline
 
-Unit-test layer is **largely DONE** with 21 files / 91 tests passing in 4.21s and good coverage of the deterministic matching core, auth, contracts, AI fallbacks, calendar, weather, uploads, and rate-limit buckets. Integration tests against a test Postgres are **MISSING entirely** (no DB-backed Vitest suites exist). E2E coverage is **MISSING**: `playwright.config.ts:4` points to `./src/tests/e2e` but that directory has no specs — only `e2e/visual.spec.ts` (visual harness) lives anywhere near Playwright. Visual QA harness is **DONE** and produces a deterministic screenshot matrix + JSON index. CI is **PARTIAL**: `pnpm check` runs lint+typecheck+unit+build but the workflow does NOT spin up Postgres, run integration tests, run Playwright smoke, run axe, or gate on Lighthouse.
+Unit-test layer is **largely DONE** with 21 files / 91 tests passing in 4.21s and good coverage of the deterministic matching core, auth, contracts, AI fallbacks, calendar, weather, uploads, and rate-limit buckets. Integration tests against a test Postgres are **MISSING entirely** (no DB-backed Vitest suites exist). E2E coverage is **MISSING**: `playwright.config.ts:4` points to `./src/tests/e2e` but that directory has no specs - only `e2e/visual.spec.ts` (visual harness) lives anywhere near Playwright. Visual QA harness is **DONE** and produces a deterministic screenshot matrix + JSON index. CI is **PARTIAL**: `pnpm check` runs lint+typecheck+unit+build but the workflow does NOT spin up Postgres, run integration tests, run Playwright smoke, run axe, or gate on Lighthouse.
 
 ## Verdict Table
 
@@ -34,7 +34,7 @@ Unit-test layer is **largely DONE** with 21 files / 91 tests passing in 4.21s an
 | 5 | Sport config group-size rules | PARTIAL | Group size enforced inside `formDeterministicGroups` and partly tested via `matching-core.test.ts:36-49`, but no dedicated `sport-config` test for min/max per sport. |
 | 6 | Haversine distance | DONE | `src/lib/matching-core.test.ts:27-34` |
 | 7 | Team balancing | DONE | `src/lib/team-balance.test.ts:1-95` (5 cases incl. snake-draft, ties, invariance, normalization, captain reshuffle) |
-| 8 | Matching distance gate (1km match, outside-radius no-match) | PARTIAL | `matching-core.test.ts:36-49` excludes a candidate at lat 45.9 from a Timișoara group — implicit "outside-radius no-match", but the assertion is just `not.toContain("5")`, no explicit 1km/outside boundary case named. |
+| 8 | Matching distance gate (1km match, outside-radius no-match) | PARTIAL | `matching-core.test.ts:36-49` excludes a candidate at lat 45.9 from a Timișoara group - implicit "outside-radius no-match", but the assertion is just `not.toContain("5")`, no explicit 1km/outside boundary case named. |
 | 9 | Weather recommendation rules | DONE | `src/lib/weather.test.ts:1-65` (rain/wind/cold/clear + hourly index selection) |
 | 10 | `.ics` generation | DONE | `src/lib/calendar.test.ts:1-39` (UTC stamps + escape) |
 | 11 | AI output schema parsing | DONE | `src/lib/ai/captain-brief.test.ts:1-69` validates via `captainBriefSchema` |
@@ -120,7 +120,7 @@ No Playwright spec exists for any of the above. `playwright.config.ts:4` points 
 | 9 | Playwright smoke on built app | MISSING | No `pnpm test:e2e` step in CI. |
 | 10 | Axe accessibility smoke | MISSING | No axe dependency, no script. |
 | 11 | Lighthouse artifact gate (`/`, `/today`, mobile + desktop) | MISSING | No Lighthouse step. |
-| — | Deploy blocked on failing commit | DONE indirectly | Railway deploys on success of `main`; failing `pnpm check` blocks merge to `main`. |
+| - | Deploy blocked on failing commit | DONE indirectly | Railway deploys on success of `main`; failing `pnpm check` blocks merge to `main`. |
 
 ## Test-run result
 
@@ -134,14 +134,14 @@ Test Files  21 passed (21)
 
 Exit status 0. No services required.
 
-`pnpm test:e2e` was NOT run because `playwright.config.ts:4` points at an empty `src/tests/e2e` directory — Playwright would report "No tests found" rather than execute the spec §5 happy path.
+`pnpm test:e2e` was NOT run because `playwright.config.ts:4` points at an empty `src/tests/e2e` directory - Playwright would report "No tests found" rather than execute the spec §5 happy path.
 
 ## Key Findings
 
 - **E2E gap is the largest single risk.** Spec §5.1 ("Happy Path", 13 steps) is the demo's load-bearing proof and there is exactly zero Playwright coverage of it. `playwright.config.ts:4` even points at a directory that doesn't contain specs. AGENTS.md "Testing And Proof" lists the happy path as minimum-before-demo-ready; this is currently unmet.
 - **No integration test scaffolding at all.** Spec §4 lists 20 integration scenarios against test Postgres; none exist. There is no test DB harness, no Testcontainers, no `pg-mem`, no `vitest.config.integration.ts`. This means concurrency-sensitive specs (simultaneous Yes responses, captain assigned once across DB rows, demo reset row scoping, GDPR export/delete) have no automated proof.
 - **CI is intentionally minimal.** `.github/workflows/ci.yml:1-28` runs only `pnpm check`. None of the 7 missing CI gates from spec §8 (Postgres service, migrations, integration tests, Playwright smoke, axe, Lighthouse) is wired up. The parallel finding from `01-phase0-scaffold-deploy.md:20` ("CI runs `pnpm check` step but does NOT run Playwright, migrate a test DB, or run secret scanning") still holds.
-- **Matching algorithm IS unit-tested deterministically (good).** `matching-core.test.ts` covers Haversine, sport+distance grouping, and captain selection with stable tie-breaking — meeting the spec's "deterministic, must be unit tested" demand. Gap: no explicit "1 km matched / 5+ km not matched" boundary case named, and sport-specific min/max group-size rules are not unit-tested in isolation from `formDeterministicGroups`.
+- **Matching algorithm IS unit-tested deterministically (good).** `matching-core.test.ts` covers Haversine, sport+distance grouping, and captain selection with stable tie-breaking - meeting the spec's "deterministic, must be unit tested" demand. Gap: no explicit "1 km matched / 5+ km not matched" boundary case named, and sport-specific min/max group-size rules are not unit-tested in isolation from `formDeterministicGroups`.
 - **Visual QA harness is solid and deterministic.** Fixed route × viewport matrix, JSON index, fail-on-pageError. Outside `pnpm test:e2e` so the unit pipeline isn't slowed. Could be extended cheaply with `axe-playwright` for the "axe accessibility smoke" CI gate.
 - **Mocked-vs-real-DB strategy = pure unit (no DB).** All 91 passing tests run in `jsdom` against pure functions, contracts, or stubs. The Drizzle DB layer is exercised only at runtime (and via the `/api/health` probe in production). There is no integration safety net.
 - **Several spec-listed unit tests are missing or stub-only:** safe redirects, sport-config min/max, dimension/pixel-bomb upload rejection, price-confidence labels, AI cache fallback path, and rate-limit buckets for upload/AI/demo/SSE.

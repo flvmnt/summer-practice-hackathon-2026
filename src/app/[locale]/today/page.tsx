@@ -52,7 +52,7 @@ export default async function TodayPage({
   // banner per spec (AGENTS.md UX rules).
   const requiredComplete = 3;
   const totalSteps = 4;
-  // We don't have a photoUrl on the onboarding state — the optional step is
+  // We don't have a photoUrl on the onboarding state - the optional step is
   // always surfaced until the user closes it / wires up presence detection.
   const showSetup = true;
 
@@ -105,7 +105,7 @@ export default async function TodayPage({
         style={{ maxWidth: 1080 }}
       >
         <div className="grid items-start gap-8 lg:grid-cols-[0.82fr_1.18fr]">
-          {/* Info column — desktop only */}
+          {/* Info column - desktop only */}
           <section className="hidden lg:block">
             <Link
               href={`/${locale}`}

@@ -10,7 +10,7 @@ type AuthSubmitButtonProps = {
 };
 
 /**
- * AuthSubmitButton — direction B sodium-orange primary using the .btn-s2m
+ * AuthSubmitButton - direction B sodium-orange primary using the .btn-s2m
  * utility from globals.css. Pinned to the form so useFormStatus works.
  */
 export function AuthSubmitButton({

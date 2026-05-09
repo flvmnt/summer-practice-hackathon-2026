@@ -19,7 +19,7 @@ type AuthFieldProps = {
 };
 
 /**
- * AuthField — direction B styling. Uses the Wave 0 Input visuals via inline
+ * AuthField - direction B styling. Uses the Wave 0 Input visuals via inline
  * styles so it composes well inside auth cards. 16px input text (no iOS zoom),
  * accent focus ring, mono uppercase label, optional show/hide password toggle.
  */

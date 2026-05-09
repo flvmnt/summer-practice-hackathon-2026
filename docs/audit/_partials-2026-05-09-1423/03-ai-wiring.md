@@ -1,4 +1,4 @@
-# AI Wiring Audit — 2026-05-09 14:23
+# AI Wiring Audit - 2026-05-09 14:23
 
 ## 1. AI Lib Inventory
 
@@ -29,9 +29,9 @@
 
 **`src/lib/ai/bio-extract.ts`** (from `7745867`)
 - **Exports:** `extractSportsByKeyword()` (deterministic), `extractSportsFromBio()` (AI + fallback)
-- **Deterministic fallback:** YES — `extractSportsByKeyword()` uses keyword dict
-- **Unit test:** YES — `bio-extract.test.ts` (8 cases: English/Romanian, diacritics, caps-at-5, no false-match)
-- **Caching:** YES — `getOrCompute(..., 24h_TTL, async () => chatJson(...))`
+- **Deterministic fallback:** YES - `extractSportsByKeyword()` uses keyword dict
+- **Unit test:** YES - `bio-extract.test.ts` (8 cases: English/Romanian, diacritics, caps-at-5, no false-match)
+- **Caching:** YES - `getOrCompute(..., 24h_TTL, async () => chatJson(...))`
 - **Key behavior:**
   - Checks `isGroqConfigured()` before calling Groq
   - Cache key: `["bio-extract", "bio-v1", model, trimmed_bio]`
@@ -41,9 +41,9 @@
 
 **`src/lib/ai/compat-score.ts`** (from `da84ff4`)
 - **Exports:** `scoreCompatibilityDeterministic()`, `scoreCompatibility()`, schema + types
-- **Deterministic fallback:** YES — `scoreCompatibilityDeterministic()` always works
-- **Unit test:** YES — `compat-score.test.ts` (14 cases: identical users ≥80, no shared sports <20, skill diff, city/proximity logic, reason clamping)
-- **Caching:** YES — `getOrCompute(..., 24h_TTL, async () => chatJson(...))`
+- **Deterministic fallback:** YES - `scoreCompatibilityDeterministic()` always works
+- **Unit test:** YES - `compat-score.test.ts` (14 cases: identical users ≥80, no shared sports <20, skill diff, city/proximity logic, reason clamping)
+- **Caching:** YES - `getOrCompute(..., 24h_TTL, async () => chatJson(...))`
 - **Key behavior:**
   - Always computes deterministic score first
   - If Groq configured, attempts AI enrichment with cache by `(userA_id|sports|skill|city|distance, userB_id|...)`
@@ -53,9 +53,9 @@
 
 **`src/lib/ai/captain-brief.ts`** (from `7be52fd`)
 - **Exports:** `buildFallbackCaptainBrief()`, `generateCaptainBrief()`, schemas + types
-- **Deterministic fallback:** YES — `buildFallbackCaptainBrief()` deterministic
+- **Deterministic fallback:** YES - `buildFallbackCaptainBrief()` deterministic
 - **Unit test:** `captain-brief.test.ts` exists (not read in detail, but test file present)
-- **Caching:** YES — `getOrCompute(..., 24h_TTL, async () => chatJson(...))`
+- **Caching:** YES - `getOrCompute(..., 24h_TTL, async () => chatJson(...))`
 - **Key behavior:**
   - Checks `isGroqConfigured()` before AI path
   - Cache key: `["captain-brief", "captain-brief-v1", model, JSON.stringify(input)]`
@@ -73,7 +73,7 @@
 
 **`src/lib/ai-actions.ts`** (from `7745867`)
 - **Exports:** `extractSportsForCurrentUserAction()`
-- **Deterministic fallback:** YES — returns empty suggestions if bio empty; delegates to `extractSportsFromBio(bio)`
+- **Deterministic fallback:** YES - returns empty suggestions if bio empty; delegates to `extractSportsFromBio(bio)`
 - **Unit test:** None
 - **Caching:** Delegated to `bio-extract`
 - **Key behavior:**
@@ -110,7 +110,7 @@
 
 | Caller | File:Line | Context | Verdict |
 |--------|-----------|---------|---------|
-| None | — | — | **DEAD** |
+| None | - | - | **DEAD** |
 
 **Status:** Defined, tested, but **ZERO callers**. Not wired into any event creation, event UI, or captain action flow.
 
@@ -120,7 +120,7 @@
 
 | Caller | File:Line | Context | Verdict |
 |--------|-----------|---------|---------|
-| None | — | — | **SHIPPED-NOT-WIRED** |
+| None | - | - | **SHIPPED-NOT-WIRED** |
 
 **Status:** Server action wrapper around bio extraction, but **not called by any form or component**. PhotoForm has a local stub (`localPhotoAnalyze()`) instead of using a real Groq action.
 
@@ -136,7 +136,7 @@
 
 **Actual usage in codebase:** **ZERO**.
 
-**Vision feature spec:** `docs/specs/05-ai-features.md:84–111` — "Photo → Sports" extraction (500p rubric coverage).
+**Vision feature spec:** `docs/specs/05-ai-features.md:84–111` - "Photo → Sports" extraction (500p rubric coverage).
 
 **Current state:**
 - Upload action `uploadProfilePhotoAction()` persists photo URL to R2 and DB (from `4feee63` feat(uploads)).
@@ -154,7 +154,7 @@
 
 | Module | Check | Fallback |
 |--------|-------|----------|
-| `groq.ts` | `if (!apiKey) throw GroqError("groq_not_configured")` at line 51–53 | N/A — caller must handle |
+| `groq.ts` | `if (!apiKey) throw GroqError("groq_not_configured")` at line 51–53 | N/A - caller must handle |
 | `bio-extract.ts` | `if (isGroqConfigured())` at line 61; try-catch on line 62–89 | YES: `extractSportsByKeyword()` |
 | `compat-score.ts` | `if (!isGroqConfigured())` at line 198 | YES: deterministic score |
 | `captain-brief.ts` | `if (isGroqConfigured())` at line 126; try-catch | YES: `buildFallbackCaptainBrief()` |
@@ -167,7 +167,7 @@
 
 ### Cache Implementation
 
-- **Hash key:** SHA256 of `[namespace, version, model, data...]` — deterministic, collision-resistant, opaque.
+- **Hash key:** SHA256 of `[namespace, version, model, data...]` - deterministic, collision-resistant, opaque.
 - **Storage:** Drizzle `aiCache` table (input hash, output JSON, expires_at).
 - **Invalidation:** None; relies on 24h TTL and deterministic re-prompt.
 - **Demo seed:** Can preload cache rows for deterministic demo path.
@@ -258,17 +258,17 @@
 
 | Feature | T0 (13:53) | Now (14:23) | Δ |
 |---------|-----------|-----------|---|
-| Bio extraction lib | ✓ Shipped, 0 callers | ✓ Shipped, 0 callers (wrappable by onboarding) | — |
+| Bio extraction lib | ✓ Shipped, 0 callers | ✓ Shipped, 0 callers (wrappable by onboarding) | - |
 | Compat scoring lib | ✓ Shipped, 0 callers | ✓ **1 caller** (public profile match %) | +1 |
-| Captain brief lib | ✓ Shipped, 0 callers | ✓ Shipped, 0 callers (unwired to event UI) | — |
-| Photo vision | ✓ Model defined, 0 usage | ✓ Model defined, 0 usage, local stub | — |
-| Server actions | ✓ AI-actions wrapper, 0 callers | ✓ AI-actions wrapper, 0 callers | — |
+| Captain brief lib | ✓ Shipped, 0 callers | ✓ Shipped, 0 callers (unwired to event UI) | - |
+| Photo vision | ✓ Model defined, 0 usage | ✓ Model defined, 0 usage, local stub | - |
+| Server actions | ✓ AI-actions wrapper, 0 callers | ✓ AI-actions wrapper, 0 callers | - |
 
 ### Top 3 Unwired Hot Leaks
 
-1. **`generateCaptainBrief()` dead code** — Fully functional, tested, **never called**. Event creation likely has deterministic plan but no AI brief. **+1000p** to unlock.
-2. **`extractSportsForCurrentUserAction()` never invoked** — Server action wrapper for bio extraction exists but no form/component calls it. **+500p** if wired to onboarding profile step.
-3. **Vision model configured but unused** — `getVisionModel()` export ready; photo upload works; PhotoForm has hardcoded stubs. **+500p** if photo→sports vision action implemented.
+1. **`generateCaptainBrief()` dead code** - Fully functional, tested, **never called**. Event creation likely has deterministic plan but no AI brief. **+1000p** to unlock.
+2. **`extractSportsForCurrentUserAction()` never invoked** - Server action wrapper for bio extraction exists but no form/component calls it. **+500p** if wired to onboarding profile step.
+3. **Vision model configured but unused** - `getVisionModel()` export ready; photo upload works; PhotoForm has hardcoded stubs. **+500p** if photo→sports vision action implemented.
 
 ### Key Handling Status
 

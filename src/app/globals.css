@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ============================================================
-   ShowUp2Move — design tokens + base styles
+   ShowUp2Move - design tokens + base styles
    Direction B (default): light cream + sodium-orange + turf
    Direction A (alt): dark, lime
    Direction C (alt): warm dusk synthesis
@@ -34,7 +34,7 @@
   --warn-soft: #F8ECCC;
   --on-accent: #1A0A03;
 
-  /* radius — 4 weights with semantic intent */
+  /* radius - 4 weights with semantic intent */
   --r-pill: 999px;
   --r-chip: 10px;
   --r-card: 18px;        /* inner cards */
@@ -60,7 +60,7 @@
   --t-4: 600ms;
 
   /* ============================================================
-     Backward-compat aliases — kept until full token cleanup pass.
+     Backward-compat aliases - kept until full token cleanup pass.
      Existing code uses the legacy names below; map them to the new
      semantic tokens so nothing renders as the wrong shade.
      ============================================================ */
@@ -75,7 +75,7 @@
   --accent-strong: var(--ink);       /* used as strong text on accent surfaces */
   --background: var(--bg);
   --foreground: var(--ink);
-  --warn: var(--accent);             /* coral was warn — sodium-orange now stands in */
+  --warn: var(--accent);             /* coral was warn - sodium-orange now stands in */
   --danger: var(--alert);
   --muted: var(--ink-muted);
   --page-max: 1120px;
@@ -117,7 +117,7 @@
 [data-brand="C"] {
   color-scheme: dark;
 
-  /* warm dusk synthesis — warm slate paper, terracotta, deep moss */
+  /* warm dusk synthesis - warm slate paper, terracotta, deep moss */
   --bg: #14110D;
   --bg-alt: #1A1612;
   --surface: #1F1A14;
@@ -190,7 +190,7 @@ select {
   color: var(--on-accent);
 }
 
-/* display + mono helpers — promoted to global utilities */
+/* display + mono helpers - promoted to global utilities */
 .display {
   font-family: var(--f-display);
   font-weight: 700;
@@ -293,7 +293,7 @@ select {
   100% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--accent) 0%, transparent); }
 }
 
-/* AI mark — chevron-burst, NOT a sparkle. Used everywhere AI is involved. */
+/* AI mark - chevron-burst, NOT a sparkle. Used everywhere AI is involved. */
 .ai-mark {
   display: inline-flex;
   width: 14px;
@@ -315,7 +315,7 @@ select {
 .ai-mark::before { inset: 1px 1px 5px 5px; opacity: 0.55; }
 .ai-mark::after  { inset: 4px 4px 1px 1px; }
 
-/* tab underline (signature motion #2 — but our actual signature is type-on) */
+/* tab underline (signature motion #2 - but our actual signature is type-on) */
 .tabs {
   display: flex;
   gap: 4px;
@@ -429,7 +429,7 @@ select {
   }
 }
 
-/* iconography — mono symbolic glyphs (all glyphs share weight + cap-height) */
+/* iconography - mono symbolic glyphs (all glyphs share weight + cap-height) */
 .glyph {
   width: 1em;
   height: 1em;

@@ -58,7 +58,7 @@ function weatherGlyphFor(
 }
 
 /**
- * Cinematic captain pre-confirm sheet — only renders when the current user is
+ * Cinematic captain pre-confirm sheet - only renders when the current user is
  * the group captain and the event is still `proposed`. First visit auto-opens
  * (one-time, persisted to localStorage by event id). Confirm is the only path
  * with the `var(--accent)` pulse so the eye lands there.
@@ -163,7 +163,7 @@ export function CaptainAutoEventReveal({
           {copy.whenRange}
         </p>
 
-        {/* Why this works — TypeOn at 50ms/char per spec */}
+        {/* Why this works - TypeOn at 50ms/char per spec */}
         <TypeOn text={copy.reasoning} active speedMs={50} />
 
         {/* Venue rows */}

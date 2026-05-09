@@ -50,7 +50,7 @@ type AiState = "idle" | "loading" | "ok" | "down";
 
 /**
  * Bio → sports stub. Wave 1 has no `bioSuggestSportsAction` server action yet
- * (verified — no AI/Groq files exist in src/lib). We pick keywords from the
+ * (verified - no AI/Groq files exist in src/lib). We pick keywords from the
  * bio so the demo path stays deterministic. Real Groq wiring lands in a
  * later wave. Returns up to 4 suggestions.
  */
@@ -136,7 +136,7 @@ export function ProfileForm({
     setBioError(undefined);
     setAiState("loading");
     setSuggestions([]);
-    // Local stub — Wave 2 will swap to the real `bioSuggestSportsAction`.
+    // Local stub - Wave 2 will swap to the real `bioSuggestSportsAction`.
     window.setTimeout(() => {
       try {
         const result = localBioSuggest(bio);
@@ -223,7 +223,7 @@ export function ProfileForm({
               );
           }
         } catch {
-          // Swallow — proceed without suggestions.
+          // Swallow - proceed without suggestions.
         }
       }
 

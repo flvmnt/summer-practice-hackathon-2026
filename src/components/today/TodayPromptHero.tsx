@@ -92,7 +92,7 @@ function NoButton({ label }: { label: string }) {
 }
 
 /**
- * State A — fresh prompt.
+ * State A - fresh prompt.
  * Big "ShowUpToday?" hero with weather chip, two large action buttons,
  * and a nearby-avatars social proof row.
  */
@@ -106,7 +106,7 @@ export function TodayPromptHero({
   weatherLabel,
   nearbyLabel,
 }: Props) {
-  // Split last word so we can color it accent — visual blueprint from screens.jsx
+  // Split last word so we can color it accent - visual blueprint from screens.jsx
   const words = headline.trim().split(/\s+/);
   const last = words.at(-1) ?? headline;
   const lead = words.slice(0, -1).join(" ");

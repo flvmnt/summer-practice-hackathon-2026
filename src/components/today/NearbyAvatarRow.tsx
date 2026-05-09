@@ -16,7 +16,7 @@ const SAMPLE_NAMES: ReadonlyArray<string> = [
 ];
 
 /**
- * Social proof row — overlapping avatars + count.
+ * Social proof row - overlapping avatars + count.
  * Placeholder names until real data wires in (A2/A3 backfill).
  */
 export function NearbyAvatarRow({

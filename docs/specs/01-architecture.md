@@ -1,8 +1,8 @@
-# 01 — Architecture
+# 01 - Architecture
 
 ## 1. Shape: single Next.js app
 
-**Form factor:** mobile-first responsive web app. Design starts at 360px wide and scales up to desktop. **Not a PWA** — no service worker, no install prompt, no offline shell. Reminders (300p) are covered by in-app SSE banner + email; service-worker-driven web push is a stretch upgrade in [08-bonus-features.md](08-bonus-features.md).
+**Form factor:** mobile-first responsive web app. Design starts at 360px wide and scales up to desktop. **Not a PWA** - no service worker, no install prompt, no offline shell. Reminders (300p) are covered by in-app SSE banner + email; service-worker-driven web push is a stretch upgrade in [08-bonus-features.md](08-bonus-features.md).
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
@@ -66,7 +66,7 @@ summer-practice-hackathon-2026/
 ├── public/
 │   ├── icons/                    ← favicon, og images
 │   └── locales/                  ← i18n JSON (ro, en)
-│   (manifest.webmanifest, sw.js, push assets — stretch only)
+│   (manifest.webmanifest, sw.js, push assets - stretch only)
 ├── src/
 │   ├── app/                      ← Next.js App Router
 │   │   ├── (marketing)/          ← landing, /despre
@@ -237,7 +237,7 @@ curbe's choice. Encrypted cookie, server-side rotation trivial, no token exfil c
 ### 6.5 No service worker in MVP
 - Not a PWA. No SW, no install prompt, no offline shell.
 - Mobile-first responsiveness comes from Tailwind alone (`min-w-[360px]`, breakpoint-up at `sm`/`md`/`lg`).
-- If we add web push (stretch), it's a hand-rolled minimal SW that handles `push` events only — no fetch interception (avoids cache-staleness bugs during demo). Do not make Web Push required for reminder points.
+- If we add web push (stretch), it's a hand-rolled minimal SW that handles `push` events only - no fetch interception (avoids cache-staleness bugs during demo). Do not make Web Push required for reminder points.
 
 ### 6.6 next-intl for i18n
 - RO + EN at launch. Romanian primary (Haufe is in Romania).
@@ -252,7 +252,7 @@ curbe's choice. Encrypted cookie, server-side rotation trivial, no token exfil c
 | `/groups/[id]` | < 2.0s | < 150 KB | chat lazy-loads |
 | `/events/[id]` | < 2.5s | < 200 KB | map lazy-loaded |
 
-Lighthouse target: **≥ 95 on both mobile and desktop** across the four categories. Mobile is the primary form factor; desktop should clear the same bar with margin to spare. To hit this with MapLibre on event pages, we **defer-load** the map JS only when the user scrolls/clicks into it — landing/today/groups/chat pages stay map-free.
+Lighthouse target: **≥ 95 on both mobile and desktop** across the four categories. Mobile is the primary form factor; desktop should clear the same bar with margin to spare. To hit this with MapLibre on event pages, we **defer-load** the map JS only when the user scrolls/clicks into it - landing/today/groups/chat pages stay map-free.
 
 ## 8. Out of this doc
 

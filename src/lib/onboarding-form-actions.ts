@@ -15,7 +15,7 @@ export type OnboardingProfileFormState = {
   /**
    * AI-extracted sport suggestions derived from the saved bio. Top entries by
    * confidence; consumed by the next onboarding step. Empty when AI fails or
-   * the bio yields no signal — never blocks form submission.
+   * the bio yields no signal - never blocks form submission.
    */
   suggestedSports?: SportKey[];
 };
@@ -44,7 +44,7 @@ export async function onboardingProfileFormAction(
     };
   }
 
-  // Fire bio→sports extraction. Failures must NOT block onboarding — the
+  // Fire bio→sports extraction. Failures must NOT block onboarding - the
   // deterministic keyword fallback inside `extractSportsFromBio` already
   // handles a missing GROQ key, but we still wrap defensively in case the
   // DB read or downstream call throws.
@@ -59,7 +59,7 @@ export async function onboardingProfileFormAction(
         .map((entry) => entry.sport);
     }
   } catch {
-    // Swallow — onboarding flow proceeds without suggestions.
+    // Swallow - onboarding flow proceeds without suggestions.
   }
 
   return { saved: true, suggestedSports };

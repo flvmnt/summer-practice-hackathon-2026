@@ -16,7 +16,7 @@ type SignupCopy = {
   pending: string;
   genericError: string;
   usernameTaken: string;
-  // Legacy keys present in messages — kept optional for forward-compat.
+  // Legacy keys present in messages - kept optional for forward-compat.
   recoveryTitle?: string;
   recoveryBody?: string;
   recoveryWarning?: string;

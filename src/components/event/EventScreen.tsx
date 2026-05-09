@@ -361,7 +361,7 @@ function EventScreenInner({
         <section className="hidden lg:block">{votePanel}</section>
       </div>
 
-      {/* Captain auto-event reveal — rendered everywhere; gates itself by
+      {/* Captain auto-event reveal - rendered everywhere; gates itself by
           status + role. */}
       <CaptainAutoEventReveal
         copy={copy.captainReveal}

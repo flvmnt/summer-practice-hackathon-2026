@@ -18,7 +18,7 @@ type Props = {
 };
 
 /**
- * State F — group exists + event confirmed.
+ * State F - group exists + event confirmed.
  */
 export function TodayConfirmedCard({
   groupId,

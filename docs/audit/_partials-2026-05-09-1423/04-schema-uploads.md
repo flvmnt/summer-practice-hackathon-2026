@@ -4,7 +4,7 @@
 
 **Files in drizzle/:** 11 SQL files (0000–0010) + meta/_journal.json
 
-**Migration 0010 (black_mauler)** — Added notifications table:
+**Migration 0010 (black_mauler)** - Added notifications table:
 - **Columns:** id (uuid pk), demo_run_id (fk to demo_runs, cascade), user_id (fk to users, cascade), type (varchar 40), title (varchar 160), body (text), href (text), read_at (timestamp nullable), created_at (timestamp default now)
 - **Indexes:** 
   - `notifications_user_created_idx` (user_id, created_at)
@@ -89,7 +89,7 @@
 
 - **Dockerfile lines 25–27:** drizzle/ folder and scripts/migrate.mjs copied into runner image
 - **Dockerfile line 31:** CMD defaults to `["node", "server.js"]` (no migrate step in CMD)
-- **railway.toml lines 6:** `preDeployCommand = "node scripts/migrate.mjs"` — runs BEFORE startCommand
+- **railway.toml lines 6:** `preDeployCommand = "node scripts/migrate.mjs"` - runs BEFORE startCommand
 - **railway.toml line 7:** `startCommand = "node server.js"`
 
 **Flow on Railway restart:**

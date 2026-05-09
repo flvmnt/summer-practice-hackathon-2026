@@ -10,7 +10,7 @@ type Props = {
 };
 
 /**
- * State E — user clicked Not today.
+ * State E - user clicked Not today.
  * Smaller card; offers a Change-to-Yes affordance.
  */
 export function TodaySaidNoCard({ title, body, changeLabel, onChange }: Props) {

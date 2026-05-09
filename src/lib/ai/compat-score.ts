@@ -88,7 +88,7 @@ function buildReason(
   distanceKm: number,
 ): string {
   if (shared.length === 0) {
-    return "No shared sports yet — try adding more interests.";
+    return "No shared sports yet - try adding more interests.";
   }
   const sportText =
     shared.length === 1
@@ -122,7 +122,7 @@ export function scoreCompatibilityDeterministic(
   const sameCity =
     userA.city.trim().toLowerCase() === userB.city.trim().toLowerCase() &&
     userA.city.trim().length > 0;
-  // Use the minimum of any explicit per-user max — we don't have it here so
+  // Use the minimum of any explicit per-user max - we don't have it here so
   // fall back to a generous default of 10km when both users tolerate it.
   const maxDistanceKm = 10;
   const proximityFit = classifyProximity(distanceKm, sameCity, maxDistanceKm);
@@ -144,11 +144,11 @@ export function scoreCompatibilityDeterministic(
   else if (proximityFit === "same_city") score += 12;
   else score += 0;
 
-  // Availability fit (20) — no signal here, assume medium.
+  // Availability fit (20) - no signal here, assume medium.
   const scheduleFit: "high" | "medium" | "low" = "medium";
   score += 12;
 
-  // Group-size contribution (10) — neutral default.
+  // Group-size contribution (10) - neutral default.
   score += 6;
 
   // Skill balance (10)
@@ -156,7 +156,7 @@ export function scoreCompatibilityDeterministic(
   else if (skillFit === "mentor") score += 5;
   else score += 0;
 
-  // AI/bio compatibility (10) — neutral default for fallback.
+  // AI/bio compatibility (10) - neutral default for fallback.
   score += 5;
 
   // If no shared sports at all, force a low score per spec rule.

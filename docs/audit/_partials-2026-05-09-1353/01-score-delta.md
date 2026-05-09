@@ -57,21 +57,21 @@
 
 ## Top 5 Lifts Since 13:23
 
-1. **MapLibre map + list fallback (+500p)** — `c444174`: full /map route with lazy-load MapLibre, privacy-safe denied fallback, venue pins, distance sorting, directions links.
-2. **Notifications inbox + bell (+300p)** — `7a4772b`: persistent notification center at /notifications, header bell entry, read/unread state toggles.
-3. **Calendar .ics export (+300p)** — `b5881f4`: event detail panel includes IcsExportButton, download-as-file route, folded RFC 5545 lines.
-4. **First Match achievement (+300p)** — `bacf976`: auto-award on group join, persisted to achievements table, displayed in group header.
-5. **Event-scoped chat + tabs (+200p)** — `b5881f4`: EventScreen with separate event-chat scope (eventId key), isolated from group messages, event/chat/players tabs.
+1. **MapLibre map + list fallback (+500p)** - `c444174`: full /map route with lazy-load MapLibre, privacy-safe denied fallback, venue pins, distance sorting, directions links.
+2. **Notifications inbox + bell (+300p)** - `7a4772b`: persistent notification center at /notifications, header bell entry, read/unread state toggles.
+3. **Calendar .ics export (+300p)** - `b5881f4`: event detail panel includes IcsExportButton, download-as-file route, folded RFC 5545 lines.
+4. **First Match achievement (+300p)** - `bacf976`: auto-award on group join, persisted to achievements table, displayed in group header.
+5. **Event-scoped chat + tabs (+200p)** - `b5881f4`: EventScreen with separate event-chat scope (eventId key), isolated from group messages, event/chat/players tabs.
 
 ## Top 3 Stagnant Rows (Highest Points Lost)
 
-1. **AI bio extraction (500p, fallback)** — Groq text extraction ready in `src/lib/ai/bio-extract.ts` but NOT wired into `/onboarding/profile` UI. Deterministic keyword fallback covers 50% confidence.
-2. **Photo upload (500p, pending)** — R2 env vars set on Railway; no sharp re-encode handler or upload form action yet. Blocks AI photo→sport row.
-3. **Match confirmation workflow (300p, pending)** — Groups persist automatically; explicit `confirmMembershipAction` not wired into UI. Requires single server action + "Confirm spot" button in group.
+1. **AI bio extraction (500p, fallback)** - Groq text extraction ready in `src/lib/ai/bio-extract.ts` but NOT wired into `/onboarding/profile` UI. Deterministic keyword fallback covers 50% confidence.
+2. **Photo upload (500p, pending)** - R2 env vars set on Railway; no sharp re-encode handler or upload form action yet. Blocks AI photo→sport row.
+3. **Match confirmation workflow (300p, pending)** - Groups persist automatically; explicit `confirmMembershipAction` not wired into UI. Requires single server action + "Confirm spot" button in group.
 
 ## Single Biggest Blocker (≤2.5h fix)
 
-**AI bio extraction not wired into onboarding UI** — The Groq client, caching layer, sport-keyword fallback, and deterministic demo outputs are production-ready in HEAD. Wiring the extraction into `/onboarding/profile` as a suggestion chip (with manual edit) unblocks +500p AI bio row and chains into AI compatibility scoring (+300p). Est. 20 min implementation + 10 min demo integration.
+**AI bio extraction not wired into onboarding UI** - The Groq client, caching layer, sport-keyword fallback, and deterministic demo outputs are production-ready in HEAD. Wiring the extraction into `/onboarding/profile` as a suggestion chip (with manual edit) unblocks +500p AI bio row and chains into AI compatibility scoring (+300p). Est. 20 min implementation + 10 min demo integration.
 
 ---
 

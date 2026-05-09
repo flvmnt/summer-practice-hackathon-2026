@@ -203,7 +203,7 @@ export function LocationForm({
               className="text-sm"
               style={{ color: "var(--ink-muted)" }}
             >
-              Location denied — type your city manually.
+              Location denied - type your city manually.
             </span>
           ) : null}
           {geoStatus === "error" ? (
@@ -212,7 +212,7 @@ export function LocationForm({
               className="text-sm"
               style={{ color: "var(--ink-muted)" }}
             >
-              Couldn&apos;t read your location — type your city manually.
+              Couldn&apos;t read your location - type your city manually.
             </span>
           ) : null}
           {geoStatus === "ok" ? (
@@ -226,7 +226,7 @@ export function LocationForm({
           ) : null}
         </div>
 
-        {/* Hidden lat/lng — populated by geolocation or kept at defaults. */}
+        {/* Hidden lat/lng - populated by geolocation or kept at defaults. */}
         <input
           name="homeLat"
           type="hidden"

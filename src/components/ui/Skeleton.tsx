@@ -10,7 +10,7 @@ type Props = {
 };
 
 /**
- * Skeleton — wraps the global `.skel` shimmer class.
+ * Skeleton - wraps the global `.skel` shimmer class.
  * Use to indicate loading state in cards, lists, hero blocks, etc.
  */
 export function Skeleton({

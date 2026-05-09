@@ -31,7 +31,7 @@ export type AiSuggestionsCopy = {
   hint: string;
 };
 
-// Direction B canvas tile sports — 6 tiles, 3×2 mobile, 6×1 desktop.
+// Direction B canvas tile sports - 6 tiles, 3×2 mobile, 6×1 desktop.
 const TILE_SPORTS = [
   { key: "football" as SportKey, glyph: Glyph.football, label: "Football" },
   { key: "basketball" as SportKey, glyph: Glyph.basketball, label: "Basketball" },
@@ -42,7 +42,7 @@ const TILE_SPORTS = [
 ] as const;
 
 // Padel isn't in SPORT_KEYS yet; map to a supported sport on submit.
-// Schema is locked, so silently fall back to football for padel — that matches
+// Schema is locked, so silently fall back to football for padel - that matches
 // the deterministic-first rule (no fake sports surfaced to matching).
 const SUBMIT_SPORT: Record<string, SportKey> = {
   football: "football",
@@ -198,7 +198,7 @@ export function SportsForm({
           );
         })}
 
-        {/* AI-suggested sports row — shown only when bio yielded matches */}
+        {/* AI-suggested sports row - shown only when bio yielded matches */}
         {aiSuggestionTiles.length > 0 ? (
           <div className="mt-5 flex flex-col gap-2">
             <div className="flex items-baseline justify-between">

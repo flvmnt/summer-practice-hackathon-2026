@@ -15,7 +15,7 @@ type Props = {
 };
 
 /**
- * State D — Yes clicked, but no match yet (queued).
+ * State D - Yes clicked, but no match yet (queued).
  */
 export function TodayQueuedCard({
   sportLabel,

@@ -78,9 +78,9 @@ export function PhotoForm({ locale, initialPhotoUrl }: PhotoFormProps) {
     }
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
-    // R2 upload route is not yet wired — surface a friendly status banner so
+    // R2 upload route is not yet wired - surface a friendly status banner so
     // the demo flow is honest about what's saved vs. local-preview.
-    setStatusBanner("Photo uploads are being wired up — your photo will save in a later step.");
+    setStatusBanner("Photo uploads are being wired up - your photo will save in a later step.");
     setAiState("idle");
     setSuggestions([]);
     setPicked(new Set());
@@ -142,7 +142,7 @@ export function PhotoForm({ locale, initialPhotoUrl }: PhotoFormProps) {
           total={4}
           stepLabel="Step 4 of 4"
           title="Add a photo"
-          subtitle="Optional — helps your team recognize you."
+          subtitle="Optional - helps your team recognize you."
         />
 
         {/* Drop zone */}
@@ -221,7 +221,7 @@ export function PhotoForm({ locale, initialPhotoUrl }: PhotoFormProps) {
                 className="text-[12px]"
                 style={{ color: "var(--ink-muted)" }}
               >
-                Optional — JPG, PNG, or HEIC.
+                Optional - JPG, PNG, or HEIC.
               </div>
             </div>
           )}
@@ -392,7 +392,7 @@ export function PhotoForm({ locale, initialPhotoUrl }: PhotoFormProps) {
           className="btn-s2m btn-ghost mx-auto"
           style={{ minHeight: 36, fontSize: 13 }}
         >
-          Skip — open Today
+          Skip - open Today
         </button>
       </div>
 

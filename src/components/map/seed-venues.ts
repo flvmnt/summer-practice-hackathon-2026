@@ -5,7 +5,7 @@ export type MapVenue = {
   name: string;
   city: string;
   sport: SportKey;
-  /** Public venue lat/lng — never user home coords. */
+  /** Public venue lat/lng - never user home coords. */
   lat: number;
   lon: number;
   /** 0 = free, 1 = low, 2 = medium */

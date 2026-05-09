@@ -55,7 +55,7 @@ function describeWeather(weather: WeatherKind): string {
     case "cloudy":
       return "Weather is cloudy but playable";
     case "rainy":
-      return "Weather is rainy — consider indoor backup";
+      return "Weather is rainy - consider indoor backup";
   }
 }
 

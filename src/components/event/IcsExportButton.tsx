@@ -37,7 +37,7 @@ function escapeIcs(value: string): string {
 /**
  * Client-side .ics generator. Emits a minimal demo-ready calendar payload
  * matching the spec in A9 instructions; not a replacement for the server
- * `/api/events/[eventId]/ics` route — that one folds long lines and is the
+ * `/api/events/[eventId]/ics` route - that one folds long lines and is the
  * canonical proof for Judge Mode. This is the in-screen one-click download.
  */
 export function IcsExportButton({

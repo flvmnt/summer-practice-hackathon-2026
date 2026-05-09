@@ -790,7 +790,7 @@ function LocationEditor({
         <div className="flex flex-col gap-2">
           <ReadField
             label={copy.cityLabel}
-            value={savedCity ?? "—"}
+            value={savedCity ?? "-"}
             muted={!savedCity}
           />
           <ReadField

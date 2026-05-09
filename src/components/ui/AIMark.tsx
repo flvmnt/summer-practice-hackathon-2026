@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 
 /**
- * AIMark — chevron-burst, NOT a sparkle/star.
+ * AIMark - chevron-burst, NOT a sparkle/star.
  * Used everywhere AI is involved. Inherits color via currentColor.
  *
  * The actual visual is rendered by the global `.ai-mark` class

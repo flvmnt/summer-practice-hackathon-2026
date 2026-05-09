@@ -248,7 +248,7 @@ export default async function GroupPage({
       className="min-h-screen has-mobile-tabbar"
       style={{ background: "var(--surface-2)" }}
     >
-      {/* Mobile header — sticky so count + captain stay above the fold */}
+      {/* Mobile header - sticky so count + captain stay above the fold */}
       <div className="sticky top-0 z-10 md:hidden">
         <GroupHeader
           backHref={`/${locale}/today`}

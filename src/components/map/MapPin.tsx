@@ -8,7 +8,7 @@ type Props = {
 };
 
 /**
- * SVG pin atom — render inside an existing <svg> ancestor.
+ * SVG pin atom - render inside an existing <svg> ancestor.
  * Ported from screens.jsx `Pin`.
  */
 export function MapPin({ x, y, color, label, big, cluster }: Props) {
