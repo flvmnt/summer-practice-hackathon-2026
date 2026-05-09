@@ -1,4 +1,3 @@
-import { and, asc, desc, eq, inArray } from "drizzle-orm";
 import { setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -6,10 +5,10 @@ import { GroupListItem } from "@/components/groups/GroupListItem";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Glyph } from "@/components/ui/Glyph";
-import { getDb } from "@/db";
-import { groupMembers, groups, users } from "@/db/schema";
+import { Pill } from "@/components/ui/Pill";
 import type { AppLocale } from "@/i18n/routing";
 import { getCurrentUser } from "@/lib/auth-current-user";
+import { getUserGroupsList } from "@/lib/groups";
 import { SPORTS, type SportKey } from "@/lib/sports";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +20,8 @@ const COPY = {
     captain: "Captain",
     open: "Open",
     count: (n: number, t: number) => `${n}/${t} players`,
+    activeGroups: (n: number) => `${n} active`,
+    captainCount: (n: number) => (n === 1 ? "1 captain" : `${n} captains`),
     emptyTitle: "No groups yet",
     emptyBody: "Answer today's prompt to form your first group.",
     emptyAction: "Go to Today",
@@ -43,6 +44,8 @@ const COPY = {
     captain: "Căpitan",
     open: "Deschide",
     count: (n: number, t: number) => `${n}/${t} jucători`,
+    activeGroups: (n: number) => `${n} active`,
+    captainCount: (n: number) => (n === 1 ? "1 căpitan" : `${n} căpitani`),
     emptyTitle: "Niciun grup încă",
     emptyBody: "Răspunde la promptul de azi pentru a forma primul grup.",
     emptyAction: "Deschide Today",
@@ -61,90 +64,6 @@ const COPY = {
   },
 };
 
-/**
- * Lists the groups the current user is an active member of. Reads directly
- * from Drizzle (no shared lib helper exists yet) — see TODO below for moving
- * this into `src/lib/groups.ts` once that module exists.
- *
- * TODO(backend): introduce `getUserGroupsList()` action in `src/lib/groups.ts`
- * with proper ownership and demoRunId scoping, then swap the inline query.
- */
-async function getUserGroupsList(userId: string) {
-  const db = getDb();
-
-  const myGroups = await db
-    .select({
-      groupId: groups.id,
-      sport: groups.sport,
-      sizeTarget: groups.sizeTarget,
-      captainUserId: groups.captainUserId,
-      status: groups.status,
-      myRole: groupMembers.role,
-    })
-    .from(groupMembers)
-    .innerJoin(groups, eq(groups.id, groupMembers.groupId))
-    .where(
-      and(
-        eq(groupMembers.userId, userId),
-        eq(groupMembers.status, "confirmed"),
-      ),
-    )
-    .orderBy(desc(groups.createdAt));
-
-  if (myGroups.length === 0) {
-    return [] as Array<{
-      id: string;
-      sport: SportKey;
-      sizeTarget: number;
-      captainUserId: string | null;
-      isCaptain: boolean;
-      memberCount: number;
-      members: Array<{ userId: string; fullName: string }>;
-    }>;
-  }
-
-  const groupIds = myGroups.map((g) => g.groupId);
-
-  const memberRows = await db
-    .select({
-      groupId: groupMembers.groupId,
-      userId: groupMembers.userId,
-      fullName: users.fullName,
-    })
-    .from(groupMembers)
-    .innerJoin(users, eq(users.id, groupMembers.userId))
-    .where(
-      and(
-        inArray(groupMembers.groupId, groupIds),
-        eq(groupMembers.status, "confirmed"),
-      ),
-    )
-    .orderBy(asc(groupMembers.joinedAt));
-
-  const byGroup = new Map<
-    string,
-    Array<{ userId: string; fullName: string }>
-  >();
-  for (const row of memberRows) {
-    const list = byGroup.get(row.groupId) ?? [];
-    list.push({ userId: row.userId, fullName: row.fullName });
-    byGroup.set(row.groupId, list);
-  }
-
-  return myGroups.map((g) => {
-    const members = byGroup.get(g.groupId) ?? [];
-    return {
-      id: g.groupId,
-      sport: g.sport as SportKey,
-      sizeTarget: g.sizeTarget,
-      captainUserId: g.captainUserId,
-      isCaptain: g.captainUserId === userId,
-      memberCount: members.length,
-      members,
-    };
-  });
-}
-
 export default async function GroupsPage({
   params,
 }: Readonly<{
@@ -160,6 +79,7 @@ export default async function GroupsPage({
 
   const copy = COPY[locale];
   const list = await getUserGroupsList(user.id);
+  const captainCount = list.reduce((n, g) => (g.isCaptain ? n + 1 : n), 0);
 
   return (
     <main
@@ -211,6 +131,24 @@ export default async function GroupsPage({
           </p>
         </header>
 
+        {list.length > 0 ? (
+          <div
+            className="mb-3 flex flex-wrap items-center gap-2"
+            aria-label={locale === "ro" ? "Statistici grupuri" : "Group stats"}
+          >
+            <Pill icon={<Glyph.groups size={11} />}>
+              {copy.activeGroups(list.length)}
+            </Pill>
+            {captainCount > 0 ? (
+              <span style={{ color: "var(--accent)" }}>
+                <Pill icon={<Glyph.crown size={11} />} variant="accent">
+                  {copy.captainCount(captainCount)}
+                </Pill>
+              </span>
+            ) : null}
+          </div>
+        ) : null}
+
         {list.length === 0 ? (
           <EmptyState
             glyph={<Glyph.groups size={28} />}
@@ -232,12 +170,12 @@ export default async function GroupsPage({
                     copy.sportLabels[group.sport] ?? SPORTS[group.sport].kind
                   }
                   memberCount={group.memberCount}
-                  sizeTarget={group.sizeTarget}
+                  sizeTarget={group.capacity}
                   members={group.members}
                   isCaptain={group.isCaptain}
                   captainBadgeLabel={copy.captain}
                   openLabel={copy.open}
-                  countLabel={copy.count(group.memberCount, group.sizeTarget)}
+                  countLabel={copy.count(group.memberCount, group.capacity)}
                 />
               </li>
             ))}
