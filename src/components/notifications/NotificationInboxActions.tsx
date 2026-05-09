@@ -41,6 +41,7 @@ type NotificationInboxCopy = {
   unreadCount: (count: number) => string;
   allCaughtUp: string;
   filterAria: string;
+  justNow: string;
   filters: Record<FilterId, string>;
   kinds: Record<NotificationKind, string>;
 };
@@ -50,6 +51,10 @@ type Props = {
   copy: NotificationInboxCopy;
   emptyTitle?: string;
   emptyBody?: string;
+  emptyActionLabel?: string;
+  emptyActionHref?: string;
+  emptyFilteredTitle?: string;
+  emptyFilteredBody?: string;
 };
 
 /**
@@ -63,6 +68,10 @@ export function NotificationInboxActions({
   copy,
   emptyTitle,
   emptyBody,
+  emptyActionLabel,
+  emptyActionHref,
+  emptyFilteredTitle,
+  emptyFilteredBody,
 }: Props) {
   const [items, setItems] = useState<NotificationItem[]>(() =>
     initialItems.map((item) => ({ ...item })),
@@ -125,6 +134,10 @@ export function NotificationInboxActions({
     });
   }
 
+  const isInboxEmpty = items.length === 0;
+  const isFilterEmpty = !isInboxEmpty && filtered.length === 0;
+  const markAllDisabled = unreadCount === 0 || pending;
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
@@ -132,10 +145,11 @@ export function NotificationInboxActions({
           className="mono"
           style={{
             fontSize: 11,
-            color: "var(--ink-muted)",
+            color: unreadCount > 0 ? "var(--accent-deep)" : "var(--ink-muted)",
             letterSpacing: "0.1em",
             textTransform: "uppercase",
           }}
+          aria-live="polite"
         >
           {unreadCount > 0
             ? copy.unreadCount(unreadCount)
@@ -144,14 +158,27 @@ export function NotificationInboxActions({
         <button
           type="button"
           onClick={handleMarkAllRead}
-          disabled={unreadCount === 0 || pending}
-          className="inline-flex items-center gap-1.5 rounded-md px-3 text-sm font-semibold transition-colors disabled:opacity-40"
+          disabled={markAllDisabled}
+          aria-disabled={markAllDisabled}
+          className={cn(
+            "inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-semibold transition-colors",
+          )}
           style={{
-            minHeight: 36,
-            background: "transparent",
-            color: "var(--ink)",
-            border: "1px solid var(--line)",
-            cursor: unreadCount === 0 || pending ? "default" : "pointer",
+            minHeight: 44,
+            padding: "0 14px",
+            borderRadius: "var(--r-pill)",
+            background: markAllDisabled
+              ? "transparent"
+              : "var(--accent-tint)",
+            color: markAllDisabled
+              ? "var(--ink-faint)"
+              : "var(--accent-deep)",
+            border: "1px solid",
+            borderColor: markAllDisabled
+              ? "var(--line)"
+              : "var(--accent-soft)",
+            cursor: markAllDisabled ? "not-allowed" : "pointer",
+            opacity: markAllDisabled ? 0.7 : 1,
           }}
         >
           <Glyph.check size={14} />
@@ -167,14 +194,32 @@ export function NotificationInboxActions({
         onChange={setActiveFilter}
       />
 
-      {filtered.length === 0 ? (
+      {isInboxEmpty ? (
         <EmptyState
           glyph={<Glyph.bell size={28} />}
-          title={emptyTitle ?? "You're caught up"}
+          title={emptyTitle ?? "You're all caught up"}
           body={
             emptyBody ??
-            "New matches, votes, and event updates will appear here."
+            "When a match forms, a vote opens, or an event is confirmed, you'll see it here first."
           }
+          action={
+            emptyActionLabel && emptyActionHref
+              ? { label: emptyActionLabel, href: emptyActionHref }
+              : undefined
+          }
+        />
+      ) : isFilterEmpty ? (
+        <EmptyState
+          glyph={<Glyph.filter size={24} />}
+          title={emptyFilteredTitle ?? "Nothing in this filter"}
+          body={
+            emptyFilteredBody ??
+            "Try a different filter to see more updates."
+          }
+          action={{
+            label: copy.filters.all,
+            onClick: () => setActiveFilter("all"),
+          }}
         />
       ) : (
         <NotificationInbox
@@ -182,6 +227,7 @@ export function NotificationInboxActions({
           onMarkRead={handleMarkRead}
           markReadLabel={copy.markRead}
           openLabel={copy.open}
+          justNowLabel={copy.justNow}
           kindLabels={copy.kinds}
         />
       )}
@@ -211,6 +257,7 @@ function FilterChips({
         // Avoid horizontal page jiggle on iOS while letting chips wrap on wider viewports.
         scrollbarWidth: "none",
         msOverflowStyle: "none",
+        paddingBottom: 4,
       }}
     >
       {FILTERS.map((filter) => {
@@ -227,10 +274,8 @@ function FilterChips({
               "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 text-xs font-semibold transition-colors",
             )}
             style={{
-              minHeight: 32,
-              background: isActive
-                ? "var(--accent-soft)"
-                : "var(--surface)",
+              minHeight: 36,
+              background: isActive ? "var(--accent-soft)" : "var(--surface)",
               color: isActive ? "var(--accent-deep)" : "var(--ink)",
               border: "1px solid",
               borderColor: isActive ? "var(--accent-deep)" : "var(--line)",
@@ -242,7 +287,14 @@ function FilterChips({
               className="mono"
               style={{
                 fontSize: 10,
+                padding: "1px 6px",
+                borderRadius: 999,
+                background: isActive
+                  ? "var(--surface)"
+                  : "var(--surface-2)",
                 color: isActive ? "var(--accent-deep)" : "var(--ink-muted)",
+                minWidth: 18,
+                textAlign: "center",
               }}
             >
               {count}

@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useLocale } from "next-intl";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Glyph } from "@/components/ui/Glyph";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { cn } from "@/lib/utils";
 
 export type NotificationKind =
@@ -27,10 +27,9 @@ type Props = {
   onMarkRead?: (id: string) => void;
   markReadLabel?: string;
   openLabel?: string;
+  justNowLabel?: string;
   kindLabels?: Record<NotificationKind, string>;
   className?: string;
-  emptyTitle?: string;
-  emptyBody?: string;
 };
 
 const kindMeta: Record<
@@ -63,123 +62,260 @@ const kindMeta: Record<
   },
 };
 
+/**
+ * Localized relative time using `Intl.RelativeTimeFormat`. Falls back to a
+ * shared "Just now" label inside the last minute and locale-formatted date
+ * once we're past a week (to avoid "in 3 weeks" oddities).
+ */
+function useRelativeTime(iso: string | undefined, justNowLabel: string) {
+  const locale = useLocale();
+  // Re-compute every minute so labels stay fresh while the user lingers.
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 60_000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return useMemo(() => {
+    if (!iso) return { label: "", absolute: "" };
+    const ts = Date.parse(iso);
+    if (Number.isNaN(ts)) return { label: "", absolute: "" };
+
+    const diffSeconds = Math.round((ts - now) / 1000);
+    const absSeconds = Math.abs(diffSeconds);
+    const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+    const dtf = new Intl.DateTimeFormat(locale, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+    const absolute = dtf.format(new Date(ts));
+
+    let label: string;
+    if (absSeconds < 45) {
+      label = justNowLabel;
+    } else if (absSeconds < 60 * 60) {
+      label = rtf.format(Math.round(diffSeconds / 60), "minute");
+    } else if (absSeconds < 60 * 60 * 24) {
+      label = rtf.format(Math.round(diffSeconds / 3600), "hour");
+    } else if (absSeconds < 60 * 60 * 24 * 7) {
+      label = rtf.format(Math.round(diffSeconds / 86_400), "day");
+    } else {
+      label = absolute;
+    }
+
+    return { label, absolute };
+  }, [iso, now, locale, justNowLabel]);
+}
+
 export function NotificationInbox({
   items,
   onMarkRead,
   markReadLabel = "Mark read",
   openLabel = "Open",
+  justNowLabel = "Just now",
   kindLabels,
   className,
-  emptyTitle = "No notifications",
-  emptyBody = "We'll ping you when a group forms, vote closes, or an event is confirmed.",
 }: Props) {
-  if (items.length === 0) {
-    return (
-      <EmptyState
-        glyph={<Glyph.bell size={28} />}
-        title={emptyTitle}
-        body={emptyBody}
-        className={className}
-      />
-    );
-  }
   return (
-    <ul className={cn("flex flex-col gap-2", className)} aria-label="Notifications">
-      {items.map((item) => {
-        const meta = kindMeta[item.kind];
-        const kindLabel = kindLabels?.[item.kind] ?? meta.label;
-        return (
-          <li key={item.id}>
-            <article
-              className={cn(
-                "relative flex items-start gap-3 p-3",
-                !item.read && "outline-2",
-              )}
-              style={{
-                background: item.read ? "var(--surface)" : "var(--surface)",
-                border: "1px solid var(--line)",
-                borderRadius: "var(--r-card)",
-                boxShadow: item.read ? "none" : "var(--shadow-1)",
-              }}
-            >
-              {!item.read ? (
-                <span
-                  aria-hidden
-                  className="absolute top-3 right-3"
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: 999,
-                    background: "var(--accent)",
-                  }}
-                />
-              ) : null}
-              <div
-                className="grid place-items-center"
+    <ul
+      className={cn("flex flex-col gap-2", className)}
+      aria-label="Notifications"
+    >
+      {items.map((item) => (
+        <NotificationRow
+          key={item.id}
+          item={item}
+          onMarkRead={onMarkRead}
+          markReadLabel={markReadLabel}
+          openLabel={openLabel}
+          justNowLabel={justNowLabel}
+          kindLabels={kindLabels}
+        />
+      ))}
+    </ul>
+  );
+}
+
+function NotificationRow({
+  item,
+  onMarkRead,
+  markReadLabel,
+  openLabel,
+  justNowLabel,
+  kindLabels,
+}: {
+  item: NotificationItem;
+  onMarkRead?: (id: string) => void;
+  markReadLabel: string;
+  openLabel: string;
+  justNowLabel: string;
+  kindLabels?: Record<NotificationKind, string>;
+}) {
+  const meta = kindMeta[item.kind];
+  const kindLabel = kindLabels?.[item.kind] ?? meta.label;
+  const time = useRelativeTime(item.createdAt, justNowLabel);
+
+  // Unread differentiation:
+  //  - subtle accent-tint background
+  //  - thicker left border in accent
+  //  - bolder title weight
+  //  - dot indicator (top-right)
+  const isUnread = !item.read;
+
+  return (
+    <li>
+      <article
+        className={cn("relative")}
+        style={{
+          background: isUnread ? "var(--accent-tint)" : "var(--surface)",
+          border: "1px solid var(--line)",
+          borderLeft: isUnread
+            ? "3px solid var(--accent)"
+            : "1px solid var(--line)",
+          borderRadius: "var(--r-card)",
+          boxShadow: isUnread ? "var(--shadow-1)" : "none",
+          transition: "background 180ms var(--ease)",
+        }}
+      >
+        <Link
+          href={item.href}
+          aria-label={`${kindLabel}: ${item.title}. ${openLabel}`}
+          className="flex items-start gap-3 p-3 sm:p-4"
+          style={{
+            color: "var(--ink)",
+            textDecoration: "none",
+            minHeight: 44,
+          }}
+        >
+          <div
+            aria-hidden
+            className="grid place-items-center"
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: "var(--r-chip)",
+              background: meta.soft,
+              color: meta.color,
+              flex: "none",
+            }}
+          >
+            {meta.icon}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <span
+                className="mono uppercase tracking-[0.12em]"
                 style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 10,
-                  background: meta.soft,
+                  fontSize: 10,
+                  fontWeight: 700,
                   color: meta.color,
-                  flex: "none",
                 }}
               >
-                {meta.icon}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
+                {kindLabel}
+              </span>
+              {time.label ? (
+                <>
                   <span
-                    className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
-                    style={{ color: meta.color }}
+                    aria-hidden
+                    style={{
+                      width: 3,
+                      height: 3,
+                      borderRadius: 999,
+                      background: "var(--ink-faint)",
+                      flex: "none",
+                    }}
+                  />
+                  <time
+                    className="mono"
+                    dateTime={item.createdAt}
+                    title={time.absolute}
+                    style={{
+                      fontSize: 11,
+                      color: "var(--ink-muted)",
+                    }}
                   >
-                    {kindLabel}
-                  </span>
-                </div>
-                <h3
-                  className="mt-1 truncate text-[14px] font-semibold leading-tight"
-                  style={{ color: "var(--ink)" }}
-                >
-                  {item.title}
-                </h3>
-                <p
-                  className="mt-1 text-[12px] leading-snug"
-                  style={{ color: "var(--ink-muted)" }}
-                >
-                  {item.body}
-                </p>
-                <div className="mt-2 flex items-center gap-3">
-                  <Link
-                    href={item.href}
-                    className="inline-flex items-center gap-1 text-[12px] font-semibold"
-                    style={{ color: "var(--accent-deep)" }}
-                  >
-                    {openLabel}
-                    <Glyph.arrow size={14} />
-                  </Link>
-                  {!item.read && onMarkRead ? (
-                    <button
-                      type="button"
-                      onClick={() => onMarkRead(item.id)}
-                      className="text-[12px] font-medium"
-                      style={{
-                        color: "var(--ink-muted)",
-                        background: "transparent",
-                        border: 0,
-                        padding: 0,
-                        minHeight: 32,
-                        cursor: "pointer",
-                      }}
-                    >
-                      {markReadLabel}
-                    </button>
-                  ) : null}
-                </div>
-              </div>
-            </article>
-          </li>
-        );
-      })}
-    </ul>
+                    {time.label}
+                  </time>
+                </>
+              ) : null}
+            </div>
+            <h3
+              className="mt-1 truncate leading-tight"
+              style={{
+                fontSize: 15,
+                fontWeight: isUnread ? 700 : 500,
+                color: "var(--ink)",
+              }}
+            >
+              {item.title}
+            </h3>
+            {item.body ? (
+              <p
+                className="mt-1 leading-snug"
+                style={{
+                  fontSize: 13,
+                  color: isUnread ? "var(--ink-2)" : "var(--ink-muted)",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }}
+              >
+                {item.body}
+              </p>
+            ) : null}
+          </div>
+          <div
+            className="flex flex-col items-end gap-2"
+            style={{ flex: "none" }}
+          >
+            {isUnread ? (
+              <span
+                aria-hidden
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 999,
+                  background: "var(--accent)",
+                  boxShadow: "0 0 0 2px var(--surface)",
+                }}
+              />
+            ) : null}
+            <Glyph.arrow size={16} className="opacity-40" />
+          </div>
+        </Link>
+        {isUnread && onMarkRead ? (
+          <div
+            className="flex justify-end px-3 pb-3 sm:px-4 sm:pb-3"
+            style={{ borderTop: "1px dashed var(--line)" }}
+          >
+            <button
+              type="button"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                onMarkRead(item.id);
+              }}
+              className="inline-flex items-center gap-1"
+              style={{
+                marginTop: 8,
+                fontSize: 12,
+                fontWeight: 600,
+                color: "var(--ink-muted)",
+                background: "transparent",
+                border: 0,
+                padding: "8px 4px",
+                minHeight: 32,
+                cursor: "pointer",
+              }}
+            >
+              <Glyph.check size={12} />
+              {markReadLabel}
+            </button>
+          </div>
+        ) : null}
+      </article>
+    </li>
   );
 }

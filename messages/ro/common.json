@@ -682,6 +682,22 @@
     "body": "Această rută nu face parte din faza curentă ShowUp2Move.",
     "back": "Înapoi la ShowUp2Move"
   },
+  "routeStates": {
+    "loadingAria": "Se încarcă {section}",
+    "errorTitle": "Ceva nu a mers.",
+    "errorBody": "Nu am putut încărca {section}. Încearcă din nou sau revino la Today.",
+    "retry": "Încearcă din nou",
+    "backToToday": "Înapoi la Today",
+    "sections": {
+      "today": "Today",
+      "groups": "grupurile tale",
+      "group": "acest grup",
+      "events": "evenimentele tale",
+      "settings": "setările",
+      "notifications": "inbox-ul tău",
+      "map": "harta"
+    }
+  },
   "map": {
     "title": "Locuri din apropiere",
     "subtitle": "Terenuri publice din apropiere. Harta are nevoie de locația ta pentru a te plasa exact.",

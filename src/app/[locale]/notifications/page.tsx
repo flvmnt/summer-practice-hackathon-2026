@@ -67,6 +67,9 @@ export default async function NotificationsPage({
     unread > 0 ? t("unreadCount", { count: unread }) : t("allCaughtUp");
   const emptyTitle = t("emptyTitle");
   const emptyBody = t("emptyBody");
+  const emptyActionLabel = t("emptyAction");
+  const emptyFilteredTitle = t("emptyFilteredTitle");
+  const emptyFilteredBody = t("emptyFilteredBody");
   const inboxCopy = {
     markAllRead: t("markAllRead"),
     markRead: t("markRead"),
@@ -74,6 +77,7 @@ export default async function NotificationsPage({
     unreadCount: (count: number) => t("unreadCount", { count }),
     allCaughtUp: t("allCaughtUp"),
     filterAria: t("filterAria"),
+    justNow: t("relativeTime.justNow"),
     filters: {
       all: t("filters.all"),
       unread: t("filters.unread"),
@@ -168,6 +172,10 @@ export default async function NotificationsPage({
           copy={inboxCopy}
           emptyTitle={emptyTitle}
           emptyBody={emptyBody}
+          emptyActionLabel={emptyActionLabel}
+          emptyActionHref={`/${locale}/today`}
+          emptyFilteredTitle={emptyFilteredTitle}
+          emptyFilteredBody={emptyFilteredBody}
         />
       </section>
 

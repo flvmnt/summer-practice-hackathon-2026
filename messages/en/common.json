@@ -682,6 +682,22 @@
     "body": "This route is not part of the current ShowUp2Move phase.",
     "back": "Back to ShowUp2Move"
   },
+  "routeStates": {
+    "loadingAria": "Loading {section}",
+    "errorTitle": "Something slipped.",
+    "errorBody": "We couldn't load {section}. Try again, or head back to Today.",
+    "retry": "Try again",
+    "backToToday": "Back to Today",
+    "sections": {
+      "today": "today",
+      "groups": "your groups",
+      "group": "this group",
+      "events": "your events",
+      "settings": "settings",
+      "notifications": "your inbox",
+      "map": "the map"
+    }
+  },
   "map": {
     "title": "Nearby venues",
     "subtitle": "Public pickup spots near you. Map needs your location to plot you exactly.",
