@@ -323,7 +323,7 @@ export function SportsForm({
                     padding: "10px 12px",
                     background: "var(--surface)",
                     border: "1px solid var(--line)",
-                    borderRadius: "var(--r-card)",
+                    borderRadius: 12,
                   }}
                 >
                   <span

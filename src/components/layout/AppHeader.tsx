@@ -47,7 +47,7 @@ export function AppHeader({ locale, unreadCount = 0, title }: Props) {
           style={{
             width: 28,
             height: 28,
-            borderRadius: "var(--r-chip)",
+            borderRadius: 8,
             background: "var(--accent-soft)",
             color: "var(--accent-deep)",
           }}

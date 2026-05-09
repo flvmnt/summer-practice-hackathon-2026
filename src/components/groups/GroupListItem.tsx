@@ -68,7 +68,7 @@ export function GroupListItem({
         style={{
           width: 40,
           height: 40,
-          borderRadius: "var(--r-chip)",
+          borderRadius: 12,
           background: "var(--accent-soft)",
           color: "var(--accent-deep)",
           flex: "none",

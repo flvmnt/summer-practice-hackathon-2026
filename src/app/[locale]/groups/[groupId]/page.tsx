@@ -169,7 +169,7 @@ export default async function GroupPage({
             style={{
               background: "var(--accent-soft)",
               color: "var(--accent-deep)",
-              borderRadius: "var(--r-chip)",
+              borderRadius: 8,
             }}
           >
             <Glyph.cal size={16} />
@@ -459,7 +459,7 @@ function EventProposalRow({
   return (
     <div className="flex flex-col gap-3">
       <Link
-        className="flex items-center gap-2 rounded-[var(--r-card)] px-3 py-2.5"
+        className="flex items-center gap-2 rounded-[12px] px-3 py-2.5"
         href={href}
         style={{
           background: "var(--surface-2)",

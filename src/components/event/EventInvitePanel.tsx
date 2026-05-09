@@ -95,7 +95,7 @@ export function EventInvitePanel({
       </form>
       {invitePath ? (
         <div className="mt-3 grid gap-2">
-          <p className="break-all rounded-md bg-[var(--surface-2)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
+          <p className="break-all rounded-md bg-[var(--cloud)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
             {invitePath}
           </p>
           <div className="grid grid-cols-2 gap-2">
@@ -124,7 +124,7 @@ export function EventInvitePanel({
         <AuthSubmitButton label={copy.revoke} pendingLabel={copy.revoking} />
       </form>
       {revokeState.revoked ? (
-        <p className="mt-3 rounded-md bg-[var(--surface-2)] px-3 py-2 text-sm font-semibold">
+        <p className="mt-3 rounded-md bg-[var(--cloud)] px-3 py-2 text-sm font-semibold">
           {copy.revoked}
         </p>
       ) : null}

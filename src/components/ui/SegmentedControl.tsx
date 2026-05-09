@@ -41,7 +41,7 @@ export function SegmentedControl<V extends string>({
       style={{
         padding: 3,
         background: "var(--surface-2)",
-        borderRadius: "var(--r-pill)",
+        borderRadius: 10,
       }}
     >
       <span
@@ -53,7 +53,7 @@ export function SegmentedControl<V extends string>({
           left: 3,
           width: `calc(${widthPct}% - 6px / ${options.length})`,
           background: "var(--surface)",
-          borderRadius: "var(--r-pill)",
+          borderRadius: 8,
           boxShadow: "var(--shadow-1)",
           transform: `translateX(calc(${activeIndex} * 100%))`,
           transition: "transform var(--t-2) var(--ease)",
@@ -76,7 +76,7 @@ export function SegmentedControl<V extends string>({
             style={{
               color: selected ? "var(--ink)" : "var(--ink-muted)",
               minHeight: small ? 28 : 32,
-              borderRadius: "var(--r-pill)",
+              borderRadius: 8,
               background: "transparent",
               border: 0,
             }}
