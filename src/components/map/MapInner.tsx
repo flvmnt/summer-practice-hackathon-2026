@@ -3,8 +3,6 @@
 import maplibregl, { type StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef, useState } from "react";
-import { MapBg } from "./MapBg";
-import { MapPin } from "./MapPin";
 import type { MapVenue } from "./seed-venues";
 import { DEFAULT_CENTER } from "./seed-venues";
 import type { SportKey } from "@/lib/sports";
@@ -29,6 +27,10 @@ const SPORT_LABEL: Record<SportKey, string> = {
   table_tennis: "🏓",
 };
 
+// Raster OSM style with an explicit background layer. The background paints
+// underneath the raster tiles so the canvas never reveals a transparent
+// WebGL context while tiles are still arriving - that was the "blank map"
+// perception. Mirrors curbe's approach of letting the style own its backdrop.
 const OSM_RASTER_STYLE: StyleSpecification = {
   version: 8,
   sources: {
@@ -44,14 +46,18 @@ const OSM_RASTER_STYLE: StyleSpecification = {
       maxzoom: 19,
     },
   },
-  layers: [{ id: "osm", type: "raster", source: "osm" }],
+  layers: [
+    { id: "bg", type: "background", paint: { "background-color": "#e8e3d6" } },
+    { id: "osm", type: "raster", source: "osm" },
+  ],
 };
 
 /**
- * Inner map renderer. Init happens once per `tileKey`; venues/userLocation/
- * selection updates are pushed into the live map instance via separate
- * effects so the map is never torn down mid-load when geolocation resolves
- * or the venue filter changes. Mirrors the pattern in /Users/flv/curbe.
+ * Inner map renderer. Mirrors /Users/flv/curbe/src/components/Map.tsx:
+ * the container element IS the map - no spinner/SVG fallback layered on top
+ * that could hide the canvas mid-load. Init runs once per tileKey/reinit;
+ * marker and recenter updates flow through separate effects so the map is
+ * never torn down when geolocation resolves or filters change.
  */
 export function MapInner({
   venues,
@@ -63,8 +69,7 @@ export function MapInner({
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markersRef = useRef<Map<string, maplibregl.Marker>>(new Map());
   const onSelectRef = useRef(onSelectVenue);
-  const [mapReady, setMapReady] = useState(false);
-  const [mapFailed, setMapFailed] = useState(false);
+  const [styleReady, setStyleReady] = useState(false);
   const [reinitKey, setReinitKey] = useState(0);
 
   const tileKey = process.env.NEXT_PUBLIC_MAPTILER_KEY;
@@ -86,7 +91,7 @@ export function MapInner({
       }
       mapRef.current = null;
       markersRef.current.clear();
-      setMapReady(false);
+      setStyleReady(false);
       setReinitKey((k) => k + 1);
     }
     function onPageShow(e: PageTransitionEvent) {
@@ -96,14 +101,12 @@ export function MapInner({
     return () => window.removeEventListener("pageshow", onPageShow);
   }, []);
 
-  // Init map once (per tileKey/reinit). Does NOT depend on venues/userLocation
+  // Init map once per tileKey/reinit. Does NOT depend on venues/userLocation
   // so geolocation resolving or filter chips changing won't tear down a
   // half-loaded map.
   useEffect(() => {
     const container = containerRef.current;
     if (!container || mapRef.current) return;
-    // Capture the markers map by reference so the cleanup function works on
-    // the same Map instance the effect saw, not a later replacement.
     const markers = markersRef.current;
     let cancelled = false;
 
@@ -111,22 +114,14 @@ export function MapInner({
       ? `https://api.maptiler.com/maps/dataviz/style.json?key=${tileKey}`
       : OSM_RASTER_STYLE;
 
-    let instance: maplibregl.Map;
-    try {
-      instance = new maplibregl.Map({
-        container,
-        style,
-        center: [DEFAULT_CENTER.lon, DEFAULT_CENTER.lat],
-        zoom: 13,
-        attributionControl: { compact: true },
-        canvasContextAttributes: { preserveDrawingBuffer: true },
-      });
-    } catch {
-      if (!cancelled) {
-        queueMicrotask(() => setMapFailed(true));
-      }
-      return;
-    }
+    const instance = new maplibregl.Map({
+      container,
+      style,
+      center: [DEFAULT_CENTER.lon, DEFAULT_CENTER.lat],
+      zoom: 13,
+      attributionControl: { compact: true },
+      canvasContextAttributes: { preserveDrawingBuffer: true },
+    });
     mapRef.current = instance;
     instance.addControl(
       new maplibregl.NavigationControl({ visualizePitch: false }),
@@ -135,14 +130,12 @@ export function MapInner({
 
     instance.on("load", () => {
       if (cancelled) return;
-      setMapReady(true);
-      // Resize once after first paint so an initially-zero-height container
-      // (laid out after the map mounted) gets re-measured.
+      setStyleReady(true);
+      // Force re-measure after first paint so an initially-zero-height
+      // container (laid out after the map mounted) gets resized.
       requestAnimationFrame(() => instance.resize());
     });
-    instance.on("error", () => {
-      if (!cancelled) setMapFailed(true);
-    });
+
     function onContextLost(e: Event) {
       e.preventDefault();
       try {
@@ -152,20 +145,13 @@ export function MapInner({
       }
       mapRef.current = null;
       markersRef.current.clear();
-      setMapReady(false);
+      setStyleReady(false);
       setReinitKey((k) => k + 1);
     }
     instance.getCanvas().addEventListener("webglcontextlost", onContextLost);
 
-    // Safety net: if `load` never fires (CSP, offline, broken tile host),
-    // fall back to the SVG bg after 6s.
-    const failTimer = window.setTimeout(() => {
-      if (!cancelled && !mapRef.current?.loaded()) setMapFailed(true);
-    }, 6000);
-
     // ResizeObserver: tab-switching to /map can leave the canvas at the wrong
-    // size if the parent flexbox slot was 0px when init ran. Force a resize
-    // whenever the container resizes.
+    // size if the parent flexbox slot was 0px when init ran.
     const ro = new ResizeObserver(() => {
       mapRef.current?.resize();
     });
@@ -173,7 +159,6 @@ export function MapInner({
 
     return () => {
       cancelled = true;
-      window.clearTimeout(failTimer);
       ro.disconnect();
       try {
         instance.getCanvas().removeEventListener("webglcontextlost", onContextLost);
@@ -190,11 +175,11 @@ export function MapInner({
     };
   }, [tileKey, reinitKey]);
 
-  // Sync markers with the venues prop. Add new, remove stale, recolor
-  // existing — never tear down the map.
+  // Sync markers with the venues prop. Add new, remove stale, recolor existing
+  // - never tear down the map.
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapReady) return;
+    if (!map || !styleReady) return;
     const markers = markersRef.current;
     const seen = new Set<string>();
 
@@ -213,6 +198,8 @@ export function MapInner({
         el.style.boxShadow = "0 4px 10px rgba(14,26,31,0.25)";
         el.style.color = "white";
         el.style.fontSize = "14px";
+        el.style.display = "grid";
+        el.style.placeItems = "center";
         el.textContent = SPORT_LABEL[venue.sport] ?? "•";
         el.addEventListener("click", () => onSelectRef.current(venue.id));
         marker = new maplibregl.Marker({ element: el })
@@ -237,12 +224,12 @@ export function MapInner({
         markers.delete(id);
       }
     }
-  }, [venues, selectedVenueId, mapReady]);
+  }, [venues, selectedVenueId, styleReady]);
 
-  // Recenter when the user location resolves (or selected venue changes).
+  // Recenter when the user location resolves or selected venue changes.
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapReady) return;
+    if (!map || !styleReady) return;
     if (selectedVenueId) {
       const v = venues.find((x) => x.id === selectedVenueId);
       if (v) {
@@ -252,81 +239,9 @@ export function MapInner({
     }
     const center = userLocation ?? DEFAULT_CENTER;
     map.flyTo({ center: [center.lon, center.lat], zoom: 13, duration: 600 });
-  }, [userLocation, selectedVenueId, venues, mapReady]);
+  }, [userLocation, selectedVenueId, venues, styleReady]);
 
-  if (!mapFailed) {
-    return (
-      <div
-        className="relative h-full w-full"
-        style={{ background: "var(--bg-alt)" }}
-      >
-        <div ref={containerRef} className="absolute inset-0" />
-        {!mapReady ? (
-          <div
-            aria-hidden
-            className="absolute inset-0 grid place-items-center"
-            style={{ background: "var(--bg-alt)" }}
-          >
-            <div
-              className="h-8 w-8 animate-spin rounded-full border-2 border-t-transparent"
-              style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }}
-            />
-          </div>
-        ) : null}
-      </div>
-    );
-  }
-
-  // SVG fallback when MapLibre cannot initialise (offline / CSP / WebGL off).
-  const center = userLocation ?? DEFAULT_CENTER;
-  const VIEW_W = 390;
-  const VIEW_H = 768;
-  const SPAN_LON = 0.022;
-  const SPAN_LAT = 0.014;
-
-  function project(lat: number, lon: number) {
-    const x = ((lon - center.lon) / SPAN_LON) * (VIEW_W / 2) + VIEW_W / 2;
-    const y = -((lat - center.lat) / SPAN_LAT) * (VIEW_H / 2) + VIEW_H / 2;
-    return {
-      x: Math.max(20, Math.min(VIEW_W - 20, x)),
-      y: Math.max(40, Math.min(VIEW_H - 40, y)),
-    };
-  }
-
-  return (
-    <div className="relative h-full w-full">
-      <MapBg showMe={Boolean(userLocation)}>
-        <>
-          {venues.map((venue) => {
-            const { x, y } = project(venue.lat, venue.lon);
-            const isSelected = venue.id === selectedVenueId;
-            const color = venue.eventAt
-              ? "var(--accent)"
-              : isSelected
-                ? "var(--accent-deep)"
-                : "var(--field)";
-            return (
-              <g
-                key={venue.id}
-                style={{ cursor: "pointer" }}
-                onClick={() => onSelectVenue(venue.id)}
-                role="button"
-                aria-label={venue.name}
-              >
-                <MapPin
-                  x={x}
-                  y={y}
-                  color={color}
-                  label={SPORT_LABEL[venue.sport] ?? "•"}
-                  big={isSelected}
-                />
-              </g>
-            );
-          })}
-        </>
-      </MapBg>
-    </div>
-  );
+  return <div ref={containerRef} className="relative h-full w-full" />;
 }
 
 export default MapInner;
