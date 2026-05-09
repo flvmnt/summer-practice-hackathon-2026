@@ -1,5 +1,6 @@
 import {
   boolean,
+  date,
   decimal,
   index,
   jsonb,
@@ -96,6 +97,52 @@ export const profilePhotos = pgTable(
     index("profile_photos_user_created_idx").on(table.userId, table.createdAt),
     index("profile_photos_demo_run_idx").on(table.demoRunId),
     uniqueIndex("profile_photos_object_key_unique").on(table.objectKey),
+  ],
+);
+
+export const prompts = pgTable(
+  "prompts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    demoRunId: uuid("demo_run_id").references(() => demoRuns.id, {
+      onDelete: "cascade",
+    }),
+    windowDate: date("window_date").notNull(),
+    windowSlot: varchar("window_slot", { length: 12 }).notNull(),
+    messageText: text("message_text"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("prompt_date_slot_unique").on(table.windowDate, table.windowSlot),
+    index("prompts_demo_run_idx").on(table.demoRunId),
+  ],
+);
+
+export const availabilityResponses = pgTable(
+  "availability_responses",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    demoRunId: uuid("demo_run_id").references(() => demoRuns.id, {
+      onDelete: "cascade",
+    }),
+    promptId: uuid("prompt_id")
+      .notNull()
+      .references(() => prompts.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    answer: varchar("answer", { length: 3 }).notNull(),
+    sportPrefs: text("sport_prefs").array(),
+    lat: decimal("lat", { precision: 9, scale: 6 }),
+    lng: decimal("lng", { precision: 9, scale: 6 }),
+    maxDistanceKm: smallint("max_distance_km"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("availability_prompt_user_unique").on(table.promptId, table.userId),
+    index("availability_user_idx").on(table.userId),
+    index("availability_demo_run_idx").on(table.demoRunId),
   ],
 );
 

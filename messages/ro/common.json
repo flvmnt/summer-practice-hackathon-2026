@@ -202,8 +202,34 @@
     }
   },
   "today": {
-    "title": "ShowUpToday urmeaza.",
-    "body": "Faza 0 dovedeste doar scheletul deployabil. Autentificarea, onboarding-ul, prompturile, potrivirea si chatul vor fi livrate in ordinea documentata inainte ca pagina sa revendice puncte."
+    "back": "Inapoi",
+    "title": "ShowUpToday",
+    "body": "Raspunde o singura data pentru fereastra activa din Romania. Un raspuns Da te pune in coada pentru potrivirea determinista din urmatoarea felie.",
+    "card": {
+      "promptLabel": "Prompt activ",
+      "yes": "Da, pot juca",
+      "no": "Nu azi",
+      "queuedTitle": "Esti in coada",
+      "queuedBody": "Raspunsul este salvat. Potrivirea este urmatoarea felie de implementare, deci nu revendicam inca un grup.",
+      "unavailableTitle": "Marcat indisponibil",
+      "unavailableBody": "Raspunsul este salvat si poate fi schimbat cat timp aceasta fereastra este activa.",
+      "genericError": "Raspunsul nu a putut fi salvat. Verifica sesiunea si incearca din nou.",
+      "sportPrefs": "Folosim sporturile selectate",
+      "maxDistance": "Raza",
+      "km": "km",
+      "sports": {
+        "football": "Fotbal",
+        "basketball": "Baschet",
+        "tennis": "Tenis",
+        "volleyball": "Volei",
+        "badminton": "Badminton",
+        "running": "Alergare",
+        "cycling": "Ciclism",
+        "yoga": "Yoga",
+        "hiking": "Drumetie",
+        "table_tennis": "Tenis de masa"
+      }
+    }
   },
   "demo": {
     "title": "Placeholder pentru Mod juriu",

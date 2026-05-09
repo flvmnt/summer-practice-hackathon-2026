@@ -202,8 +202,34 @@
     }
   },
   "today": {
-    "title": "ShowUpToday is next.",
-    "body": "Phase 0 only proves the deployable shell. Auth, onboarding, prompts, matching, and chat land in the documented order before this page claims rubric credit."
+    "back": "Back",
+    "title": "ShowUpToday",
+    "body": "Answer once for the active Romania prompt window. A Yes response queues you for deterministic matching in the next slice.",
+    "card": {
+      "promptLabel": "Active prompt",
+      "yes": "Yes, I can play",
+      "no": "Not today",
+      "queuedTitle": "You are queued",
+      "queuedBody": "The response is saved. Matching is the next implementation slice, so no group is claimed yet.",
+      "unavailableTitle": "Marked unavailable",
+      "unavailableBody": "The response is saved and can be changed while this prompt window is active.",
+      "genericError": "The response could not be saved. Check your session and try again.",
+      "sportPrefs": "Using your selected sports",
+      "maxDistance": "Radius",
+      "km": "km",
+      "sports": {
+        "football": "Football",
+        "basketball": "Basketball",
+        "tennis": "Tennis",
+        "volleyball": "Volleyball",
+        "badminton": "Badminton",
+        "running": "Running",
+        "cycling": "Cycling",
+        "yoga": "Yoga",
+        "hiking": "Hiking",
+        "table_tennis": "Table tennis"
+      }
+    }
   },
   "demo": {
     "title": "Judge Mode placeholder",
