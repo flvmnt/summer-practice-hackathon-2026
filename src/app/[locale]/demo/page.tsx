@@ -7,6 +7,7 @@ import { RubricSection } from "@/components/demo/RubricSection";
 import { Glyph } from "@/components/ui/Glyph";
 import { getDb } from "@/db";
 import type { AppLocale } from "@/i18n/routing";
+import { ensureDemoSeeded } from "@/lib/demo/ensure-seeded";
 import { isDemoModeEnabled } from "@/lib/demo/guard";
 import {
   RUBRIC_CATEGORIES,
@@ -46,6 +47,8 @@ export default async function JudgeModePage({
   if (!isDemoModeEnabled()) {
     notFound();
   }
+
+  await ensureDemoSeeded();
 
   const t = await getTranslations("demo");
   const controlsCopy = {
