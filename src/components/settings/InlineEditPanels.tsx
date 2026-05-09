@@ -6,6 +6,7 @@ import { Pill } from "@/components/ui/Pill";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { ProfilePhotoEditor } from "@/components/settings/ProfilePhotoEditor";
 import { SettingsSection } from "@/components/settings/SettingsSection";
+import { SportsAiSuggestions } from "@/components/settings/SportsAiSuggestions";
 import {
   togglePublicVisibilityAction,
   updateLocationAction,
@@ -57,6 +58,12 @@ type Copy = {
   photoChangeLabel: string;
   photoUploadingLabel: string;
   photoErrorTooLarge: string;
+  aiBioButton: string;
+  aiPhotoButton: string;
+  aiLoadingLabel: string;
+  aiNoBio: string;
+  aiNoResults: string;
+  aiRateLimited: string;
 };
 
 const BIO_MAX = 240;
@@ -594,8 +601,27 @@ function SportsEditor({
     );
   }
 
+  function addSportFromSuggestion(key: SportKey) {
+    setDraft((prev) => (key in prev ? prev : { ...prev, [key]: "casual" }));
+  }
+
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-3">
+      <SportsAiSuggestions
+        copy={{
+          bioButton: copy.aiBioButton,
+          photoButton: copy.aiPhotoButton,
+          loadingLabel: copy.aiLoadingLabel,
+          noBio: copy.aiNoBio,
+          noResults: copy.aiNoResults,
+          errorGeneric: copy.errorGeneric,
+          errorTooLarge: copy.photoErrorTooLarge,
+          rateLimited: copy.aiRateLimited,
+          sportLabels: copy.sportLabels,
+        }}
+        selected={draftKeys}
+        onAdd={addSportFromSuggestion}
+      />
       <div
         className="grid gap-2"
         style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}
