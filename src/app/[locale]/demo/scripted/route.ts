@@ -1,6 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isDemoModeEnabled } from "@/lib/demo/guard";
 import { startScriptedDemoSession } from "@/lib/demo/scripted-login";
+import {
+  WALKTHROUGH_COOKIE,
+  WALKTHROUGH_COOKIE_MAX_AGE,
+} from "@/lib/demo/walkthrough";
 
 export const dynamic = "force-dynamic";
 
@@ -18,5 +22,14 @@ export async function GET(
   const started = await startScriptedDemoSession();
   const target = started ? `/${safeLocale}/today` : `/${safeLocale}/login`;
 
-  return NextResponse.redirect(new URL(target, request.url));
+  const response = NextResponse.redirect(new URL(target, request.url));
+  if (started) {
+    response.cookies.set(WALKTHROUGH_COOKIE, "1", {
+      httpOnly: false,
+      sameSite: "lax",
+      path: "/",
+      maxAge: WALKTHROUGH_COOKIE_MAX_AGE,
+    });
+  }
+  return response;
 }
