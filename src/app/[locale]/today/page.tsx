@@ -1,7 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { HeaderBell } from "@/components/layout/HeaderBell";
-import { SetupBanner } from "@/components/onboarding/SetupBanner";
 import { TodayPromptCard } from "@/components/today/TodayPromptCard";
 import { Glyph } from "@/components/ui/Glyph";
 import type { AppLocale } from "@/i18n/routing";
@@ -47,23 +46,6 @@ export default async function TodayPage({
     redirect(`/${locale}/login`);
   }
   const unread = await unreadCount(user.id);
-
-  // Required onboarding is complete; surface optional photo step as a setup
-  // banner per spec (AGENTS.md UX rules).
-  const requiredComplete = 3;
-  const totalSteps = 4;
-  // We don't have a photoUrl on the onboarding state - the optional step is
-  // always surfaced until the user closes it / wires up presence detection.
-  const showSetup = true;
-  const setupCopy = {
-    ariaLabel: t("setup.ariaLabel"),
-    progress: t("setup.progress", {
-      complete: requiredComplete,
-      total: totalSteps,
-    }),
-    next: t("setup.next", { label: t("photoSetup") }),
-    continue: t("setup.continue"),
-  };
 
   return (
     <main
@@ -159,32 +141,10 @@ export default async function TodayPage({
             >
               {t("body")}
             </p>
-            {showSetup ? (
-              <div className="mt-8">
-                <SetupBanner
-                  complete={requiredComplete}
-                  total={totalSteps}
-                  nextLabel={t("photoSetup")}
-                  nextHref={`/${locale}/onboarding/profile`}
-                  copy={setupCopy}
-                />
-              </div>
-            ) : null}
           </section>
 
           {/* Hero column */}
           <section className="flex flex-col gap-4">
-            {showSetup ? (
-              <div className="lg:hidden">
-                <SetupBanner
-                  complete={requiredComplete}
-                  total={totalSteps}
-                  nextLabel={t("photoSetup")}
-                  nextHref={`/${locale}/onboarding/profile`}
-                  copy={setupCopy}
-                />
-              </div>
-            ) : null}
             <TodayPromptCard
               copy={t.raw("card")}
               group={todayState.data.group}
