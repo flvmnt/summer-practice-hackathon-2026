@@ -1,5 +1,7 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -17,14 +19,24 @@ type Props = {
 };
 
 /**
- * Sticky action bar that floats above the iOS keyboard via visualViewport.
+ * Sticky action bar that floats above the iOS keyboard via visualViewport
+ * and respects the iOS home-indicator safe-area inset.
  *
  * Math ported from Glamingo SetupMobileShell.tsx lines 17-34:
  *   offset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
  *
  * When the keyboard opens on iOS Safari, `visualViewport.height` shrinks and
  * `offsetTop` moves; we translate the bar up by the difference so the Next
- * button rides above the keyboard.
+ * button rides above the keyboard. The transform transition is disabled when
+ * `prefers-reduced-motion: reduce` is active.
+ *
+ * The bar uses `position: fixed` so it stays pinned to the viewport bottom
+ * regardless of content height. Page wrappers add bottom padding so the
+ * scrollable area never gets occluded by the bar.
+ *
+ * Mobile: full-bleed edge-to-edge background. Desktop: edge-to-edge tinted
+ * surface with content centered to max-w-xl, so the bar reads as its own
+ * elevated plane on wider viewports.
  */
 export function WizardStickyActionBar({
   primaryLabel,
@@ -38,7 +50,18 @@ export function WizardStickyActionBar({
   primaryIcon,
   className,
 }: Props) {
+  const t = useTranslations("onboarding.wizard");
   const [keyboardOffset, setKeyboardOffset] = useState(0);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => setPrefersReducedMotion(mql.matches);
+    apply();
+    mql.addEventListener("change", apply);
+    return () => mql.removeEventListener("change", apply);
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -60,51 +83,61 @@ export function WizardStickyActionBar({
     };
   }, []);
 
+  const resolvedSecondary = secondaryLabel ?? t("back");
+
+  const buttonBase = {
+    minHeight: 48,
+    fontSize: 14,
+    fontWeight: 600,
+    borderRadius: "var(--r-pill)",
+  } as const;
+
   return (
     <div
-      className={cn(
-        "sticky right-0 bottom-0 left-0 z-30",
-        className,
-      )}
+      className={cn("fixed inset-x-0 bottom-0 z-30", className)}
       style={{
-        background:
-          "color-mix(in oklch, var(--surface) 92%, transparent)",
+        background: "color-mix(in oklch, var(--surface) 94%, transparent)",
         borderTop: "1px solid var(--line)",
-        backdropFilter: "blur(14px)",
-        WebkitBackdropFilter: "blur(14px)",
-        padding: "10px 16px calc(env(safe-area-inset-bottom) + 12px)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        paddingTop: 12,
+        paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)",
         transform: `translateY(${-keyboardOffset}px)`,
-        transition: "transform var(--t-2) var(--ease)",
+        transition: prefersReducedMotion
+          ? "none"
+          : "transform var(--t-2) var(--ease)",
+        boxShadow: "0 -10px 28px -18px rgba(14, 26, 31, 0.22)",
       }}
     >
-      <div className="grid grid-cols-[1fr_1.6fr] gap-2">
+      <div className="mx-auto grid w-full max-w-xl grid-cols-[1fr_1.6fr] gap-2 px-4 sm:gap-3 sm:px-6">
         {secondaryHref ? (
           <a
             href={secondaryHref}
             className="btn-s2m btn-secondary"
-            style={{ minHeight: 48, fontSize: 14 }}
+            style={buttonBase}
           >
-            {secondaryLabel ?? "Back"}
+            {resolvedSecondary}
           </a>
         ) : (
           <button
             type="button"
             onClick={onSecondary}
             className="btn-s2m btn-secondary"
-            style={{ minHeight: 48, fontSize: 14 }}
-            disabled={!onSecondary && !secondaryHref}
+            style={buttonBase}
+            disabled={!onSecondary}
+            aria-disabled={!onSecondary}
           >
-            {secondaryLabel ?? "Back"}
+            {resolvedSecondary}
           </button>
         )}
-        {primaryHref && !primaryDisabled ? (
+        {primaryHref && !primaryDisabled && !primaryLoading ? (
           <a
             href={primaryHref}
             aria-busy={primaryLoading}
             className="btn-s2m"
-            style={{ minHeight: 48, fontSize: 14 }}
+            style={buttonBase}
           >
-            {primaryLoading ? "…" : primaryLabel}
+            <span>{primaryLabel}</span>
             {primaryIcon}
           </a>
         ) : (
@@ -112,17 +145,39 @@ export function WizardStickyActionBar({
             type="button"
             onClick={onPrimary}
             disabled={primaryDisabled || primaryLoading}
+            aria-disabled={primaryDisabled || primaryLoading}
             aria-busy={primaryLoading}
-            className="btn-s2m"
+            aria-label={primaryLoading ? t("loading") : undefined}
+            className="btn-s2m motion-reduce:transition-none"
             style={{
-              minHeight: 48,
-              fontSize: 14,
-              opacity: primaryDisabled ? 0.4 : 1,
-              cursor: primaryDisabled ? "not-allowed" : "pointer",
+              ...buttonBase,
+              opacity: primaryDisabled && !primaryLoading ? 0.5 : 1,
+              cursor:
+                primaryDisabled || primaryLoading ? "not-allowed" : "pointer",
+              filter:
+                primaryDisabled && !primaryLoading
+                  ? "saturate(0.6)"
+                  : undefined,
+              gap: 6,
             }}
           >
-            {primaryLoading ? "…" : primaryLabel}
-            {primaryIcon}
+            {primaryLoading ? (
+              <>
+                <Loader2
+                  size={16}
+                  aria-hidden="true"
+                  className={
+                    prefersReducedMotion ? undefined : "animate-spin"
+                  }
+                />
+                <span>{primaryLabel}</span>
+              </>
+            ) : (
+              <>
+                <span>{primaryLabel}</span>
+                {primaryIcon}
+              </>
+            )}
           </button>
         )}
       </div>

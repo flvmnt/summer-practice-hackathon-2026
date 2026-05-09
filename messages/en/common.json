@@ -215,7 +215,8 @@
           "cycling": "Cycling",
           "yoga": "Yoga",
           "hiking": "Hiking",
-          "table_tennis": "Table tennis"
+          "table_tennis": "Table tennis",
+          "padel": "Padel"
         }
       },
       "headerTitle": "Choose sports",
@@ -293,6 +294,14 @@
       "skip": "Skip",
       "finish": "Finish",
       "back": "Back"
+    },
+    "wizard": {
+      "stepOfTotal": "Step {step} of {total}",
+      "progressLabel": "Onboarding progress",
+      "back": "Back",
+      "next": "Next",
+      "loading": "Saving…",
+      "backAria": "Go back to the previous step"
     }
   },
   "today": {
@@ -327,6 +336,51 @@
         "yoga": "Yoga",
         "hiking": "Hiking",
         "table_tennis": "Table tennis"
+      },
+      "found": {
+        "in": "Match found",
+        "groupHeadline": "{sport} crew",
+        "memberCount": "{current}/{ideal} players",
+        "captainLine": "{name} is captain tonight",
+        "noCaptainLine": "Captain to be assigned",
+        "confirm": "Confirm participation",
+        "confirming": "Confirming…",
+        "why": "Why this group?",
+        "venueName": "Suggested venue nearby",
+        "venueSub": "Captain will lock the spot · ~2 km",
+        "errorBody": "Couldn't confirm right now. Open the group to check your status."
+      },
+      "queued": {
+        "title": "We're looking for your group",
+        "subhead": "Hold tight — we're scanning every nearby player who said yes today.",
+        "lookingFor": "Looking for {sport}",
+        "searchingLabel": "Searching",
+        "elapsedJustNow": "just now",
+        "elapsedSeconds": "{count}s ago",
+        "elapsedMinutes": "{count} min ago",
+        "progressNearby": "Scanning nearby players",
+        "progressSkill": "Matching skill levels",
+        "progressFinal": "Finalizing your crew",
+        "planB": "Plan B",
+        "planBHint": "While you wait, try one of these:",
+        "tryRun": "Try a nearby run instead",
+        "createSmall": "Create a small manual event"
+      },
+      "saidNo": {
+        "title": "Rest day logged.",
+        "subhead": "See you tomorrow. Your streak is safe.",
+        "change": "Change to Yes",
+        "browseHint": "Or browse public events nearby"
+      },
+      "confirmed": {
+        "label": "Confirmed for tonight",
+        "startsLabel": "Starts {time}",
+        "headline": "{sport} · {time}",
+        "venueLine": "{venue}",
+        "rosterLine": "{going} going · {maybe} maybe",
+        "openChat": "Open chat",
+        "calendar": "Add to calendar",
+        "calendarPending": "Calendar export pending"
       }
     },
     "greeting": "Today",
@@ -462,6 +516,57 @@
         "title": "No messages yet",
         "body": "Say where and when works for you."
       }
+    },
+    "captainBriefPanel": {
+      "ariaLabel": "Captain brief",
+      "header": "Captain brief",
+      "confirmedSummary": "{confirmed}/{total} confirmed",
+      "squadLabel": "Squad",
+      "planLabel": "Plan",
+      "sections": {
+        "venue": "Venue",
+        "kickoff": "Kickoff",
+        "weather": "Weather"
+      },
+      "status": {
+        "confirmed": "Confirmed",
+        "pending": "Pending",
+        "declined": "Declined"
+      },
+      "empty": {
+        "heading": "No plan locked in yet",
+        "body": {
+          "captain": "Lock a venue and kickoff time when you're ready — your squad sees updates instantly.",
+          "viewer": "Your captain will pin the venue, kickoff time, and weather once decided."
+        },
+        "venue": {
+          "captain": "You haven't picked a venue yet",
+          "viewer": "Captain hasn't picked a venue yet"
+        },
+        "kickoff": {
+          "captain": "You haven't set a kickoff time yet",
+          "viewer": "Captain hasn't set a kickoff time yet"
+        },
+        "weather": {
+          "captain": "Forecast appears once the kickoff time is set",
+          "viewer": "Forecast appears once the kickoff time is set"
+        }
+      }
+    }
+  },
+  "formationTimeline": {
+    "title": "Why this group?",
+    "progressLabel": "{done} of {total} signals confirmed",
+    "scoreLabel": "Match score {score}",
+    "updatedAt": "Updated {time}",
+    "state": {
+      "done": "Confirmed",
+      "active": "Checking",
+      "pending": "Waiting"
+    },
+    "empty": {
+      "title": "Waiting for the first signal",
+      "body": "We'll fill in distance, sport, skill mix, and group fit as members answer Yes."
     }
   },
   "event": {
@@ -607,7 +712,9 @@
       "aiCache": "AI cache",
       "aiCacheLoaded": "{count} entries cached",
       "aiCacheEmpty": "Empty",
-      "build": "Build"
+      "build": "Build",
+      "seedEmptyHint": "Demo not seeded yet — run /api/demo/seed",
+      "aiCacheEmptyHint": "Cache warms after the first AI call"
     },
     "controls": {
       "seed": "Seed demo",
@@ -635,7 +742,19 @@
       "total": "Total",
       "claimed": "Claimed",
       "max": "Max"
-    }
+    },
+    "categories": {
+      "foundation": "Foundation",
+      "today_matching": "Today + Matching",
+      "group_chat": "Group + Chat",
+      "events_voting": "Events + Voting",
+      "maps_location": "Maps + Location",
+      "ai": "AI",
+      "notifications_calendar": "Notifications + Calendar",
+      "i18n_sharing": "i18n + Sharing",
+      "production_demo": "Production + Demo"
+    },
+    "navAria": "Rubric sections"
   },
   "invitePreview": {
     "back": "Back to ShowUp2Move",

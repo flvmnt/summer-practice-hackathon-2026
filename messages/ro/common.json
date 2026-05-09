@@ -215,7 +215,8 @@
           "cycling": "Ciclism",
           "yoga": "Yoga",
           "hiking": "Drumeție",
-          "table_tennis": "Tenis de masă"
+          "table_tennis": "Tenis de masă",
+          "padel": "Padel"
         }
       },
       "headerTitle": "Alege sporturile",
@@ -293,6 +294,14 @@
       "skip": "Sari peste",
       "finish": "Finalizează",
       "back": "Înapoi"
+    },
+    "wizard": {
+      "stepOfTotal": "Pasul {step} din {total}",
+      "progressLabel": "Progres onboarding",
+      "back": "Înapoi",
+      "next": "Continuă",
+      "loading": "Se salvează…",
+      "backAria": "Înapoi la pasul anterior"
     }
   },
   "today": {
@@ -327,6 +336,51 @@
         "yoga": "Yoga",
         "hiking": "Drumeție",
         "table_tennis": "Tenis de masă"
+      },
+      "found": {
+        "in": "Potrivire găsită",
+        "groupHeadline": "Echipă de {sport}",
+        "memberCount": "{current}/{ideal} jucători",
+        "captainLine": "{name} e căpitan diseară",
+        "noCaptainLine": "Căpitanul va fi desemnat",
+        "confirm": "Confirmă participarea",
+        "confirming": "Se confirmă…",
+        "why": "De ce acest grup?",
+        "venueName": "Loc sugerat în apropiere",
+        "venueSub": "Căpitanul fixează locul · ~2 km",
+        "errorBody": "Nu s-a putut confirma acum. Deschide grupul pentru a verifica statusul."
+      },
+      "queued": {
+        "title": "Îți căutăm echipa",
+        "subhead": "Stai pe fază — verificăm toți jucătorii din apropiere care au zis da azi.",
+        "lookingFor": "Caut {sport}",
+        "searchingLabel": "Caut",
+        "elapsedJustNow": "chiar acum",
+        "elapsedSeconds": "acum {count} s",
+        "elapsedMinutes": "acum {count} min",
+        "progressNearby": "Scanez jucătorii din apropiere",
+        "progressSkill": "Potrivesc nivelurile",
+        "progressFinal": "Finalizez echipa",
+        "planB": "Planul B",
+        "planBHint": "Cât aștepți, încearcă una dintre acestea:",
+        "tryRun": "Încearcă o alergare în apropiere",
+        "createSmall": "Creează un eveniment mic"
+      },
+      "saidNo": {
+        "title": "Zi de odihnă marcată.",
+        "subhead": "Ne vedem mâine. Seria ta e în siguranță.",
+        "change": "Schimbă în Da",
+        "browseHint": "Sau vezi evenimentele publice din apropiere"
+      },
+      "confirmed": {
+        "label": "Confirmat pentru diseară",
+        "startsLabel": "Începe la {time}",
+        "headline": "{sport} · {time}",
+        "venueLine": "{venue}",
+        "rosterLine": "{going} confirmați · {maybe} poate",
+        "openChat": "Deschide chat",
+        "calendar": "Adaugă în calendar",
+        "calendarPending": "Export calendar în pregătire"
       }
     },
     "greeting": "Astăzi",
@@ -462,6 +516,57 @@
         "title": "Niciun mesaj încă",
         "body": "Spune când și unde îți convine."
       }
+    },
+    "captainBriefPanel": {
+      "ariaLabel": "Brief căpitan",
+      "header": "Brief căpitan",
+      "confirmedSummary": "{confirmed}/{total} confirmați",
+      "squadLabel": "Echipă",
+      "planLabel": "Plan",
+      "sections": {
+        "venue": "Locație",
+        "kickoff": "Start",
+        "weather": "Vreme"
+      },
+      "status": {
+        "confirmed": "Confirmat",
+        "pending": "În așteptare",
+        "declined": "Refuzat"
+      },
+      "empty": {
+        "heading": "Niciun plan fixat încă",
+        "body": {
+          "captain": "Fixează locația și ora de start când ești gata — echipa vede actualizările imediat.",
+          "viewer": "Căpitanul va fixa locația, ora de start și prognoza odată ce decide."
+        },
+        "venue": {
+          "captain": "Nu ai ales încă o locație",
+          "viewer": "Căpitanul nu a ales încă o locație"
+        },
+        "kickoff": {
+          "captain": "Nu ai stabilit încă ora de start",
+          "viewer": "Căpitanul nu a stabilit încă ora de start"
+        },
+        "weather": {
+          "captain": "Prognoza apare după setarea orei de start",
+          "viewer": "Prognoza apare după setarea orei de start"
+        }
+      }
+    }
+  },
+  "formationTimeline": {
+    "title": "De ce această echipă?",
+    "progressLabel": "{done} din {total} semnale confirmate",
+    "scoreLabel": "Scor potrivire {score}",
+    "updatedAt": "Actualizat la {time}",
+    "state": {
+      "done": "Confirmat",
+      "active": "Se verifică",
+      "pending": "În așteptare"
+    },
+    "empty": {
+      "title": "Așteptăm primul semnal",
+      "body": "Completăm distanța, sportul, mixul de nivel și mărimea echipei pe măsură ce membrii spun Da."
     }
   },
   "event": {
@@ -607,7 +712,9 @@
       "aiCache": "Cache AI",
       "aiCacheLoaded": "{count} intrări în cache",
       "aiCacheEmpty": "Gol",
-      "build": "Build"
+      "build": "Build",
+      "seedEmptyHint": "Demo nepopulat încă — rulează /api/demo/seed",
+      "aiCacheEmptyHint": "Cache-ul se umple după primul apel AI"
     },
     "controls": {
       "seed": "Populează demo",
@@ -635,7 +742,19 @@
       "total": "Total",
       "claimed": "Revendicat",
       "max": "Maxim"
-    }
+    },
+    "categories": {
+      "foundation": "Fundație",
+      "today_matching": "Today + Matching",
+      "group_chat": "Grup + Chat",
+      "events_voting": "Evenimente + Vot",
+      "maps_location": "Hartă + Locație",
+      "ai": "AI",
+      "notifications_calendar": "Notificări + Calendar",
+      "i18n_sharing": "i18n + Partajare",
+      "production_demo": "Producție + Demo"
+    },
+    "navAria": "Secțiuni rubrică"
   },
   "invitePreview": {
     "back": "Înapoi la ShowUp2Move",
