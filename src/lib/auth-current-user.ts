@@ -55,3 +55,26 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     locale: user.locale === "en" ? "en" : "ro",
   };
 }
+
+export class UnauthorizedError extends Error {
+  constructor() {
+    super("unauthorized");
+    this.name = "UnauthorizedError";
+  }
+}
+
+export async function requireUser(): Promise<CurrentUser> {
+  const user = await getCurrentUser();
+  if (!user) {
+    throw new UnauthorizedError();
+  }
+  return user;
+}
+
+export async function requireAdmin(): Promise<CurrentUser> {
+  const user = await requireUser();
+  if (!user.isAdmin) {
+    throw new UnauthorizedError();
+  }
+  return user;
+}
