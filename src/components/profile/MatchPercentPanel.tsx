@@ -13,9 +13,10 @@ export type MatchPercentPanelProps = {
 };
 
 /**
- * Compatibility readout for the public profile. Uses placeholder logic - the
- * `percent` and `breakdown` come from the page-level computation. A real
- * compatibility scoring lib lives behind a TODO until matching agent A* lands.
+ * Compatibility readout for the public profile. `percent` and `breakdown`
+ * come from `getMatchPercentForViewer()` in `src/lib/profile-public.ts`,
+ * which calls `scoreCompatibility()` (deterministic + AI-enriched when
+ * Groq is configured). Pure presentation here.
  */
 export function MatchPercentPanel({
   title,
