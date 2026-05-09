@@ -77,7 +77,7 @@ export default async function EventPage({
   const startsAt = new Date(event.whenAt);
   const endsAt = new Date(startsAt.getTime() + event.durationMin * 60_000);
   const whenLabel = whenFmt.format(startsAt);
-  const whenRange = `${timeFmt.format(startsAt)} – ${timeFmt.format(endsAt)}`;
+  const whenRange = `${timeFmt.format(startsAt)} - ${timeFmt.format(endsAt)}`;
 
   const myAttendee = attendees.find((a) => a.userId === currentUserId);
   const initialRsvp = asRsvp(myAttendee?.status);

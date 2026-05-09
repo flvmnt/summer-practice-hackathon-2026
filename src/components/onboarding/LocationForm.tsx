@@ -53,7 +53,7 @@ const SLIDER_MAX = 10;
 const SLIDER_STEP = 0.5;
 
 // Schema currently locks accepted distances to [1, 3, 5, 10]; the slider
-// presents a continuous 1–10 km feel and snaps on submit so the action accepts.
+// presents a continuous 1-10 km feel and snaps on submit so the action accepts.
 function snapDistance(value: number): (typeof DISTANCE_OPTIONS_KM)[number] {
   let best: (typeof DISTANCE_OPTIONS_KM)[number] = DISTANCE_OPTIONS_KM[0];
   let bestDelta = Number.POSITIVE_INFINITY;

@@ -304,8 +304,8 @@ function NotificationRow({
                 color: "var(--ink-muted)",
                 background: "transparent",
                 border: 0,
-                padding: "8px 4px",
-                minHeight: 32,
+                padding: "12px 4px",
+                minHeight: 44,
                 cursor: "pointer",
               }}
             >

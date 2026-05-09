@@ -238,8 +238,12 @@ export function SportsForm({
       <WizardMobileHeader
         step={2}
         total={3}
-        title="Choose sports"
-        subtitle="Pick what you like to play"
+        title={locale === "ro" ? "Alege sporturile" : "Choose sports"}
+        subtitle={
+          locale === "ro"
+            ? "Alege ce îți place să joci"
+            : "Pick what you like to play"
+        }
       />
 
       <form ref={formRef} className="contents" action={() => submit()}>
