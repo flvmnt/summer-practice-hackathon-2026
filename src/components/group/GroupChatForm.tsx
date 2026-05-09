@@ -233,7 +233,13 @@ export function GroupChatForm({
     };
   }, []);
 
-  const isEmpty = messages.length === 0;
+  const isEmpty = mergedMessages.length === 0;
+  const streamLabel =
+    streamStatus === "live"
+      ? copy.liveLabel
+      : streamStatus === "reconnecting"
+        ? copy.reconnectingLabel
+        : undefined;
 
   return (
     <div
@@ -247,10 +253,22 @@ export function GroupChatForm({
         role="log"
         aria-live="polite"
       >
+        {streamLabel ? (
+          <div
+            className="mono self-center rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em]"
+            style={{
+              background: "var(--surface)",
+              color: "var(--ink-muted)",
+              border: "1px solid var(--line)",
+            }}
+          >
+            {streamLabel}
+          </div>
+        ) : null}
         {isEmpty ? (
           <EmptyChat title={copy.emptyTitle} body={copy.emptyBody} />
         ) : (
-          messages.map((message) => (
+          mergedMessages.map((message) => (
             <MessageRow
               key={message.id}
               message={message}

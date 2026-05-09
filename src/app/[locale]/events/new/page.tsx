@@ -41,6 +41,7 @@ const COPY = {
     manualVenueSearch: "Search venues",
     manualSuggested: "Suggested",
     manualSelected: "Selected",
+    manualChange: "Change",
     manualSubmit: "Create event",
     manualSubmitting: "Creating…",
     sportLabels: {
@@ -81,6 +82,7 @@ const COPY = {
     manualVenueSearch: "Caută locuri",
     manualSuggested: "Sugestii",
     manualSelected: "Selectat",
+    manualChange: "Schimbă",
     manualSubmit: "Creează eveniment",
     manualSubmitting: "Se creează…",
     sportLabels: {

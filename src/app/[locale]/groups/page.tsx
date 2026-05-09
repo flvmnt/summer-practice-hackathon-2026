@@ -1,5 +1,4 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { GroupListItem } from "@/components/groups/GroupListItem";
 import { HeaderBell } from "@/components/layout/HeaderBell";

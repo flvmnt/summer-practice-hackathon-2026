@@ -18,7 +18,6 @@ import {
 } from "@/lib/contracts/profile";
 import {
   setUserSportsAction,
-  updateOnboardingLocationAction,
   updateOnboardingProfileAction,
 } from "@/lib/onboarding";
 import { clearSession, getSession, saveUserSession } from "@/lib/session";
@@ -86,7 +85,50 @@ export async function updateLocationAction(
     return actionError(auth.error);
   }
 
-  return updateOnboardingLocationAction(parsed.data);
+  try {
+    const [user] = await getDb()
+      .update(users)
+      .set({
+        city: parsed.data.city,
+        homeLat: parsed.data.homeLat.toFixed(6),
+        homeLng: parsed.data.homeLng.toFixed(6),
+        maxDistanceKm: parsed.data.maxDistanceKm,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(users.id, auth.user.id),
+          isNull(users.bannedAt),
+          isNull(users.deletedAt),
+        ),
+      )
+      .returning({
+        id: users.id,
+        username: users.username,
+        fullName: users.fullName,
+        isAdmin: users.isAdmin,
+        locale: users.locale,
+        updatedAt: users.updatedAt,
+      });
+
+    if (!user) {
+      await clearSession();
+      return actionError("unauthorized");
+    }
+
+    await saveUserSession({
+      userId: user.id,
+      username: user.username,
+      fullName: user.fullName,
+      isAdmin: user.isAdmin,
+      locale: user.locale === "en" ? "en" : "ro",
+      userUpdatedAt: user.updatedAt.toISOString(),
+    });
+
+    return actionOk();
+  } catch {
+    return actionError("update_failed");
+  }
 }
 
 export async function togglePublicVisibilityAction(

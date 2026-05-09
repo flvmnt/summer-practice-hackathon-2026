@@ -49,6 +49,12 @@ function hrefFor(pathname: string, href: string) {
 export function MobileTabBar({ tabs = DEFAULT_TABS, className }: Props) {
   const pathname = usePathname() ?? "/";
   const t = useTranslations("sidebar");
+  const strippedPathname = pathname.replace(/^\/[a-z]{2}(?=\/|$)/, "") || "/";
+
+  if (strippedPathname === "/onboarding" || strippedPathname.startsWith("/onboarding/")) {
+    return null;
+  }
+
   return (
     <nav
       aria-label={t("primaryAriaLabel")}

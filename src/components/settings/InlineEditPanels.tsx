@@ -30,6 +30,7 @@ type Copy = {
   saving: string;
   saved: string;
   errorGeneric: string;
+  usernameLabel: string;
   fullNameLabel: string;
   bioLabel: string;
   noBio: string;
@@ -233,6 +234,7 @@ export type InlineEditPanelsProps = {
   section: SectionKey;
   initial: {
     fullName: string;
+    username: string;
     bio: string | null;
     photoUrl: string | null;
     city: string | null;
@@ -255,6 +257,7 @@ export function InlineEditPanels(props: InlineEditPanelsProps) {
       >
         <ProfileEditor
           fullName={props.initial.fullName}
+          username={props.initial.username}
           bio={props.initial.bio}
           photoUrl={props.initial.photoUrl}
           copy={props.copy}
@@ -303,11 +306,13 @@ export function InlineEditPanels(props: InlineEditPanelsProps) {
 
 function ProfileEditor({
   fullName: initialFullName,
+  username,
   bio: initialBio,
   photoUrl,
   copy,
 }: {
   fullName: string;
+  username: string;
   bio: string | null;
   photoUrl: string | null;
   copy: Copy;
@@ -375,6 +380,7 @@ function ProfileEditor({
           }}
         />
         <div className="flex flex-col gap-2">
+          <ReadField label={copy.usernameLabel} value={`@${username}`} />
           <ReadField label={copy.fullNameLabel} value={savedFullName} />
           <ReadField
             label={copy.bioLabel}
@@ -393,6 +399,8 @@ function ProfileEditor({
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-3">
+      <ReadField label={copy.usernameLabel} value={`@${username}`} />
+
       <div className="grid gap-1.5">
         <label
           htmlFor="settings-full-name"

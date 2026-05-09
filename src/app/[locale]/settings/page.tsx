@@ -10,6 +10,7 @@ import {
   SettingsTabs,
   type SettingsSectionId,
 } from "@/components/settings/SettingsTabs";
+import { Avatar } from "@/components/ui/Avatar";
 import { Glyph } from "@/components/ui/Glyph";
 import { getDb } from "@/db";
 import { users } from "@/db/schema";
@@ -71,6 +72,7 @@ const COPY = {
       saving: "Saving…",
       saved: "Saved.",
       errorGeneric: "Something went wrong. Try again.",
+      usernameLabel: "Nume utilizator",
       fullNameLabel: "Display name",
       bioLabel: "Short bio",
       noBio: "Add a bio so captains can form better groups.",
@@ -163,6 +165,7 @@ const COPY = {
       saving: "Se salvează…",
       saved: "Salvat.",
       errorGeneric: "Ceva nu a mers. Încearcă din nou.",
+      usernameLabel: "Username",
       fullNameLabel: "Nume afișat",
       bioLabel: "Bio scurt",
       noBio: "Adaugă un bio ca să formăm grupuri mai bune.",
@@ -287,7 +290,8 @@ export default async function SettingsPage({
         color: "var(--ink)",
         paddingBottom: "calc(78px + env(safe-area-inset-bottom) + 16px)",
       }}
-    >      <header className="flex items-center gap-3 px-5 pt-6 md:hidden">
+    >
+      <header className="flex items-center gap-3 px-5 pt-6 md:hidden">
         <Link
           href={`/${locale}/today`}
           aria-label={copy.back}
@@ -303,6 +307,12 @@ export default async function SettingsPage({
         >
           <Glyph.back size={16} />
         </Link>
+        <Avatar
+          src={photoUrl}
+          name={user.fullName}
+          size={42}
+          alt={user.fullName}
+        />
         <div className="min-w-0 flex-1">
           <div
             className="mono"
@@ -340,47 +350,55 @@ export default async function SettingsPage({
 
       {/* Desktop header - global sidebar handles back nav, so no back arrow. */}
       <header className="hidden items-end justify-between gap-4 px-8 pt-10 md:flex">
-        <div className="min-w-0">
-          <div
-            className="mono"
-            style={{
-              fontSize: 11,
-              color: "var(--ink-muted)",
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-            }}
-          >
-            {copy.eyebrow}
+        <div className="flex min-w-0 items-center gap-4">
+          <Avatar
+            src={photoUrl}
+            name={user.fullName}
+            size={68}
+            alt={user.fullName}
+          />
+          <div className="min-w-0">
+            <div
+              className="mono"
+              style={{
+                fontSize: 11,
+                color: "var(--ink-muted)",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+              }}
+            >
+              {copy.eyebrow}
+            </div>
+            <h1
+              className="display"
+              style={{
+                fontSize: 32,
+                lineHeight: 1.05,
+                marginTop: 4,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              {copy.title}
+            </h1>
+            <div
+              className="mono"
+              style={{
+                marginTop: 6,
+                fontSize: 13,
+                color: "var(--ink-muted)",
+                letterSpacing: "0.01em",
+              }}
+            >
+              <span style={{ color: "var(--accent-deep)" }}>@</span>
+              {user.username}
+            </div>
+            <p
+              className="mt-2 max-w-xl text-[13px]"
+              style={{ color: "var(--ink-muted)", lineHeight: 1.5 }}
+            >
+              {copy.subtitle}
+            </p>
           </div>
-          <h1
-            className="display"
-            style={{
-              fontSize: 32,
-              lineHeight: 1.05,
-              marginTop: 4,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            {copy.title}
-          </h1>
-          <div
-            className="mono"
-            style={{
-              marginTop: 6,
-              fontSize: 13,
-              color: "var(--ink-muted)",
-              letterSpacing: "0.01em",
-            }}
-          >
-            <span style={{ color: "var(--accent-deep)" }}>@</span>
-            {user.username}
-          </div>
-          <p
-            className="mt-2 max-w-xl text-[13px]"
-            style={{ color: "var(--ink-muted)", lineHeight: 1.5 }}
-          >
-            {copy.subtitle}
-          </p>
         </div>
         <div className="flex items-center gap-2">
           <LocaleFlagToggle locale={locale} pathWithinLocale="/settings" />
@@ -403,6 +421,7 @@ export default async function SettingsPage({
               section={editableSection}
               initial={{
                 fullName: user.fullName,
+                username: user.username,
                 bio: user.bio,
                 photoUrl,
                 city: user.city,

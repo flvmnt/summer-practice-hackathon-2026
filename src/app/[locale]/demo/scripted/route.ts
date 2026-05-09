@@ -5,6 +5,7 @@ import {
   WALKTHROUGH_COOKIE,
   WALKTHROUGH_COOKIE_MAX_AGE,
 } from "@/lib/demo/walkthrough";
+import { toPublicUrl } from "@/lib/public-url";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,7 @@ export async function GET(
   const started = await startScriptedDemoSession();
   const target = started ? `/${safeLocale}/today` : `/${safeLocale}/login`;
 
-  const response = NextResponse.redirect(new URL(target, request.url));
+  const response = NextResponse.redirect(toPublicUrl(target, request));
   if (started) {
     response.cookies.set(WALKTHROUGH_COOKIE, "1", {
       httpOnly: false,

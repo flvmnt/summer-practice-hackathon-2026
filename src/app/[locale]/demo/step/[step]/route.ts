@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getDb } from "@/db";
 import { events, groupMembers } from "@/db/schema";
 import { isDemoModeEnabled } from "@/lib/demo/guard";
+import { toPublicUrl } from "@/lib/public-url";
 import { getSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
@@ -28,13 +29,13 @@ export async function GET(
   const userId = session.userId;
   if (!userId) {
     return NextResponse.redirect(
-      new URL(`/${safeLocale}/login`, request.url),
+      toPublicUrl(`/${safeLocale}/login`, request),
     );
   }
 
   const db = getDb();
   const target = await resolveTarget(db, userId, step, safeLocale);
-  return NextResponse.redirect(new URL(target, request.url));
+  return NextResponse.redirect(toPublicUrl(target, request));
 }
 
 async function resolveTarget(

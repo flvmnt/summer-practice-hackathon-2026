@@ -52,20 +52,7 @@ export default async function JudgeModePage({
 
   const t = await getTranslations("demo");
   const controlsCopy = {
-    seed: t("controls.seed"),
-    seeding: t("controls.seeding"),
-    reset: t("controls.reset"),
-    resetting: t("controls.resetting"),
     scriptedFlow: t("controls.scriptedFlow"),
-    resetTitle: t("controls.resetTitle"),
-    resetBody: t("controls.resetBody"),
-    resetConfirm: t("controls.resetConfirm"),
-    cancel: t("controls.cancel"),
-    toastSeedOk: t("controls.toastSeedOk"),
-    toastSeedFailed: t("controls.toastSeedFailed"),
-    toastResetOk: t("controls.toastResetOk"),
-    toastResetFailed: t("controls.toastResetFailed"),
-    notWired: t("controls.notWired"),
   };
   const statusLabels = {
     live: t("rubricLegend.live"),
