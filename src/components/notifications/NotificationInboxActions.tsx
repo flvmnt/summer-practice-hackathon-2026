@@ -274,7 +274,7 @@ function FilterChips({
               "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 text-xs font-semibold transition-colors",
             )}
             style={{
-              minHeight: 36,
+              minHeight: 44,
               background: isActive ? "var(--accent-soft)" : "var(--surface)",
               color: isActive ? "var(--accent-deep)" : "var(--ink)",
               border: "1px solid",
