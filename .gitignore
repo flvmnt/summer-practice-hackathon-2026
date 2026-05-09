@@ -47,6 +47,7 @@ test-results/
 .playwright-cli/
 .nyc_output/
 _review/
+!_review/visual-qa.md
 
 # Local databases and generated artifacts
 *.sqlite
