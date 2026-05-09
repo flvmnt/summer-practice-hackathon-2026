@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { actionError, actionOk, type ActionResult } from "@/lib/action-result";
-import { getCurrentUser } from "@/lib/auth-current-user";
+import { requireUserForAction } from "@/lib/auth-current-user";
 import {
   listNotifications,
   markAllNotificationsRead,
@@ -17,12 +17,12 @@ export type FetchNotificationsResult =
 const FETCH_LIMIT = 50;
 
 export async function fetchNotificationsAction(): Promise<FetchNotificationsResult> {
-  const user = await getCurrentUser();
-  if (!user) {
-    return { ok: false, error: "unauthorized" };
+  const auth = await requireUserForAction();
+  if (!auth.ok) {
+    return auth;
   }
 
-  const items = await listNotifications(user.id, { limit: FETCH_LIMIT });
+  const items = await listNotifications(auth.user.id, { limit: FETCH_LIMIT });
   return { ok: true, notifications: items };
 }
 
@@ -45,23 +45,23 @@ export async function markNotificationReadAction(
     return actionError("validation");
   }
 
-  const user = await getCurrentUser();
-  if (!user) {
-    return actionError("unauthorized");
+  const auth = await requireUserForAction();
+  if (!auth.ok) {
+    return actionError(auth.error);
   }
 
-  const updated = await markNotificationRead(user.id, parsed.data.notificationId);
+  const updated = await markNotificationRead(auth.user.id, parsed.data.notificationId);
   return actionOk({ updated });
 }
 
 export async function markAllNotificationsReadAction(): Promise<
   ActionResult<{ updated: number }>
 > {
-  const user = await getCurrentUser();
-  if (!user) {
-    return actionError("unauthorized");
+  const auth = await requireUserForAction();
+  if (!auth.ok) {
+    return actionError(auth.error);
   }
 
-  const updated = await markAllNotificationsRead(user.id);
+  const updated = await markAllNotificationsRead(auth.user.id);
   return actionOk({ updated });
 }
