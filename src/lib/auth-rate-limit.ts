@@ -25,6 +25,7 @@ export const AUTH_RATE_LIMIT_POLICIES = {
   loginUser: { limit: 10, windowSeconds: 15 * 60 },
   signupIp: { limit: 10, windowSeconds: 60 * 60 },
   recoveryIpUser: { limit: 3, windowSeconds: 30 * 60 },
+  chatUserGroup: { limit: 20, windowSeconds: 60 },
 } as const;
 
 function normalizePart(value: string) {
@@ -55,6 +56,10 @@ export function signupIpBucket(ip: string) {
 
 export function recoveryIpUserBucket(ip: string, username: string) {
   return `auth:recovery:ip_user:${hashRateLimitParts(ip, username)}`;
+}
+
+export function chatUserGroupBucket(userId: string, groupId: string) {
+  return `chat:send:user_group:${hashRateLimitParts(userId, groupId)}`;
 }
 
 export function evaluateAuthRateLimit(

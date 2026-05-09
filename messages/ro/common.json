@@ -210,9 +210,10 @@
       "yes": "Da, pot juca",
       "no": "Nu azi",
       "matchedTitle": "Grup format",
-      "matchedBody": "Există un grup determinist pentru acest prompt. Chatul de grup și confirmarea vin în următoarea felie.",
+      "matchedBody": "Există un grup determinist pentru acest prompt. Deschide chatul de grup ca să coordonați primul plan.",
       "noMatchTitle": "Încă se caută",
       "noMatchBody": "Răspunsul este salvat, dar încă nu sunt destui jucători compatibili în apropiere.",
+      "openGroup": "Deschide chatul",
       "queuedTitle": "Ești în coadă",
       "queuedBody": "Răspunsul este salvat și va fi reconsiderat când răspund mai mulți jucători compatibili.",
       "unavailableTitle": "Marcat indisponibil",
@@ -233,6 +234,36 @@
         "hiking": "Drumeție",
         "table_tennis": "Tenis de masă"
       }
+    }
+  },
+  "group": {
+    "back": "Înapoi la Today",
+    "title": "Grup de {sport}",
+    "summary": "{count}/{target} jucători potriviți pentru acest prompt.",
+    "captain": "{name} este căpitan.",
+    "chatTitle": "Chat de grup",
+    "playersTitle": "Jucători",
+    "emptyChat": "Nu există încă mesaje în grup.",
+    "system": "Sistem",
+    "captainBadge": "Căpitan",
+    "playerBadge": "Jucător",
+    "form": {
+      "messagePlaceholder": "Trimite un mesaj grupului",
+      "send": "Trimite mesaj",
+      "sending": "Se trimite",
+      "genericError": "Mesajul nu a putut fi trimis. Verifică sesiunea și încearcă din nou."
+    },
+    "sports": {
+      "football": "Fotbal",
+      "basketball": "Baschet",
+      "tennis": "Tenis",
+      "volleyball": "Volei",
+      "badminton": "Badminton",
+      "running": "Alergare",
+      "cycling": "Ciclism",
+      "yoga": "Yoga",
+      "hiking": "Drumeție",
+      "table_tennis": "Tenis de masă"
     }
   },
   "demo": {

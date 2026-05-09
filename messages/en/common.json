@@ -210,9 +210,10 @@
       "yes": "Yes, I can play",
       "no": "Not today",
       "matchedTitle": "Group formed",
-      "matchedBody": "A deterministic group exists for this prompt. Group chat and confirmation land in the next slice.",
+      "matchedBody": "A deterministic group exists for this prompt. Open the group chat to coordinate the first plan.",
       "noMatchTitle": "Still looking",
       "noMatchBody": "Your response is saved, but there aren't enough nearby compatible players yet.",
+      "openGroup": "Open group chat",
       "queuedTitle": "You're queued",
       "queuedBody": "Your response is saved and will be reconsidered as more compatible players answer.",
       "unavailableTitle": "Marked unavailable",
@@ -233,6 +234,36 @@
         "hiking": "Hiking",
         "table_tennis": "Table tennis"
       }
+    }
+  },
+  "group": {
+    "back": "Back to Today",
+    "title": "{sport} group",
+    "summary": "{count}/{target} players matched for this prompt.",
+    "captain": "{name} is captain.",
+    "chatTitle": "Group chat",
+    "playersTitle": "Players",
+    "emptyChat": "No group messages yet.",
+    "system": "System",
+    "captainBadge": "Captain",
+    "playerBadge": "Player",
+    "form": {
+      "messagePlaceholder": "Message the group",
+      "send": "Send message",
+      "sending": "Sending",
+      "genericError": "The message could not be sent. Check your session and try again."
+    },
+    "sports": {
+      "football": "Football",
+      "basketball": "Basketball",
+      "tennis": "Tennis",
+      "volleyball": "Volleyball",
+      "badminton": "Badminton",
+      "running": "Running",
+      "cycling": "Cycling",
+      "yoga": "Yoga",
+      "hiking": "Hiking",
+      "table_tennis": "Table tennis"
     }
   },
   "demo": {

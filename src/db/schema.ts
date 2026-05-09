@@ -1,5 +1,6 @@
 import {
   boolean,
+  check,
   date,
   decimal,
   index,
@@ -214,6 +215,46 @@ export const groupMembers = pgTable(
     index("group_members_user_idx").on(table.userId),
     index("group_members_prompt_idx").on(table.promptId),
     index("group_members_demo_run_idx").on(table.demoRunId),
+  ],
+);
+
+export const messages = pgTable(
+  "messages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    demoRunId: uuid("demo_run_id").references(() => demoRuns.id, {
+      onDelete: "cascade",
+    }),
+    scopeType: varchar("scope_type", { length: 10 }).notNull(),
+    groupId: uuid("group_id").references(() => groups.id, {
+      onDelete: "cascade",
+    }),
+    eventId: uuid("event_id"),
+    userId: uuid("user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    clientId: varchar("client_id", { length: 80 }),
+    kind: varchar("kind", { length: 20 }).notNull().default("text"),
+    body: text("body").notNull(),
+    meta: jsonb("meta"),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    deletedByUserId: uuid("deleted_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    check(
+      "messages_scope_exactly_one",
+      sql`
+        (${table.scopeType} = 'group' and ${table.groupId} is not null and ${table.eventId} is null)
+        or (${table.scopeType} = 'event' and ${table.eventId} is not null and ${table.groupId} is null)
+      `,
+    ),
+    index("messages_group_created_idx").on(table.groupId, table.createdAt),
+    index("messages_event_created_idx").on(table.eventId, table.createdAt),
+    index("messages_demo_run_idx").on(table.demoRunId),
+    uniqueIndex("messages_client_unique").on(table.userId, table.clientId),
   ],
 );
 

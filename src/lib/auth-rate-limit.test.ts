@@ -30,6 +30,7 @@ describe("auth rate limit helpers", () => {
 
   it("keeps auth policies aligned with the spec", () => {
     expect(AUTH_RATE_LIMIT_POLICIES).toEqual({
+      chatUserGroup: { limit: 20, windowSeconds: 60 },
       loginIpUser: { limit: 5, windowSeconds: 900 },
       loginUser: { limit: 10, windowSeconds: 900 },
       signupIp: { limit: 10, windowSeconds: 3600 },

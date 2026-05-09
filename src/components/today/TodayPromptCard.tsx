@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, X } from "lucide-react";
+import Link from "next/link";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { todayPromptFormAction, type TodayPromptFormState } from "@/lib/prompt-form-actions";
@@ -15,6 +16,7 @@ type TodayPromptCopy = {
   matchedBody: string;
   noMatchTitle: string;
   noMatchBody: string;
+  openGroup: string;
   queuedTitle: string;
   queuedBody: string;
   unavailableTitle: string;
@@ -31,6 +33,7 @@ const initialState: TodayPromptFormState = {};
 export function TodayPromptCard({
   copy,
   group,
+  locale,
   maxDistanceKm,
   prompt,
   response,
@@ -38,6 +41,7 @@ export function TodayPromptCard({
 }: {
   copy: TodayPromptCopy;
   group: TodayGroup | null;
+  locale: string;
   maxDistanceKm: number;
   prompt: TodayPrompt;
   response: TodayResponse | null;
@@ -108,10 +112,14 @@ export function TodayPromptCard({
             {statusCopy[status].body}
           </p>
           {currentGroup ? (
-            <p className="mt-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-[var(--navy)]">
+            <Link
+              className="mt-4 inline-flex min-h-11 items-center rounded-md bg-[var(--lime)] px-4 text-sm font-semibold text-[var(--navy)]"
+              href={`/${locale}/groups/${currentGroup.id}`}
+            >
+              {copy.openGroup}:{" "}
               {copy.sports[currentGroup.sport]}
               {currentGroup.captainUserId ? " - captain selected" : ""}
-            </p>
+            </Link>
           ) : null}
         </div>
       ) : null}
