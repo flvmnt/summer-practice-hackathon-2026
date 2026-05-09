@@ -1,56 +1,171 @@
 @import "tailwindcss";
 
-:root {
+/* ============================================================
+   ShowUp2Move — design tokens + base styles
+   Direction B (default): light cream + sodium-orange + turf
+   Direction A (alt): dark, lime
+   Direction C (alt): warm dusk synthesis
+   ============================================================ */
+
+:root,
+[data-brand="B"] {
   color-scheme: light;
-  --navy: #101828;
-  --lime: #b7f34a;
-  --court: #2563eb;
-  --coral: #ff6b4a;
-  --mint: #ddfce8;
-  --cloud: #f7f9fc;
-  --ink: #101828;
-  --muted: #667085;
-  --line: #d7dee8;
-  --surface: #ffffff;
-  --danger: #dc2626;
+
+  --bg: #FAF7F0;
+  --bg-alt: #F4EFE5;
+  --surface: #FFFFFF;
+  --surface-2: #FBF8F2;
+  --ink: #0E1A1F;
+  --ink-2: #2A3942;
+  --ink-muted: rgba(14, 26, 31, 0.62);
+  --ink-faint: rgba(14, 26, 31, 0.36);
+  --line: rgba(14, 26, 31, 0.10);
+  --line-2: rgba(14, 26, 31, 0.18);
+  --accent: #FF5C2A;
+  --accent-deep: #E84A1B;
+  --accent-soft: #FFE4D6;
+  --accent-tint: #FFF1E8;
+  --field: #1E6E48;
+  --field-soft: #DCEDE2;
+  --field-ink: #FFFFFF;
+  --alert: #C8331E;
+  --alert-soft: #FBE3DD;
+  --warn-token: #B8741B;
+  --warn-soft: #F8ECCC;
+  --on-accent: #1A0A03;
+
+  /* radius — 4 weights with semantic intent */
+  --r-pill: 999px;
+  --r-chip: 10px;
+  --r-card: 18px;        /* inner cards */
+  --r-surface: 26px;     /* hero cards / sheets */
+  --r-shell: 32px;       /* full-screen sheets */
+
+  /* shadows */
+  --shadow-1: 0 1px 0 rgba(14,26,31,0.04), 0 1px 2px rgba(14,26,31,0.04);
+  --shadow-2: 0 6px 14px -8px rgba(14,26,31,0.18), 0 2px 4px rgba(14,26,31,0.04);
+  --shadow-3: 0 24px 60px -28px rgba(14,26,31,0.32), 0 8px 16px -10px rgba(14,26,31,0.10);
+
+  /* type */
+  --f-display: "Bricolage Grotesque", "Newsreader", Georgia, serif;
+  --f-body: "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* motion */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --t-1: 120ms;
+  --t-2: 180ms;
+  --t-3: 250ms;
+  --t-4: 600ms;
+
+  /* ============================================================
+     Backward-compat aliases — kept until full token cleanup pass.
+     Existing code uses the legacy names below; map them to the new
+     semantic tokens so nothing renders as the wrong shade.
+     ============================================================ */
+  --lime: var(--accent);             /* signature accent */
+  --coral: var(--alert);             /* old "warn" was coral; alert is closer */
+  --mint: var(--field-soft);         /* soft pitch chip */
+  --cloud: var(--bg);                /* page bg */
+  --navy: var(--ink);                /* primary ink */
+  --court: var(--field);             /* primary action / focus */
+  --panel: var(--bg-alt);            /* tinted panel */
+  --panel-strong: var(--surface);    /* white card */
+  --accent-strong: var(--ink);       /* used as strong text on accent surfaces */
+  --background: var(--bg);
+  --foreground: var(--ink);
+  --warn: var(--accent);             /* coral was warn — sodium-orange now stands in */
+  --danger: var(--alert);
+  --muted: var(--ink-muted);
   --page-max: 1120px;
   --mobile-pad: 16px;
   --desktop-pad: 32px;
   --nav-height-mobile: 64px;
-  --radius-card: 8px;
-  --radius-control: 8px;
+  --radius-card: var(--r-card);
+  --radius-control: var(--r-chip);
   --tap-target: 44px;
-  --background: var(--cloud);
-  --foreground: var(--ink);
-  --panel: #eef8ff;
-  --panel-strong: var(--surface);
-  --accent: var(--lime);
-  --accent-strong: var(--navy);
-  --accent-soft: var(--mint);
-  --warn: var(--coral);
 }
 
+[data-brand="A"] {
+  color-scheme: dark;
+
+  --bg: #07110D;
+  --bg-alt: #0A1812;
+  --surface: #0D1C15;
+  --surface-2: #112620;
+  --ink: #E8F6EC;
+  --ink-2: #C7D8CD;
+  --ink-muted: rgba(232,246,236,0.62);
+  --ink-faint: rgba(232,246,236,0.32);
+  --line: rgba(232,246,236,0.10);
+  --line-2: rgba(232,246,236,0.18);
+  --accent: #B7FF3C;
+  --accent-deep: #9CE525;
+  --accent-soft: rgba(183,255,60,0.18);
+  --accent-tint: rgba(183,255,60,0.08);
+  --field: #34D399;
+  --field-soft: rgba(52,211,153,0.16);
+  --field-ink: #07110D;
+  --alert: #FB7185;
+  --alert-soft: rgba(251,113,133,0.16);
+  --warn-token: #FBBF24;
+  --warn-soft: rgba(251,191,36,0.18);
+  --on-accent: #07110D;
+}
+
+[data-brand="C"] {
+  color-scheme: dark;
+
+  /* warm dusk synthesis — warm slate paper, terracotta, deep moss */
+  --bg: #14110D;
+  --bg-alt: #1A1612;
+  --surface: #1F1A14;
+  --surface-2: #261F18;
+  --ink: #F4EBDD;
+  --ink-2: #D9CDB8;
+  --ink-muted: rgba(244,235,221,0.62);
+  --ink-faint: rgba(244,235,221,0.32);
+  --line: rgba(244,235,221,0.10);
+  --line-2: rgba(244,235,221,0.18);
+  --accent: #F26A2E;
+  --accent-deep: #D85518;
+  --accent-soft: rgba(242,106,46,0.20);
+  --accent-tint: rgba(242,106,46,0.10);
+  --field: #5FAA7C;
+  --field-soft: rgba(95,170,124,0.16);
+  --field-ink: #14110D;
+  --alert: #E07A5F;
+  --alert-soft: rgba(224,122,95,0.16);
+  --warn-token: #E1B43A;
+  --warn-soft: rgba(225,180,58,0.18);
+  --on-accent: #14110D;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
 * {
   box-sizing: border-box;
 }
 
 html {
   min-width: 320px;
-  background: var(--background);
+  background: var(--bg);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  margin: 0;
-  background: var(--background);
-  color: var(--foreground);
-  font-family:
-    Inter,
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  min-height: 100vh;
 }
 
 a {
@@ -66,11 +181,268 @@ select {
 }
 
 :focus-visible {
-  outline: 3px solid var(--court);
+  outline: 3px solid var(--field);
   outline-offset: 3px;
 }
 
 ::selection {
-  background: var(--lime);
-  color: var(--navy);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* display + mono helpers — promoted to global utilities */
+.display {
+  font-family: var(--f-display);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.02;
+}
+.mono {
+  font-family: var(--f-mono);
+  font-feature-settings: "tnum" 1, "ss01" 1;
+}
+
+/* shimmer skeleton (single source of truth) */
+.skel {
+  background: linear-gradient(
+    90deg,
+    var(--line) 0%,
+    color-mix(in oklch, var(--ink) 8%, transparent) 50%,
+    var(--line) 100%
+  );
+  background-size: 200% 100%;
+  animation: skel-shimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
+}
+@keyframes skel-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* ShowUp2Move primary button (namespaced as .btn-s2m so it does not
+   clobber shadcn/ui or other Tailwind button utilities). */
+.btn-s2m {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: var(--r-pill);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  padding: 16px 22px;
+  cursor: pointer;
+  background: var(--accent);
+  color: var(--on-accent);
+  min-height: 52px;
+  transition: transform var(--t-1) var(--ease), box-shadow var(--t-2) var(--ease), background var(--t-2);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.08), 0 4px 14px -4px color-mix(in oklch, var(--accent) 40%, transparent);
+}
+.btn-s2m:hover { background: var(--accent-deep); }
+.btn-s2m:active { transform: scale(0.97); }
+.btn-s2m.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--line-2);
+}
+.btn-s2m.btn-secondary:hover {
+  background: var(--surface-2);
+}
+.btn-s2m.btn-ghost {
+  background: transparent;
+  color: var(--ink-muted);
+  box-shadow: none;
+  font-weight: 500;
+}
+.btn-s2m.btn-field {
+  background: var(--field);
+  color: var(--field-ink);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.08), 0 4px 14px -4px color-mix(in oklch, var(--field) 40%, transparent);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: var(--r-pill);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.pill.alt { background: var(--surface-2); }
+.pill.accent { background: var(--accent); color: var(--on-accent); box-shadow: none; }
+.pill.field { background: var(--field-soft); color: var(--field); box-shadow: none; }
+.pill.live::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 var(--accent);
+  animation: live-pulse 1.6s ease-out infinite;
+}
+@keyframes live-pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in oklch, var(--accent) 60%, transparent); }
+  70%  { box-shadow: 0 0 0 7px color-mix(in oklch, var(--accent) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--accent) 0%, transparent); }
+}
+
+/* AI mark — chevron-burst, NOT a sparkle. Used everywhere AI is involved. */
+.ai-mark {
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  flex: none;
+  position: relative;
+}
+.ai-mark::before,
+.ai-mark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid currentColor;
+  border-top: 0;
+  border-left: 0;
+  transform: rotate(-45deg);
+  border-radius: 2px;
+}
+.ai-mark::before { inset: 1px 1px 5px 5px; opacity: 0.55; }
+.ai-mark::after  { inset: 4px 4px 1px 1px; }
+
+/* tab underline (signature motion #2 — but our actual signature is type-on) */
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--line);
+}
+.tab {
+  position: relative;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  cursor: pointer;
+  letter-spacing: -0.005em;
+}
+.tab[aria-selected="true"] { color: var(--ink); }
+.tab[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  left: 8px; right: 8px; bottom: -1px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* status bar / nav helpers */
+.statusbar {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+  font-family: var(--f-mono);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+/* bottom nav */
+.tabbar {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 78px;
+  padding: 8px 14px 22px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: color-mix(in oklch, var(--surface) 90%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--line);
+  z-index: 5;
+}
+.tabbar .titem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.tabbar .titem.active { color: var(--ink); }
+.tabbar .titem .glyph { color: currentColor; }
+
+/* subtle pitch lines for canvas atmosphere */
+.pitch-bg {
+  background-image:
+    radial-gradient(ellipse 80% 40% at 50% -10%, var(--accent-tint) 0%, transparent 60%),
+    repeating-linear-gradient(
+      135deg,
+      transparent 0,
+      transparent 36px,
+      color-mix(in oklch, var(--ink) 4%, transparent) 36px,
+      color-mix(in oklch, var(--ink) 4%, transparent) 37px
+    );
+}
+
+/* type-on caret */
+.typing::after {
+  content: "▍";
+  display: inline-block;
+  margin-left: 2px;
+  animation: caret 1s steps(2, end) infinite;
+  color: var(--accent);
+  font-weight: 400;
+}
+@keyframes caret {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* match number ratchet (signature) */
+@keyframes ratchet-in {
+  0%   { transform: translateY(8px); opacity: 0; }
+  100% { transform: translateY(0);   opacity: 1; }
+}
+
+/* vote bar spring */
+@keyframes vote-fill { from { width: 0; } }
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+/* iconography — mono symbolic glyphs (all glyphs share weight + cap-height) */
+.glyph {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  flex: none;
+  vertical-align: -0.15em;
+}
+.glyph svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
