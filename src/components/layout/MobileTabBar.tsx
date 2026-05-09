@@ -47,7 +47,7 @@ export function MobileTabBar({ tabs = DEFAULT_TABS, className }: Props) {
   return (
     <nav
       aria-label="Primary"
-      className={cn("md:hidden", className)}
+      className={cn("grid md:hidden", className)}
       style={{
         position: "fixed",
         left: 0,
@@ -55,7 +55,6 @@ export function MobileTabBar({ tabs = DEFAULT_TABS, className }: Props) {
         bottom: 0,
         height: 78,
         padding: "8px 14px calc(env(safe-area-inset-bottom) + 14px)",
-        display: "grid",
         gridTemplateColumns: `repeat(${tabs.length}, 1fr)`,
         background: "color-mix(in oklch, var(--surface) 90%, transparent)",
         backdropFilter: "blur(20px)",
