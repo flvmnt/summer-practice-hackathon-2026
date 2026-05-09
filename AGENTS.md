@@ -64,6 +64,7 @@ Follow `docs/specs/01-architecture.md`. Important boundaries:
 ## Implementation Rules
 
 - Validate all user input with zod before DB writes.
+- Do not use em dashes in code comments, docs, UI copy, commit messages, or generated text. Use `-` instead.
 - Server actions return one consistent discriminated result shape from the contracts.
 - Do not throw user-facing errors across the server-action boundary.
 - Keep mutations ownership-checked: group, event, vote, message, notification, upload.
