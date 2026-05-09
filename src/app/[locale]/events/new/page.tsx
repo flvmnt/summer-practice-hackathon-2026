@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CreateEventForm } from "@/components/events/CreateEventForm";
 import { CreateGroupEventForm } from "@/components/group/CreateGroupEventForm";
+import { HeaderBell } from "@/components/layout/HeaderBell";
 import { Card } from "@/components/ui/Card";
 import { Glyph } from "@/components/ui/Glyph";
 import { Pill } from "@/components/ui/Pill";
@@ -160,6 +161,7 @@ export default async function CreateEventPage({
             {copy.title}
           </h1>
         </div>
+        <HeaderBell unreadCount={unread} locale={locale} />
       </header>
 
       <div className="mx-auto w-full max-w-xl px-5 pt-4 md:pt-10">
