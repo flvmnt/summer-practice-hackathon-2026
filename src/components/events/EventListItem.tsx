@@ -72,7 +72,7 @@ export function EventListItem({
         style={{
           width: 40,
           height: 40,
-          borderRadius: 12,
+          borderRadius: "var(--r-chip)",
           background: past ? "var(--surface-2)" : "var(--accent-soft)",
           color: past ? "var(--ink-muted)" : "var(--accent-deep)",
           flex: "none",

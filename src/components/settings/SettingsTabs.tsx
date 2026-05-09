@@ -120,7 +120,7 @@ export function SettingsTabs({ sections, current }: SettingsTabsProps) {
                 fontWeight: 600,
                 color: active ? "var(--ink)" : "var(--ink-muted)",
                 background: active ? "var(--surface-2)" : "transparent",
-                borderRadius: 8,
+                borderRadius: "var(--r-chip)",
                 textDecoration: "none",
                 borderLeft: active
                   ? "3px solid var(--accent)"

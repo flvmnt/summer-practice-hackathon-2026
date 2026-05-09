@@ -593,7 +593,7 @@ function SportsEditor({
               style={{
                 minHeight: 44,
                 padding: "10px 12px",
-                borderRadius: 12,
+                borderRadius: "var(--r-chip)",
                 background: isActive ? "var(--accent-soft)" : "var(--surface)",
                 border: isActive
                   ? "2px solid var(--accent)"

@@ -46,13 +46,13 @@ export function TeamBalancePanel({ members, canShuffle, copy }: Props) {
         <Scale aria-hidden="true" size={18} />
         <h2 className="text-sm font-bold">{copy.title}</h2>
       </div>
-      <p className="mb-3 rounded-md bg-[var(--cloud)] px-3 py-2 text-sm font-semibold">
+      <p className="mb-3 rounded-md bg-[var(--surface-2)] px-3 py-2 text-sm font-semibold">
         {formatTemplate(copy.score, { score: teamBalance.score })}
       </p>
       <div className="grid gap-3">
         {teamBalance.teams.map((team) => (
           <article
-            className="rounded-md border border-[var(--line)] bg-[var(--cloud)] p-3"
+            className="rounded-md border border-[var(--line)] bg-[var(--surface-2)] p-3"
             key={team.label}
           >
             <p className="text-sm font-bold">

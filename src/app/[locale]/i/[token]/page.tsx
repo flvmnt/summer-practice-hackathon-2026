@@ -87,7 +87,7 @@ export default async function InvitePreviewPage({
             {t("expired.body")}
           </p>
           <Link
-            className="mt-6 inline-flex min-h-11 items-center rounded-md bg-[var(--lime)] px-4 font-semibold text-[var(--navy)]"
+            className="mt-6 inline-flex min-h-11 items-center rounded-md bg-[var(--accent)] px-4 font-semibold text-[var(--on-accent)]"
             href={`/${locale}`}
           >
             {t("expired.cta")}
@@ -123,7 +123,7 @@ export default async function InvitePreviewPage({
             })}
           </p>
           {preview.group?.city ? <p>{t("city", { city: preview.group.city })}</p> : null}
-          <p className="rounded-md bg-[var(--cloud)] px-3 py-2 font-semibold">
+          <p className="rounded-md bg-[var(--surface-2)] px-3 py-2 font-semibold">
             {t("status", {
               status: t(`statuses.${preview.event.status}`),
             })}
@@ -131,7 +131,7 @@ export default async function InvitePreviewPage({
         </div>
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
           <Link
-            className="inline-flex min-h-11 items-center justify-center rounded-md bg-[var(--court)] px-4 text-sm font-semibold text-white"
+            className="inline-flex min-h-11 items-center justify-center rounded-md bg-[var(--field)] px-4 text-sm font-semibold text-[var(--field-ink)]"
             href={`/${locale}/signup?invite=${encodeURIComponent(token)}`}
           >
             {t("signup")}
