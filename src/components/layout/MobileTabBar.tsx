@@ -23,9 +23,9 @@ const DEFAULT_TABS: ReadonlyArray<MobileTab> = [
     glyph: "groups",
     match: ["/groups", "/events"],
   },
-  { id: "create", href: "/create", label: "Create", glyph: "plus" },
+  { id: "create", href: "/events/new", label: "Create", glyph: "plus" },
   { id: "map", href: "/map", label: "Map", glyph: "map" },
-  { id: "profile", href: "/profile", label: "Profile", glyph: "profile" },
+  { id: "profile", href: "/settings", label: "Profile", glyph: "profile" },
 ];
 
 type Props = {

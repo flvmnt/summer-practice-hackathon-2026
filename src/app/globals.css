@@ -47,9 +47,9 @@
   --shadow-3: 0 24px 60px -28px rgba(14,26,31,0.32), 0 8px 16px -10px rgba(14,26,31,0.10);
 
   /* type */
-  --f-display: "Bricolage Grotesque", "Newsreader", Georgia, serif;
-  --f-body: "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --f-display: var(--font-display), "Bricolage Grotesque", Georgia, serif;
+  --f-body: var(--font-body), "Inter Tight", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --f-mono: var(--font-mono), "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
   /* motion */
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
