@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { AuthField } from "@/components/auth/AuthField";
 import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
+import { Glyph } from "@/components/ui/Glyph";
 import type { AppLocale } from "@/i18n/routing";
 import { recoverFormAction, type AuthFormState } from "@/lib/auth-form-actions";
 
@@ -25,73 +26,166 @@ type RecoverCopy = {
   continue: string;
 };
 
+type StepCopy = {
+  step1: string;
+  step2: string;
+  step3: string;
+};
+
 const initialState: AuthFormState = {};
 
 function errorText(code: string | undefined, copy: RecoverCopy) {
-  if (code === "invalid_recovery") {
-    return copy.invalidRecovery;
-  }
-
-  if (code === "rate_limited") {
-    return copy.rateLimited;
-  }
-
-  if (code) {
-    return copy.genericError;
-  }
-
+  if (code === "invalid_recovery") return copy.invalidRecovery;
+  if (code === "rate_limited") return copy.rateLimited;
+  if (code) return copy.genericError;
   return undefined;
+}
+
+function StepRail({ active, steps }: { active: 1 | 2 | 3; steps: StepCopy }) {
+  const labels: Array<{ n: 1 | 2 | 3; label: string }> = [
+    { n: 1, label: steps.step1 },
+    { n: 2, label: steps.step2 },
+    { n: 3, label: steps.step3 },
+  ];
+  return (
+    <ol
+      className="mono flex items-center gap-1.5 text-[10px] font-bold uppercase"
+      style={{ letterSpacing: "0.12em" }}
+      aria-label="Recovery steps"
+    >
+      {labels.map((s, i) => {
+        const state = s.n < active ? "done" : s.n === active ? "active" : "todo";
+        return (
+          <li key={s.n} className="flex items-center gap-1.5">
+            <span
+              style={{
+                color:
+                  state === "active"
+                    ? "var(--accent-deep)"
+                    : state === "done"
+                      ? "var(--field)"
+                      : "var(--ink-faint)",
+              }}
+            >
+              {s.label}
+            </span>
+            {i < labels.length - 1 ? (
+              <span
+                aria-hidden
+                style={{
+                  width: 16,
+                  height: 2,
+                  borderRadius: 2,
+                  background: state === "done" ? "var(--field)" : "var(--line-2)",
+                }}
+              />
+            ) : null}
+          </li>
+        );
+      })}
+    </ol>
+  );
 }
 
 export function RecoverForm({
   copy,
   locale,
+  steps,
+  showLabel,
+  hideLabel,
 }: {
   copy: RecoverCopy;
   locale: AppLocale;
+  steps: StepCopy;
+  showLabel: string;
+  hideLabel: string;
 }) {
   const [state, formAction] = useActionState(recoverFormAction, initialState);
   const formError = errorText(state.error, copy);
 
   if (state.newRecoveryCode) {
+    // Step 3 — success
     return (
       <div className="grid gap-5">
-        <div className="rounded-md border border-[var(--line)] bg-[var(--mint)] p-4">
-          <h2 className="text-lg font-bold">{copy.successTitle}</h2>
-          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+        <StepRail active={3} steps={steps} />
+        <div
+          className="grid gap-2"
+          style={{
+            padding: "20px 18px",
+            background: "var(--field-soft)",
+            border: "1px solid color-mix(in oklch, var(--field) 24%, transparent)",
+            borderRadius: "var(--r-surface)",
+          }}
+        >
+          <h2 className="display" style={{ fontSize: 22, lineHeight: 1.1 }}>
+            {copy.successTitle}
+          </h2>
+          <p className="text-[14px]" style={{ color: "var(--ink-2)", lineHeight: 1.5 }}>
             {copy.successBody}
           </p>
-          <code className="mt-4 block overflow-x-auto rounded-md bg-white px-3 py-3 text-center text-lg font-bold tracking-[0.12em] text-[var(--navy)]">
+          <code
+            className="mono mt-2 block overflow-x-auto px-3 py-3 text-center"
+            style={{
+              fontSize: 18,
+              fontWeight: 600,
+              letterSpacing: "0.16em",
+              background: "var(--surface)",
+              color: "var(--ink)",
+              borderRadius: "var(--r-card)",
+              border: "1px solid var(--line-2)",
+            }}
+          >
             {state.newRecoveryCode}
           </code>
-          <p className="mt-3 text-sm font-semibold text-[var(--danger)]">
+          <p className="text-[12px] font-medium" style={{ color: "var(--alert)" }}>
             {copy.recoveryWarning}
           </p>
         </div>
         <Link
-          className="inline-flex min-h-12 items-center justify-center rounded-md bg-[var(--lime)] px-5 text-sm font-semibold text-[var(--navy)]"
-          href={`/${locale}/today`}
+          className="btn-s2m"
+          href={`/${locale}/login`}
+          style={{ width: "100%" }}
         >
           {copy.continue}
+          <Glyph.arrow size={16} />
         </Link>
       </div>
     );
   }
 
+  // Steps 1 + 2 are submitted together via the existing action; we render
+  // both fields on one page but keep the visual rail pinned to "step 1" until
+  // the user has typed in the recovery code (purely visual aid).
   return (
     <form action={formAction} className="grid gap-4">
+      <StepRail active={1} steps={steps} />
       <AuthField
         autoComplete="username"
         label={copy.username}
         name="username"
         placeholder={copy.usernamePlaceholder}
+        showPasswordLabel={showLabel}
+        hidePasswordLabel={hideLabel}
       />
       <AuthField
         autoComplete="one-time-code"
         label={copy.recoveryCode}
         name="recoveryCode"
         placeholder={copy.recoveryCodePlaceholder}
+        showPasswordLabel={showLabel}
+        hidePasswordLabel={hideLabel}
       />
+      <div
+        className="my-1"
+        aria-hidden
+        style={{ height: 1, background: "var(--line)" }}
+      />
+      <p
+        className="mono text-[10px] font-bold uppercase"
+        style={{ color: "var(--ink-muted)", letterSpacing: "0.12em" }}
+      >
+        {steps.step2}
+      </p>
       <AuthField
         autoComplete="new-password"
         label={copy.newPassword}
@@ -99,9 +193,20 @@ export function RecoverForm({
         name="newPassword"
         placeholder={copy.newPasswordPlaceholder}
         type="password"
+        showPasswordLabel={showLabel}
+        hidePasswordLabel={hideLabel}
       />
       {formError ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-[var(--danger)]">
+        <p
+          className="text-[13px] font-medium"
+          style={{
+            background: "var(--alert-soft)",
+            color: "var(--alert)",
+            padding: "10px 12px",
+            borderRadius: "var(--r-card)",
+          }}
+          role="alert"
+        >
           {formError}
         </p>
       ) : null}

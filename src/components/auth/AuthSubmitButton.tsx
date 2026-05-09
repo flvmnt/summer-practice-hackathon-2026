@@ -2,18 +2,30 @@
 
 import { Loader2 } from "lucide-react";
 import { useFormStatus } from "react-dom";
-import { Button } from "@/components/ui/button";
 
 type AuthSubmitButtonProps = {
   label: string;
   pendingLabel: string;
 };
 
+/**
+ * AuthSubmitButton — direction B sodium-orange primary using the .btn-s2m
+ * utility from globals.css. Pinned to the form so useFormStatus works.
+ */
 export function AuthSubmitButton({ label, pendingLabel }: AuthSubmitButtonProps) {
   const { pending } = useFormStatus();
 
   return (
-    <Button className="w-full" disabled={pending} size="lg" type="submit">
+    <button
+      type="submit"
+      className="btn-s2m"
+      disabled={pending}
+      aria-busy={pending || undefined}
+      style={{
+        width: "100%",
+        opacity: pending ? 0.7 : 1,
+      }}
+    >
       {pending ? (
         <>
           <Loader2 aria-hidden="true" className="animate-spin" size={18} />
@@ -22,6 +34,6 @@ export function AuthSubmitButton({ label, pendingLabel }: AuthSubmitButtonProps)
       ) : (
         label
       )}
-    </Button>
+    </button>
   );
 }

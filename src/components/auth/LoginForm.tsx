@@ -21,27 +21,22 @@ type LoginCopy = {
 const initialState: AuthFormState = {};
 
 function errorText(code: string | undefined, copy: LoginCopy) {
-  if (code === "invalid_credentials") {
-    return copy.invalidCredentials;
-  }
-
-  if (code === "rate_limited") {
-    return copy.rateLimited;
-  }
-
-  if (code) {
-    return copy.genericError;
-  }
-
+  if (code === "invalid_credentials") return copy.invalidCredentials;
+  if (code === "rate_limited") return copy.rateLimited;
+  if (code) return copy.genericError;
   return undefined;
 }
 
 export function LoginForm({
   copy,
   locale,
+  showLabel,
+  hideLabel,
 }: {
   copy: LoginCopy;
   locale: AppLocale;
+  showLabel: string;
+  hideLabel: string;
 }) {
   const [state, formAction] = useActionState(loginFormAction, initialState);
   const formError = errorText(state.error, copy);
@@ -54,6 +49,8 @@ export function LoginForm({
         label={copy.username}
         name="username"
         placeholder={copy.usernamePlaceholder}
+        showPasswordLabel={showLabel}
+        hidePasswordLabel={hideLabel}
       />
       <AuthField
         autoComplete="current-password"
@@ -62,9 +59,20 @@ export function LoginForm({
         name="password"
         placeholder={copy.passwordPlaceholder}
         type="password"
+        showPasswordLabel={showLabel}
+        hidePasswordLabel={hideLabel}
       />
       {formError ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-[var(--danger)]">
+        <p
+          className="text-[13px] font-medium"
+          style={{
+            background: "var(--alert-soft)",
+            color: "var(--alert)",
+            padding: "10px 12px",
+            borderRadius: "var(--r-card)",
+          }}
+          role="alert"
+        >
           {formError}
         </p>
       ) : null}

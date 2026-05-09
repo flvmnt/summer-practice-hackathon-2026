@@ -1,4 +1,4 @@
-import { ArrowLeft, KeyRound } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { RecoverForm } from "@/components/auth/RecoverForm";
@@ -13,36 +13,72 @@ export default async function RecoverPage({
   setRequestLocale(locale);
   const t = await getTranslations("auth.recover");
 
+  const showLabel = locale === "ro" ? "Arată parola" : "Show password";
+  const hideLabel = locale === "ro" ? "Ascunde parola" : "Hide password";
+  const steps = {
+    step1: locale === "ro" ? "1. Identificare" : "1. Identify",
+    step2: locale === "ro" ? "2. Parolă nouă" : "2. New password",
+    step3: locale === "ro" ? "3. Gata" : "3. Done",
+  };
+
   return (
-    <main className="mx-auto grid min-h-screen w-full max-w-5xl items-center gap-8 px-5 py-8 lg:grid-cols-[0.88fr_1.12fr]">
-      <section>
-        <Link
-          className="inline-flex min-h-11 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel-strong)] px-3 text-sm font-semibold"
-          href={`/${locale}/login`}
+    <main
+      className="mx-auto flex min-h-screen w-full flex-col items-stretch px-4 py-8 sm:max-w-md sm:px-6 sm:py-12"
+      style={{ background: "var(--bg)" }}
+    >
+      <Link
+        className="mono inline-flex w-fit items-center gap-2 text-[11px] font-bold uppercase"
+        href={`/${locale}/login`}
+        style={{
+          letterSpacing: "0.14em",
+          color: "var(--ink-muted)",
+          padding: "8px 10px",
+          borderRadius: "var(--r-pill)",
+        }}
+      >
+        <ArrowLeft aria-hidden="true" size={14} />
+        {t("back")}
+      </Link>
+
+      <header className="mt-6 grid gap-1.5">
+        <p
+          className="mono text-[10px] font-bold uppercase"
+          style={{ color: "var(--accent-deep)", letterSpacing: "0.18em" }}
         >
-          <ArrowLeft aria-hidden="true" size={16} />
-          {t("back")}
-        </Link>
-        <p className="mt-8 text-sm font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)]">
           {t("eyebrow")}
         </p>
-        <h1 className="mt-3 text-4xl font-bold leading-tight sm:text-5xl">
+        <h1 className="display" style={{ fontSize: 32, lineHeight: 1.05 }}>
           {t("title")}
         </h1>
-        <p className="mt-4 max-w-xl leading-7 text-[var(--muted)]">{t("body")}</p>
-      </section>
+        <p className="text-[14px]" style={{ color: "var(--ink-muted)", lineHeight: 1.5 }}>
+          {t("body")}
+        </p>
+      </header>
 
-      <section className="rounded-lg border border-[var(--line)] bg-[var(--panel-strong)] p-5 shadow-sm sm:p-7">
-        <div className="mb-6 flex items-center gap-3">
-          <span className="flex size-10 items-center justify-center rounded-full bg-[var(--mint)] text-[var(--navy)]">
-            <KeyRound aria-hidden="true" size={20} />
-          </span>
-          <div>
-            <h2 className="text-xl font-bold">{t("cardTitle")}</h2>
-            <p className="text-sm text-[var(--muted)]">{t("cardBody")}</p>
-          </div>
+      <section
+        className="mt-6 p-5 sm:p-6"
+        style={{
+          background: "var(--surface)",
+          borderRadius: "var(--r-surface)",
+          boxShadow: "var(--shadow-2)",
+          border: "1px solid var(--line)",
+        }}
+      >
+        <div className="mb-4 grid gap-1">
+          <h2 className="display" style={{ fontSize: 22, lineHeight: 1.1 }}>
+            {t("cardTitle")}
+          </h2>
+          <p className="text-[13px]" style={{ color: "var(--ink-muted)", lineHeight: 1.5 }}>
+            {t("cardBody")}
+          </p>
         </div>
-        <RecoverForm copy={t.raw("form")} locale={locale} />
+        <RecoverForm
+          copy={t.raw("form")}
+          locale={locale}
+          steps={steps}
+          showLabel={showLabel}
+          hideLabel={hideLabel}
+        />
       </section>
     </main>
   );
