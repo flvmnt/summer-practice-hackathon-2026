@@ -2,6 +2,8 @@
   "home": {
     "languageSwitch": "EN",
     "health": "Status",
+    "login": "Autentificare",
+    "signup": "Cont nou",
     "eyebrow": "Practica de vara Haufe 2026",
     "title": "Intra in jocul care se formeaza deja aproape de tine.",
     "subtitle": "O aplicatie web mobile-first pentru potrivire sportiva spontana: fotbal, tenis, baschet si alergare in Timisoara.",
@@ -35,6 +37,86 @@
         "text": "Fiecare rand din rubrica trebuie sa indice dovezi live, seeded sau fallback inainte sa fie revendicat."
       }
     ]
+  },
+  "auth": {
+    "signup": {
+      "back": "Inapoi",
+      "eyebrow": "Cont",
+      "title": "Creeaza contul ShowUp2Move.",
+      "body": "Foloseste un nume de utilizator si o parola. Afisam un singur cod de recuperare dupa creare, pentru ca MVP-ul nu foloseste resetare prin email sau telefon.",
+      "cardTitle": "Incepe cu un cod privat de recuperare",
+      "cardBody": "Salveaza-l o singura data. Este singura cale de recuperare a contului in aceasta faza.",
+      "hasAccount": "Ai deja cont?",
+      "login": "Autentificare",
+      "form": {
+        "username": "Nume utilizator",
+        "usernamePlaceholder": "alex_runner",
+        "password": "Parola",
+        "passwordPlaceholder": "Minimum 8 caractere",
+        "submit": "Creeaza cont",
+        "pending": "Se creeaza contul",
+        "genericError": "Verifica datele si incearca din nou.",
+        "usernameTaken": "Acest nume de utilizator este deja folosit.",
+        "recoveryTitle": "Salveaza acest cod de recuperare",
+        "recoveryBody": "Vei avea nevoie de cod daca resetezi parola.",
+        "recoveryWarning": "Nu va mai fi afisat din nou.",
+        "continue": "Continua la profil"
+      }
+    },
+    "login": {
+      "back": "Inapoi",
+      "eyebrow": "Bine ai revenit",
+      "title": "Autentifica-te ca jocul sa continue.",
+      "body": "Intri in acelasi flux MVP cu sesiune folosit de onboarding, potrivire, chat si dovezile pentru Mod juriu.",
+      "cardTitle": "Autentificare",
+      "cardBody": "Sesiunile sunt pastrate intr-un cookie criptat.",
+      "needsRecovery": "Ai uitat parola?",
+      "recover": "Recupereaza contul",
+      "needsAccount": "Esti nou aici?",
+      "signup": "Creeaza cont",
+      "form": {
+        "username": "Nume utilizator",
+        "usernamePlaceholder": "alex_runner",
+        "password": "Parola",
+        "passwordPlaceholder": "Parola ta",
+        "submit": "Autentificare",
+        "pending": "Se autentifica",
+        "genericError": "Verifica datele si incearca din nou.",
+        "invalidCredentials": "Numele de utilizator sau parola este gresita.",
+        "rateLimited": "Prea multe incercari. Incearca din nou in scurt timp."
+      }
+    },
+    "recover": {
+      "back": "Inapoi la autentificare",
+      "eyebrow": "Recuperare",
+      "title": "Reseteaza accesul cu codul de recuperare.",
+      "body": "Aceasta faza foloseste un cod unic de recuperare in loc de email, ca fluxul de resetare sa ramana sigur pentru demo si determinist.",
+      "cardTitle": "Recuperare cont",
+      "cardBody": "O resetare reusita iti da un cod de recuperare nou.",
+      "form": {
+        "username": "Nume utilizator",
+        "usernamePlaceholder": "alex_runner",
+        "recoveryCode": "Cod recuperare",
+        "recoveryCodePlaceholder": "SM2M-ABCD-1234",
+        "newPassword": "Parola noua",
+        "newPasswordPlaceholder": "Minimum 8 caractere",
+        "submit": "Reseteaza parola",
+        "pending": "Se reseteaza parola",
+        "genericError": "Verifica datele si incearca din nou.",
+        "invalidRecovery": "Numele de utilizator sau codul de recuperare este gresit.",
+        "rateLimited": "Prea multe incercari. Incearca din nou in scurt timp.",
+        "successTitle": "Parola resetata",
+        "successBody": "Salveaza acest cod nou de recuperare. Codul vechi nu mai functioneaza.",
+        "recoveryWarning": "Nu va mai fi afisat din nou.",
+        "continue": "Continua la Today"
+      }
+    }
+  },
+  "onboarding": {
+    "profile": {
+      "title": "Onboarding-ul de profil urmeaza.",
+      "body": "Contul este pregatit. Urmatoarea felie din Faza 1 adauga nume complet, bio, sporturi, poza de profil si locatie inainte de orice revendicare pentru potrivire."
+    }
   },
   "today": {
     "title": "ShowUpToday urmeaza.",

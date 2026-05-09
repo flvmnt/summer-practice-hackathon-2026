@@ -2,6 +2,8 @@
   "home": {
     "languageSwitch": "RO",
     "health": "Health",
+    "login": "Log in",
+    "signup": "Sign up",
     "eyebrow": "Haufe summer practice 2026",
     "title": "Show up for the game that is already forming nearby.",
     "subtitle": "A mobile-first sports matching app for spontaneous football, tennis, basketball, and running groups in Timisoara.",
@@ -35,6 +37,86 @@
         "text": "Rubric rows must point to live, seeded, or fallback evidence before they are claimed."
       }
     ]
+  },
+  "auth": {
+    "signup": {
+      "back": "Back",
+      "eyebrow": "Account",
+      "title": "Create your ShowUp2Move account.",
+      "body": "Use a username and password. We show one recovery code after signup because the MVP avoids email and phone reset flows.",
+      "cardTitle": "Start with a private recovery code",
+      "cardBody": "Save it once. It is the only account recovery path in this phase.",
+      "hasAccount": "Already have an account?",
+      "login": "Log in",
+      "form": {
+        "username": "Username",
+        "usernamePlaceholder": "alex_runner",
+        "password": "Password",
+        "passwordPlaceholder": "At least 8 characters",
+        "submit": "Create account",
+        "pending": "Creating account",
+        "genericError": "Check the details and try again.",
+        "usernameTaken": "That username is already taken.",
+        "recoveryTitle": "Save this recovery code",
+        "recoveryBody": "You will need this code if you ever reset your password.",
+        "recoveryWarning": "It will not be shown again.",
+        "continue": "Continue to profile"
+      }
+    },
+    "login": {
+      "back": "Back",
+      "eyebrow": "Welcome back",
+      "title": "Log in to keep the game moving.",
+      "body": "Access the same session-backed MVP flow used by onboarding, matching, chat, and Judge Mode proof.",
+      "cardTitle": "Log in",
+      "cardBody": "Sessions are stored in an encrypted cookie.",
+      "needsRecovery": "Forgot your password?",
+      "recover": "Recover account",
+      "needsAccount": "New here?",
+      "signup": "Create account",
+      "form": {
+        "username": "Username",
+        "usernamePlaceholder": "alex_runner",
+        "password": "Password",
+        "passwordPlaceholder": "Your password",
+        "submit": "Log in",
+        "pending": "Logging in",
+        "genericError": "Check the details and try again.",
+        "invalidCredentials": "Username or password is incorrect.",
+        "rateLimited": "Too many attempts. Try again shortly."
+      }
+    },
+    "recover": {
+      "back": "Back to login",
+      "eyebrow": "Recovery",
+      "title": "Reset access with your recovery code.",
+      "body": "This phase uses a one-time recovery code instead of email delivery, so the reset path stays demo-safe and deterministic.",
+      "cardTitle": "Recover account",
+      "cardBody": "A successful reset gives you a replacement recovery code.",
+      "form": {
+        "username": "Username",
+        "usernamePlaceholder": "alex_runner",
+        "recoveryCode": "Recovery code",
+        "recoveryCodePlaceholder": "SM2M-ABCD-1234",
+        "newPassword": "New password",
+        "newPasswordPlaceholder": "At least 8 characters",
+        "submit": "Reset password",
+        "pending": "Resetting password",
+        "genericError": "Check the details and try again.",
+        "invalidRecovery": "Username or recovery code is incorrect.",
+        "rateLimited": "Too many attempts. Try again shortly.",
+        "successTitle": "Password reset",
+        "successBody": "Save this new recovery code. The old code no longer works.",
+        "recoveryWarning": "It will not be shown again.",
+        "continue": "Continue to Today"
+      }
+    }
+  },
+  "onboarding": {
+    "profile": {
+      "title": "Profile onboarding is next.",
+      "body": "The account is ready. The next Phase 1 slice adds full name, bio, sports, profile photo, and location before matching claims start."
+    }
   },
   "today": {
     "title": "ShowUpToday is next.",

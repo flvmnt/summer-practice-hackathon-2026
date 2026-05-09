@@ -35,6 +35,12 @@ export default async function HomePage({
               {t("languageSwitch")}
             </Link>
             <Link
+              className="inline-flex min-h-11 items-center rounded-md border border-[var(--line)] bg-[var(--panel-strong)] px-3 text-sm font-semibold"
+              href={`/${locale}/login`}
+            >
+              {t("login")}
+            </Link>
+            <Link
               className="inline-flex min-h-11 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel-strong)] px-4 text-sm font-semibold"
               href="/api/health"
             >
@@ -58,10 +64,16 @@ export default async function HomePage({
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 className="inline-flex min-h-12 items-center gap-2 rounded-md bg-[var(--accent)] px-5 font-semibold text-white shadow-sm"
+                href={`/${locale}/signup`}
+              >
+                {t("signup")}
+                <ArrowRight aria-hidden="true" size={18} />
+              </Link>
+              <Link
+                className="inline-flex min-h-12 items-center rounded-md border border-[var(--line)] bg-[var(--panel-strong)] px-5 font-semibold"
                 href={`/${locale}/today`}
               >
                 {t("openToday")}
-                <ArrowRight aria-hidden="true" size={18} />
               </Link>
               <Link
                 className="inline-flex min-h-12 items-center rounded-md border border-[var(--line)] bg-[var(--panel-strong)] px-5 font-semibold"
