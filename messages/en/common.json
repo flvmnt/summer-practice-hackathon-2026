@@ -1392,5 +1392,29 @@
       "live": "Live",
       "reconnecting": "Reconnecting..."
     }
+  },
+  "groups": {
+    "invite": {
+      "recommendations": {
+        "title": "Recommended teammates",
+        "subtitle": "Sorted by sport match, distance, and compatibility.",
+        "captainOnly": "Captain only",
+        "noResults": "No matching candidates yet. Leave the prompt open and check back.",
+        "matchPercent": "{score}% match",
+        "distanceLabel": "{km} km away",
+        "sameCity": "Same city",
+        "explainAi": "AI rationale",
+        "explainFallback": "Deterministic match",
+        "invite": "Invite",
+        "inviting": "Inviting",
+        "invited": "Invited",
+        "errors": {
+          "unauthorized": "Only the captain can invite recommended teammates.",
+          "conflict": "This player is already in another group for this prompt.",
+          "notFound": "This player is no longer available.",
+          "generic": "Invite failed to send. Try again."
+        }
+      }
+    }
   }
 }
