@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { events, groupMembers, groups, messages, users } from "@/db/schema";
 import { actionError, actionOk, type ActionResult } from "@/lib/action-result";
-import { getCurrentUser } from "@/lib/auth-current-user";
+import { requireUserForAction } from "@/lib/auth-current-user";
 import {
   AUTH_RATE_LIMIT_POLICIES,
   checkAuthRateLimit,
@@ -73,10 +73,11 @@ export async function createManualEventAction(
     return actionError("validation");
   }
 
-  const user = await getCurrentUser();
-  if (!user) {
-    return actionError("unauthorized");
+  const auth = await requireUserForAction();
+  if (!auth.ok) {
+    return actionError(auth.error);
   }
+  const user = auth.user;
 
   const limit = await checkAuthRateLimit({
     bucket: manualEventUserBucket(user.id),
