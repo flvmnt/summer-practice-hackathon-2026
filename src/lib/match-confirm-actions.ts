@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { actionError, actionOk, type ActionResult } from "@/lib/action-result";
-import { getCurrentUser } from "@/lib/auth-current-user";
+import { requireUserForAction } from "@/lib/auth-current-user";
 import {
   confirmMembership,
   declineMembership,

@@ -117,6 +117,17 @@ export function MapInner({
         });
 
         map = instance;
+
+        // Safety net: if MapLibre never fires `load` (CSP-blocked tiles,
+        // CORS reject, missing CSS dimensions), fall back to the SVG bg
+        // after 6s instead of leaving the user staring at a blank tan box.
+        window.setTimeout(() => {
+          if (cancelled) return;
+          setMapLibreReady((ready) => {
+            if (!ready) setMapLibreFailed(true);
+            return ready;
+          });
+        }, 6000);
       } catch {
         if (!cancelled) setMapLibreFailed(true);
       }

@@ -26,6 +26,7 @@ export const AUTH_RATE_LIMIT_POLICIES = {
   signupIp: { limit: 10, windowSeconds: 60 * 60 },
   recoveryIpUser: { limit: 3, windowSeconds: 30 * 60 },
   chatUserGroup: { limit: 20, windowSeconds: 60 },
+  chatStreamUser: { limit: 10, windowSeconds: 60 },
   inviteUserEvent: { limit: 6, windowSeconds: 60 * 60 },
   invitePreviewIp: { limit: 60, windowSeconds: 60 },
   uploadPhotoUser: { limit: 10, windowSeconds: 60 * 60 },
@@ -70,6 +71,10 @@ export function chatUserGroupBucket(userId: string, groupId: string) {
 
 export function chatUserEventBucket(userId: string, eventId: string) {
   return `chat:send:user_event:${hashRateLimitParts(userId, eventId)}`;
+}
+
+export function chatStreamUserBucket(userId: string) {
+  return `chat:stream:user:${hashRateLimitParts(userId)}`;
 }
 
 export function inviteUserEventBucket(userId: string, eventId: string) {

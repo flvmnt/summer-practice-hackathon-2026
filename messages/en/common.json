@@ -950,6 +950,22 @@
       }
     }
   },
+  "walkthrough": {
+    "steps": {
+      "today": "Today",
+      "groups": "Groups",
+      "group": "Group",
+      "event": "Event",
+      "vote": "Vote",
+      "calendar": "Calendar",
+      "judgeMode": "Judge Mode"
+    },
+    "nav": {
+      "aria": "Demo walkthrough navigation",
+      "previous": "Previous step ({label})",
+      "next": "Next step ({label})"
+    }
+  },
   "invitePreview": {
     "back": "Back to ShowUp2Move",
     "eyebrow": "Event invite",

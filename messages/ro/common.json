@@ -901,18 +901,18 @@
         },
         "ai-compatibility-score": {
           "label": "Scor compatibilitate AI (cache)",
-          "note": "Scorul de potrivire din profil public este calculat live, cache-uit după primul apel Groq si niciodata pre-seedat."
+          "note": "Scorul de potrivire din profil public este calculat live, cache-uit după primul apel Groq și niciodată pre-seedat."
         },
         "ai-captain-brief": {
-          "label": "Brief Capitan AI (rezumat actiuni)",
-          "note": "Paginile de eveniment apelează Groq pentru brief-ul capitanului când este configurat; textul determinist este doar fallback offline."
+          "label": "Brief Căpitan AI (rezumat acțiuni)",
+          "note": "Paginile de eveniment apelează Groq pentru brief-ul căpitanului când este configurat; textul determinist este doar fallback offline."
         },
         "ai-recommendations": {
-          "label": "Recomandari inteligente coechipieri",
-          "note": "Sugestiile rankate ajung cu sertarul de invitatii in Valul 3."
+          "label": "Recomandări inteligente coechipieri",
+          "note": "Sugestiile rankate ajung cu sertarul de invitații în Valul 3."
         },
         "notifications": {
-          "label": "Centru persistent de notificari",
+          "label": "Centru persistent de notificări",
           "note": "Randuri persistente + citit/necitit; intrare prin clopotelul din header."
         },
         "calendar-export": {
