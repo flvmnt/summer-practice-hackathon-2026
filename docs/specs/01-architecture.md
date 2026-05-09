@@ -15,28 +15,29 @@
 ┌──────────────────────────────────────────────────────────────────┐
 │                NEXT.JS 16 SERVER (Node, App Router)              │
 │  ┌────────────────────────────────────────────────────────┐    │
-│  │  Server Actions    Route Handlers    SSE Streams        │    │
-│  │  (mutations)       (uploads, OAuth)  (chat, prompts)    │    │
+│  │  Server Actions    Route Handlers       SSE Streams     │    │
+│  │  (mutations)       (uploads, demo, ICS) (chat, prompts) │    │
 │  └────────────────────────────────────────────────────────┘    │
 │  ┌────────────────────────────────────────────────────────┐    │
 │  │  lib/  · auth · session · groq · matching · rate-limit │    │
-│  │        · storage · maps · weather · calendar · strava  │    │
+│  │        · storage · maps · weather · calendar · demo     │    │
 │  └────────────────────────────────────────────────────────┘    │
 └────┬─────────────────┬────────────────────┬────────────────┬────┘
      │                 │                    │                │
      ▼                 ▼                    ▼                ▼
 ┌──────────┐  ┌─────────────────┐  ┌────────────────┐  ┌───────────┐
-│ Postgres │  │   Groq API      │  │ Open-Meteo /   │  │  Strava   │
-│ (Drizzle)│  │ text + vision   │  │ Overpass /     │  │  OAuth    │
-│          │  │                 │  │ Open Street Map│  │           │
+│ Postgres │  │   Groq API      │  │ Open-Meteo /   │  │Cloudflare │
+│ (Drizzle)│  │ text + vision   │  │ Overpass /     │  │ R2 uploads│
+│          │  │                 │  │ OpenStreetMap  │  │           │
 └──────────┘  └─────────────────┘  └────────────────┘  └───────────┘
 
   ▲
   │ (separate process, optional)
 ┌─┴────────────────────────┐
-│  scripts/prompt-cron.ts  │   ← Railway Cron, every 6h
+│  scripts/prompt-cron.ts  │   ← Railway Cron scheduled windows
 │  generates "ShowUpToday" │     prompts for active users
-│  and triggers reminders  │
+│  sends reminders and runs  │
+│  matching idempotently     │
 └──────────────────────────┘
 ```
 
@@ -72,21 +73,36 @@ summer-practice-hackathon-2026/
 │   │   ├── (auth)/
 │   │   │   ├── signup/
 │   │   │   ├── login/
-│   │   │   └── recuperare/
+│   │   │   └── recover/          ← recovery route; Romanian copy lives in i18n
+│   │   ├── (public)/             ← public profile and invite previews
+│   │   │   ├── u/[username]/
+│   │   │   └── i/[token]/
 │   │   ├── (app)/                ← authed shell
+│   │   │   ├── onboarding/
+│   │   │   │   ├── profile/
+│   │   │   │   ├── sports/
+│   │   │   │   ├── location/
+│   │   │   │   └── photo/
 │   │   │   ├── today/            ← daily prompt + active group
-│   │   │   ├── groups/[id]/      ← group view + chat
+│   │   │   ├── groups/           ← group list/index
+│   │   │   │   └── [id]/         ← group view + chat
 │   │   │   ├── events/
 │   │   │   │   ├── new/
 │   │   │   │   └── [id]/
+│   │   │   ├── map/              ← app map with public venue/event pins
 │   │   │   ├── settings/         ← profile edit, sports, recovery
-│   │   │   └── u/[username]/     ← public profile
+│   │   │   ├── notifications/    ← in-app notification inbox
+│   │   │   └── demo/             ← guarded judge/demo controls
 │   │   ├── api/
 │   │   │   ├── upload/photo/     ← multipart upload
-│   │   │   ├── strava/callback/  ← OAuth redirect
-│   │   │   ├── webhooks/         ← strava activity webhook
-│   │   │   ├── stream/messages/  ← SSE chat
-│   │   │   └── stream/prompts/   ← SSE prompt push
+│   │   │   ├── strava/callback/  ← optional OAuth redirect
+│   │   │   ├── webhooks/         ← optional strava activity webhook
+│   │   │   ├── stream/messages/  ← SSE group/event chat
+│   │   │   ├── stream/today/     ← SSE prompt + match updates
+│   │   │   ├── events/[id]/ics/  ← calendar export
+│   │   │   ├── u/[username]/og/  ← public profile OG image
+│   │   │   ├── demo/             ← guarded seed/reset/scoring status
+│   │   │   └── health/           ← Railway healthcheck
 │   │   ├── sitemap.ts
 │   │   └── robots.ts
 │   ├── components/
@@ -109,19 +125,27 @@ summer-practice-hackathon-2026/
 │   │   ├── venues.ts             ← Overpass API
 │   │   ├── weather.ts            ← Open-Meteo
 │   │   ├── calendar.ts           ← .ics generation
+│   │   ├── notify.ts             ← in-app/email reminders
 │   │   ├── push.ts               ← stretch-only web push helpers
-│   │   ├── strava.ts             ← OAuth + activity sync
-│   │   ├── storage.ts            ← R2/S3 preferred, Railway volume fallback
+│   │   ├── strava.ts             ← optional OAuth + activity sync
+│   │   ├── storage.ts            ← Cloudflare R2 upload adapter
 │   │   ├── i18n.ts
+│   │   ├── contracts/            ← zod schemas shared by actions/UI
+│   │   ├── error-messages.ts     ← i18n-able action error copy
+│   │   ├── team-balance.ts
 │   │   └── safe-redirect.ts      ← curbe pattern
 │   ├── server/
 │   │   ├── actions/              ← user-callable server actions
 │   │   │   ├── profile.ts
 │   │   │   ├── prompt.ts
+│   │   │   ├── matching.ts
 │   │   │   ├── group.ts
 │   │   │   ├── chat.ts
 │   │   │   ├── event.ts
-│   │   │   └── vote.ts
+│   │   │   ├── vote.ts
+│   │   │   ├── notify.ts
+│   │   │   ├── strava.ts
+│   │   │   └── admin.ts
 │   │   └── sse/                  ← SSE handlers shared logic
 │   └── tests/
 │       ├── unit/
@@ -152,12 +176,12 @@ summer-practice-hackathon-2026/
 ```
 Railway project: showup2move
 ├── Service: web         (Next.js, Node 20, exposes :3000 → public domain)
-├── Service: cron        (Node, runs scripts/prompt-cron.ts on schedule)
-├── Plugin:  Postgres    (managed, with pgvector if we add embeddings later)
-└── Storage: R2/S3 preferred for photos; Railway volume fallback
+├── Service: cron-prompts (Node, runs scripts/prompt-cron.ts on schedule)
+├── Plugin:  Postgres    (managed, plain Postgres; no PostGIS required)
+└── Storage: Cloudflare R2 bucket for profile photos
 ```
 
-Stretch: a second `worker` service if we move chat off SSE to socket.io.
+Stretch: optional Web Push or Strava OAuth, still inside the web app unless production evidence proves a separate worker is needed.
 
 ## 5. Environment variables
 
@@ -166,28 +190,34 @@ Stretch: a second `worker` service if we move chat off SSE to socket.io.
 | `DATABASE_URL` | web, cron | Postgres |
 | `SESSION_SECRET` | web | iron-session, 64+ char hex |
 | `GROQ_API_KEY` | web, cron | Groq inference |
-| `STRAVA_CLIENT_ID` | web | OAuth |
-| `STRAVA_CLIENT_SECRET` | web | OAuth |
+| `GROQ_TEXT_MODEL` | web, cron | default `llama-3.3-70b-versatile`; override if Groq permissions differ |
+| `GROQ_VISION_MODEL` | web, cron | default `meta-llama/llama-4-scout-17b-16e-instruct`; override if Groq permissions differ |
+| `STRAVA_CLIENT_ID` | web | optional OAuth stretch |
+| `STRAVA_CLIENT_SECRET` | web | optional OAuth stretch |
+| `STRAVA_WEBHOOK_VERIFY_TOKEN` | web | optional Strava webhook verification |
 | `WEB_PUSH_VAPID_PUBLIC` | web, cron | Push subscriptions (stretch) |
 | `WEB_PUSH_VAPID_PRIVATE` | web, cron | Push signing (stretch) |
 | `WEB_PUSH_SUBJECT` | web, cron | `mailto:` for VAPID (stretch) |
 | `RESEND_API_KEY` | web, cron | Email reminders (primary reminder channel) |
 | `OPEN_METEO_BASE_URL` | web | default to public |
 | `OVERPASS_BASE_URL` | web | default to public |
-| `STORAGE_DRIVER` | web | `s3`, `r2`, or `local` |
-| `STORAGE_DIR` | web | `/uploads` only when `STORAGE_DRIVER=local` |
-| `S3_ENDPOINT` | web | R2/S3 endpoint when object storage is used |
-| `S3_BUCKET` | web | upload bucket |
-| `S3_ACCESS_KEY_ID` | web | upload bucket key |
-| `S3_SECRET_ACCESS_KEY` | web | upload bucket secret |
+| `R2_ENDPOINT` | web | `https://<account_id>.r2.cloudflarestorage.com` |
+| `R2_BUCKET` | web | upload bucket |
+| `R2_ACCESS_KEY_ID` | web | bucket-scoped access key |
+| `R2_SECRET_ACCESS_KEY` | web | bucket-scoped secret |
 | `PUBLIC_UPLOAD_BASE_URL` | web | public base URL for stored photos |
 | `PUBLIC_BASE_URL` | web, cron | absolute URL for emails / OG / push |
+| `ALLOW_DEMO_MODE` | web | enables guarded Judge Mode endpoints when `true` |
+| `DEMO_MODE_SECRET` | web | optional secret for demo endpoints when no admin session is available |
+| `ALLOW_DEMO_SEED` | web, scripts | enables demo seeding/reset commands |
+| `DEMO_SEED_CONFIRM` | web, scripts | must equal `showup2move` for destructive demo reset/seed |
+| `SENTRY_DSN` | web, cron | optional observability |
 | `NODE_ENV` | both | `production` in prod |
 
 ## 6. Key technical decisions
 
 ### 6.1 Drizzle over Prisma
-curbe's choice. Faster schema iteration. SQL-first stays close to Postgres (we use PostGIS for proximity).
+curbe's choice. Faster schema iteration. SQL-first stays close to Postgres while keeping deployment simple.
 
 ### 6.2 iron-session over JWT
 curbe's choice. Encrypted cookie, server-side rotation trivial, no token exfil concern.
@@ -198,15 +228,16 @@ curbe's choice. Encrypted cookie, server-side rotation trivial, no token exfil c
 - Survives every load balancer.
 - No socket.io dependency, no Redis pub/sub.
 
-### 6.4 PostGIS for proximity
-- `geography(Point)` for user `home` and event `location`.
-- `ST_DWithin` for "within 5km" queries indexed by GiST.
-- curbe already runs PostGIS — same docker image works.
+### 6.4 Numeric lat/lng + Haversine for proximity
+- Store `home_lat`, `home_lng`, venue lat/lng, and group center lat/lng as numeric columns.
+- Use a bounding-box prefilter plus Haversine distance in `src/lib/proximity.ts`.
+- Each user has `max_distance_km`; each prompt response can optionally override it.
+- This is enough for the rubric, avoids a PostGIS extension dependency on Railway, and keeps local/test setup fast.
 
 ### 6.5 No service worker in MVP
 - Not a PWA. No SW, no install prompt, no offline shell.
 - Mobile-first responsiveness comes from Tailwind alone (`min-w-[360px]`, breakpoint-up at `sm`/`md`/`lg`).
-- If we add web push (stretch), it's a hand-rolled minimal SW that handles `push` events only — no fetch interception (avoids cache-staleness bugs during demo).
+- If we add web push (stretch), it's a hand-rolled minimal SW that handles `push` events only — no fetch interception (avoids cache-staleness bugs during demo). Do not make Web Push required for reminder points.
 
 ### 6.6 next-intl for i18n
 - RO + EN at launch. Romanian primary (Haufe is in Romania).

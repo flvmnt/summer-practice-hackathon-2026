@@ -93,7 +93,7 @@ The platform should match users based on:
 
 For each generated group:
 
-- randomly assign a captain,
+- automatically assign a captain, using random tie-breaks only when needed,
 - provide coordination tools,
 - enable organization of the event.
 
@@ -127,7 +127,8 @@ Users should also be able to:
 ## 🏅 Scoring System
 
 > Points are awarded **up to** the maximum listed below.
-> **Total Suggested Score: 7000+ points**
+> **Computed rubric maximum: 16,600 points**
+> Category rows sum to 1,300 + 1,300 + 2,600 + 1,600 + 1,600 + 4,100 + 2,100 + 2,000.
 
 ### Mandatory Foundation
 

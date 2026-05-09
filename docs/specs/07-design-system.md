@@ -20,6 +20,8 @@ Prefer:
 - tactile buttons
 - map and schedule cues
 - confident contrast
+- privacy-safe map language
+- one clear primary action per screen
 
 ## 2. Logo Concept
 
@@ -128,6 +130,14 @@ Required components:
 - Card
 - SegmentedControl
 - EmptyState
+- SetupBanner
+- WizardMobileHeader
+- WizardStickyActionBar
+- SetupChecklistDialog
+- NotificationInbox
+- ScoringProofRow
+- FormationTimeline
+- CaptainBriefPanel
 
 Cards:
 
@@ -168,6 +178,13 @@ Desktop:
 - optional left status rail
 - 2 or 3 column layout only when content benefits
 
+Product surfaces:
+
+- Today: one primary action, thumb-zone CTA, stable matching state card.
+- Group: mobile tabs for Plan/Chat/Players; desktop members/chat/tools columns.
+- Event: Details/Event chat/Vote tabs on mobile; venue/map/vote side panel on desktop.
+- Judge Mode: dense checklist rows, green/yellow/red proof status, no marketing hero.
+
 ## 7. Motion
 
 Use motion sparingly:
@@ -196,6 +213,8 @@ Targets:
 - map has list fallback
 - chat stream does not trap screen readers
 - AI suggestions explain confidence in text, not only color
+- maps always have list fallback and directions links outside the map canvas
+- exact user home locations are never plotted
 
 ## 9. UI Quality Checklist
 
@@ -209,6 +228,7 @@ Before demo:
 - map lazy-load verified
 - Lighthouse 95+ on mobile and desktop
 - no console errors
+- Judge Mode proof rows do not claim stretch integrations unless a real route or labeled fixture exists
 
 ## 10. Visual Identity in Demo
 

@@ -6,6 +6,8 @@ This is the judge-facing coverage map. Every scoring row from the challenge shou
 - demo proof
 - fallback if an external service fails
 
+Official maximum: **16,600p**. Do not use the planning pack's `16,900p` total; it double-counted Smart Matching as 2,800p instead of the upstream 2,600p.
+
 ## 1. Mandatory Foundation
 
 | Rubric row | Plan | Demo proof |
@@ -33,7 +35,7 @@ This is the judge-facing coverage map. Every scoring row from the challenge shou
 | Automatic sport matching | group formation after Yes | group created automatically |
 | Description/interests matching | AI bio extraction + compatibility scoring | bio creates sport chips and reason |
 | Group-size aware matching | sport config min/ideal/max | football forms 10-14, tennis 2-4 |
-| Nearby/proximity matching | PostGIS/Haversine radius | users in same city match; far users do not |
+| Nearby/proximity matching | numeric lat/lng, user `maxDistanceKm`, bounding-box + Haversine | 1km users match; compatible 6km/out-of-radius user stays queued |
 | Match confirmation workflow | `confirmMembershipAction` | user confirms spot in group |
 
 ## 4. AI / Smart Enhancements
@@ -50,8 +52,8 @@ This is the judge-facing coverage map. Every scoring row from the challenge shou
 | Rubric row | Plan | Demo proof |
 |---|---|---|
 | Group chat | persisted messages | send message |
-| Event-specific group chat | event context/system messages inside group | event proposal appears in chat |
-| Notifications/reminders | in-app SSE reminder + email | prompt reminder displayed/sent |
+| Event-specific group chat | separate `eventId` message scope plus group system messages | event chat tab shows messages not present in group chat |
+| Notifications/reminders | persistent notification center + in-app SSE reminder + email if configured | notification row appears/read state toggles; prompt reminder displayed/sent |
 | Real-time updates | SSE streams for chat/prompt/votes | two-browser message appears within 2s |
 
 Web push is stretch only because the MVP is not a PWA.
@@ -60,13 +62,13 @@ Web push is stretch only because the MVP is not a PWA.
 
 | Rubric row | Plan | Demo proof | Fallback |
 |---|---|---|---|
-| Automatic captain assignment | random/default captain on group creation | captain pill visible | manual captain action |
-| Auto-event setup | AI + venue + weather planner | one-click proposed event | deterministic best venue/time |
+| Automatic captain assignment | heuristic captain selection with random tie-break | captain pill visible and timeline explains why | manual captain action |
+| Auto-event setup | deterministic venue/time/weather ranking plus AI Captain Brief | one-click proposed event and captain brief | deterministic best venue/time |
 | Manual event creation | event form | create event live | custom location |
-| Venue/location suggestions | Overpass + cached venues | nearby venue cards | manual venue |
-| Price estimation | price tier heuristic | `$`, `$$`, `$$$` on venues | unknown price label |
+| Venue/location suggestions | seeded venues + cached venues + Overpass + manual captain entry | nearby venue cards with distance | manual venue |
+| Price estimation | heuristic price tier plus confidence: verified/captain_entered/estimated/unknown | `$`, `$$`, `$$$ est.` on venues | unknown price label |
 | Group voting/polling system | votes and choices | live vote counts | captain can decide manually |
-| Maps/location assistance | MapLibre + list fallback | map with venue pins | venue list |
+| Maps/location assistance | MapLibre + list fallback + radius circle + directions links + privacy-safe pins | map with venue pins, distance chips, directions | venue list |
 
 ## 7. Bonus Features
 
@@ -78,7 +80,7 @@ Web push is stretch only because the MVP is not a PWA.
 | Gamification/achievements | achievements table and badges | First Match badge |
 | Multi-language support | RO/EN with next-intl | switch language |
 | Social sharing/invites | event invite link + share sheet | copy/share invite |
-| Wearables/fitness integrations | Strava OAuth | connected sport verification |
+| Wearables/fitness integrations | Stretch only: Strava OAuth/import or labeled fixture if allowed | claim 0 unless connection/import or accepted fixture is visible |
 
 ## 8. Innovation Bonus
 
@@ -87,9 +89,11 @@ Judge-facing story:
 1. **60-second loop:** signup, describe yourself, tap Yes, get a group.
 2. **AI profile setup:** text and photo suggestions remove setup friction.
 3. **Auto group-to-event pipeline:** matching does not stop at recommendations; it produces a playable plan.
-4. **Location intelligence:** venue, price tier, weather, and map work together.
+4. **Location intelligence:** venue distance, price confidence, weather, directions, and map/list fallback work together.
 5. **Human control remains:** every AI result is editable and every external API has a manual fallback.
-6. **Production-shaped:** Railway, PostGIS, CI, health check, GDPR basics, tested demo path.
+6. **Production-shaped:** Railway, R2, CI, health check, GDPR basics, tested demo path.
+7. **AI Captain Brief:** the captain gets a concise action summary with venue, weather, votes, and next decision.
+8. **Group Formation Timeline:** judges can inspect exactly why the group formed.
 
 ## 9. Minimum Demo To Unlock Most Points
 
@@ -105,8 +109,9 @@ If time is tight, this exact demo still covers the majority of the rubric:
 8. captain shown
 9. two-browser chat
 10. venue suggestion on map
-11. vote for time/venue
-12. confirm event
-13. export calendar
-14. show weather/team balancing/i18n as quick bonus cards
-
+11. event-specific chat
+12. vote for time/venue
+13. confirm event
+14. export calendar
+15. show weather/team balancing/i18n as quick bonus cards
+16. open Judge Mode scoring proof

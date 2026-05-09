@@ -6,20 +6,23 @@ AI should make the product feel smarter without becoming a fragile demo dependen
 
 Primary vendor: **Groq**.
 
-| Task | Model | Why |
+| Task | Default model env | Why |
 |---|---|---|
-| Bio sport extraction | `llama-3.3-70b-versatile` | strong structured text reasoning |
-| Compatibility scoring | `llama-3.3-70b-versatile` | produces useful explanations |
-| Teammate recommendations | `llama-3.3-70b-versatile` | ranking + explanation |
-| Photo sport extraction | `meta-llama/llama-4-scout-17b-16e-instruct` | current lightweight Groq vision model |
+| Bio sport extraction | `GROQ_TEXT_MODEL` defaults to `llama-3.3-70b-versatile` | strong structured text reasoning |
+| Compatibility scoring | `GROQ_TEXT_MODEL` | produces useful explanations |
+| Teammate recommendations | `GROQ_TEXT_MODEL` | ranking + explanation |
+| AI Captain Brief | `GROQ_TEXT_MODEL` | concise explainable event plan |
+| Photo sport extraction | `GROQ_VISION_MODEL` defaults to `meta-llama/llama-4-scout-17b-16e-instruct` | current lightweight Groq vision model |
 
 Note: model availability can be restricted at the Groq project/org level. During implementation, verify allowed models with `https://api.groq.com/openai/v1/models` and keep model IDs configurable through environment variables.
 
-All calls happen server-side through `src/lib/groq.ts`.
+All calls happen server-side through `src/lib/groq.ts`. Startup health should log configured model IDs and fail soft: if a configured model is unavailable, the app disables that AI surface and shows deterministic/manual fallbacks.
 
 ## 2. Structured Output Contract
 
 Every AI call must return JSON parsed by zod. Invalid JSON is retried once with a repair prompt. If still invalid, fall back to deterministic logic.
+
+Every successful response is written to `ai_cache` with an input hash, model id, output JSON, and expiry. Demo seed may preload cache rows so the presentation path survives Groq latency or quota failure.
 
 ```ts
 type SportSuggestion = {
@@ -123,11 +126,12 @@ Deterministic score:
 
 | Factor | Weight |
 |---|---:|
-| shared sport | 35 |
-| availability overlap | 25 |
+| sport match | 30 |
 | distance | 20 |
+| availability fit | 20 |
+| group-size contribution | 10 |
 | skill balance | 10 |
-| bio/interests similarity | 10 |
+| AI/bio compatibility | 10 |
 
 AI score:
 
@@ -158,7 +162,7 @@ Recommendation types:
 - "Nearby and same sport"
 - "Good captain candidate"
 - "Balances teams"
-- "Played recently via Strava"
+- "Played recently" if a real Strava import or labeled demo fixture exists
 
 ## 7. Auto-Event Setup
 
@@ -170,8 +174,9 @@ Flow:
 2. Server picks top sport and time slot.
 3. Venue search returns candidates.
 4. Weather check filters outdoor venues if weather is poor.
-5. AI chooses a practical event plan.
-6. Captain sees one-click confirmation.
+5. Deterministic ranking chooses the safest practical event plan.
+6. Groq optionally generates an AI Captain Brief explaining the plan.
+7. Captain sees one-click confirmation or starts a vote.
 
 AI output:
 
@@ -183,10 +188,27 @@ type AutoEventPlan = {
   customLocationText?: string;
   reason: string;
   backupPlan: string;
+  captainBrief: string;
 };
 ```
 
-## 8. Prompt Injection Guardrails
+## 8. AI Captain Brief and Group Formation Timeline
+
+Rubric coverage: **innovation and AI explainability**.
+
+Surfaces:
+
+- group screen after match: "Why this group formed"
+- captain event panel: "AI Captain Brief"
+- Judge Mode: cached proof of deterministic gates + AI explanation
+
+Rules:
+
+- The timeline must show deterministic facts first: shared sport, distance gate, availability, group-size fit, skill balance.
+- AI copy is explain-only. It cannot override hard gates or mutate data.
+- Every suggestion has an accept/dismiss path.
+
+## 9. Prompt Injection Guardrails
 
 User bio and chat content are untrusted.
 
@@ -200,7 +222,7 @@ Rules:
 - model cannot perform mutations directly
 - AI explanations are plain text and escaped by React
 
-## 9. Latency Budget
+## 10. Latency Budget
 
 | Call | Target | Fallback |
 |---|---:|---|
@@ -208,8 +230,9 @@ Rules:
 | Photo extraction | < 4s | manual chips |
 | Pair compatibility | < 1.5s | deterministic score |
 | Auto-event plan | < 3s | highest-ranked venue/time |
+| Captain brief | < 2s | deterministic bullet summary |
 
-## 10. Cost Control
+## 11. Cost Control
 
 - cache AI results
 - batch compatibility calls by group
@@ -217,7 +240,7 @@ Rules:
 - cap recommendation refresh to once per prompt window
 - disable non-critical AI if `GROQ_API_KEY` is missing
 
-## 11. Tests
+## 12. Tests
 
 Unit:
 
@@ -237,3 +260,4 @@ E2E:
 - onboarding bio suggestion accepted
 - photo upload suggestion accepted
 - matched group shows compatibility explanation
+- Judge Mode shows cached AI proof and deterministic fallback state

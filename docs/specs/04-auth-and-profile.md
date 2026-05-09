@@ -5,6 +5,7 @@
 Use the curbe-style lightweight profile system:
 
 - username + password signup
+- full name collected during onboarding, not signup
 - `iron-session` encrypted cookie
 - `bcryptjs` password hashing
 - one-time recovery code shown after signup
@@ -13,11 +14,13 @@ Use the curbe-style lightweight profile system:
 
 This fits the challenge better than OAuth-first auth because judges can create demo accounts quickly and the team avoids provider setup risk during the hackathon.
 
+Decision: keep signup at two fields (`username`, `password`). Collect `full_name` in the first onboarding screen. Username is the stable URL handle; full name is the editable human display name used in chat, groups, events, captain labels, and profile cards.
+
 ## 2. User-Facing Flow
 
 ### 2.1 Signup
 
-1. User opens `/signup`.
+1. User opens `/signup` (or `/ro/signup` / `/en/signup` once i18n routing is enabled).
 2. User enters username and password.
 3. Server validates username format and password strength.
 4. Account is created.
@@ -41,7 +44,7 @@ SM2M-8F3K-2Q9P
 2. User enters username and password.
 3. Server compares password with real hash or dummy hash to avoid username enumeration timing leaks.
 4. Session cookie is saved.
-5. User lands on `/today`.
+5. If required onboarding is complete, user lands on `/today`; otherwise user is redirected to the next missing `/onboarding/...` step.
 
 ### 2.3 Recovery
 
@@ -57,6 +60,7 @@ SM2M-8F3K-2Q9P
 type SessionData = {
   userId?: string;
   username?: string;
+  fullName?: string;
   isAdmin?: boolean;
   locale?: 'ro' | 'en';
 };
@@ -79,6 +83,7 @@ Required by rubric:
 | Field | Required | Scoring coverage |
 |---|---:|---|
 | username | yes | registration/login |
+| full name | yes during onboarding | profile creation, human-readable chat/events |
 | bio | yes during onboarding | profile creation, AI text extraction |
 | sports | yes during onboarding | sports preferences |
 | skill level | yes during onboarding | skill level/preferences |
@@ -100,7 +105,9 @@ The onboarding should be fast enough for a judge to complete live.
 
 ```text
 /onboarding/profile
-Step 1: Bio
+Step 1: Name + Bio
+  "How should people see you?"
+  [Full name input]
   "Tell us what you like to play"
   [textarea]
   [Suggest sports with AI]
@@ -111,10 +118,11 @@ Step 2: Sports
   [Football beginner/intermediate/advanced]
   [Basketball beginner/intermediate/advanced]
 
-/onboarding/location
+`/onboarding/location`
 Step 3: Location
   city input + "use my location"
   distance slider: 1km, 3km, 5km, 10km
+  stores `homeLat`, `homeLng`, and `maxDistanceKm`
 
 /onboarding/photo
 Step 4: Photo
@@ -132,13 +140,14 @@ First prompt appears immediately
 Sections:
 
 - profile summary
+- full name edit
 - bio edit
 - sports and skill levels
 - city, map pin, max distance
 - photo upload/remove
 - AI suggestions history
 - reminder preferences
-- connected Strava account
+- connected Strava account or labeled demo fixture if the optional wearable integration ships
 - recovery code rotation
 - delete/export account
 
@@ -147,7 +156,8 @@ Sections:
 Shows:
 
 - avatar or initials mark
-- username
+- full name as primary display
+- username as secondary handle
 - sports chips
 - skill badges
 - city only, never exact location
@@ -156,7 +166,7 @@ Shows:
 
 Privacy rules:
 
-- exact `home_point` is never exposed publicly
+- exact `homeLat`/`homeLng` is never exposed publicly
 - email is never exposed
 - profile photo uses resized webp only
 - deleted users render as `deleted_user`
@@ -176,6 +186,7 @@ Use a Postgres-backed `auth_rate_limits` table, not an in-memory Map, because Ra
 
 - Password minimum: 8 characters.
 - Username regex: `^[a-zA-Z0-9_-]{3,30}$`.
+- Full name validation: 1-80 visible characters; allow Unicode letters/marks, spaces, apostrophe, and hyphen.
 - Bcrypt cost: 10 for hackathon, 12 later if latency allows.
 - Dummy hash compare on failed login/recovery.
 - Session destroyed if user row no longer exists.
@@ -187,6 +198,7 @@ Use a Postgres-backed `auth_rate_limits` table, not an in-memory Map, because Ra
 Unit:
 
 - username validation
+- full name validation
 - password validation
 - recovery code format
 - rate limit bucket behavior
@@ -204,4 +216,3 @@ E2E:
 - signup -> recovery code -> onboarding -> `/today`
 - login -> logout -> login
 - recovery with old code fails after rotation
-

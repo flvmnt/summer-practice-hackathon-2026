@@ -16,6 +16,7 @@ Stretch:
 
 - Google Calendar link
 - Outlook Calendar link
+- full Google Calendar OAuth is out of scope unless the core demo is already stable
 
 Data needed:
 
@@ -49,7 +50,7 @@ Use deterministic team split:
 
 1. Sort players by skill level descending.
 2. Snake-draft into Team A and Team B.
-3. Balance captain/known activity if Strava exists.
+3. Balance captain/known activity only if a real wearable import or labeled fixture exists.
 4. Show "balanced enough" score.
 
 Visible surface:
@@ -118,14 +119,20 @@ Privacy:
 
 ## 8. Wearables / Fitness Integrations - 500p
 
-Use Strava as the feasible integration.
+Use Strava as the only feasible real integration. This row is **not claimed** unless OAuth/import works in the demo or the judges explicitly accept a clearly labeled fixture.
 
-MVP bonus:
+Real bonus proof:
 
 - connect Strava OAuth
 - import recent activity sport types
 - mark sport tags as "verified by Strava"
 - use recent activity as teammate recommendation signal
+
+Fallback demo fixture:
+
+- seed one `demo_activity`/mocked Strava import for Judge Mode
+- label it as a fixture, not live OAuth
+- use it only to explain how the integration would influence recommendations
 
 Stretch:
 
@@ -158,7 +165,6 @@ Build order:
 4. Multi-language
 5. Social sharing
 6. Gamification
-7. Strava
+7. Wearables/Strava only if real OAuth/import or accepted fixture is ready
 
-Reason: this order maximizes visible points per hour and avoids OAuth risk until the core product is stable.
-
+Reason: this order maximizes visible points and avoids OAuth risk until the core product is stable. A greyed "coming soon" Strava button scores 0 and should not be shown as proof.

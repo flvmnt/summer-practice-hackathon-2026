@@ -10,8 +10,8 @@ Services:
 |---|---|---|
 | `web` | app service | Next.js app |
 | `cron-prompts` | cron service | creates prompt windows and reminders |
-| `postgres` | managed plugin | app database with PostGIS |
-| `uploads` | object storage or volume | profile photos |
+| `postgres` | managed plugin | app database |
+| `uploads` | Cloudflare R2 bucket | profile photos |
 
 ## 2. Runtime
 
@@ -20,7 +20,7 @@ Services:
 | Node | 20 LTS or 22 LTS |
 | Package manager | pnpm |
 | Build command | `pnpm install --frozen-lockfile && pnpm build` |
-| Start command | `pnpm start` |
+| Start command | `pnpm db:migrate && pnpm start` |
 | Health path | `/api/health` |
 
 `railway.toml` sketch:
@@ -31,11 +31,12 @@ builder = "NIXPACKS"
 buildCommand = "pnpm install --frozen-lockfile && pnpm build"
 
 [deploy]
-startCommand = "pnpm start"
+startCommand = "pnpm db:migrate && pnpm start"
 healthcheckPath = "/api/health"
-healthcheckTimeout = 30
+healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
+numReplicas = 1
 ```
 
 ## 3. Environment Variables
@@ -47,38 +48,44 @@ Required:
 | `DATABASE_URL` | Railway Postgres |
 | `SESSION_SECRET` | `openssl rand -hex 32` |
 | `GROQ_API_KEY` | server-side only |
+| `GROQ_TEXT_MODEL` | default `llama-3.3-70b-versatile`, override per Groq project |
+| `GROQ_VISION_MODEL` | default `meta-llama/llama-4-scout-17b-16e-instruct`, override per Groq project |
 | `PUBLIC_BASE_URL` | production URL |
-| `STORAGE_DRIVER` | `r2`, `s3`, or `local` |
-| `STORAGE_DIR` | `/uploads` only for `local` |
-| `S3_ENDPOINT` | required for R2/S3 |
-| `S3_BUCKET` | required for R2/S3 |
-| `S3_ACCESS_KEY_ID` | required for R2/S3 |
-| `S3_SECRET_ACCESS_KEY` | required for R2/S3 |
+| `R2_ENDPOINT` | `https://<account_id>.r2.cloudflarestorage.com` |
+| `R2_BUCKET` | Cloudflare R2 bucket name |
+| `R2_ACCESS_KEY_ID` | bucket-scoped access key |
+| `R2_SECRET_ACCESS_KEY` | bucket-scoped secret |
 | `PUBLIC_UPLOAD_BASE_URL` | public upload base URL |
+| `ALLOW_DEMO_MODE` | `true` only for judged demo deployments |
+| `ALLOW_DEMO_SEED` | `true` only when seeding/resetting demo data |
+| `DEMO_SEED_CONFIRM` | must equal `showup2move` for demo seed/reset |
 | `NODE_ENV` | `production` |
 
 Optional:
 
 | Var | Feature |
 |---|---|
-| `RESEND_API_KEY` | email reminders |
+| `RESEND_API_KEY` | email reminders; optional only if in-app reminders are the sole demo proof |
+| `DEMO_MODE_SECRET` | optional demo endpoint secret when no admin session is available |
 | `STRAVA_CLIENT_ID` | Strava bonus |
 | `STRAVA_CLIENT_SECRET` | Strava bonus |
 | `STRAVA_WEBHOOK_VERIFY_TOKEN` | Strava webhook |
 | `WEB_PUSH_VAPID_PUBLIC` | web push stretch |
 | `WEB_PUSH_VAPID_PRIVATE` | web push stretch |
+| `WEB_PUSH_SUBJECT` | `mailto:` subject for web push stretch |
+| `OPEN_METEO_BASE_URL` | override only if the public endpoint changes |
+| `OVERPASS_BASE_URL` | override only if the public endpoint changes or a mirror is used |
 | `SENTRY_DSN` | observability |
 
 ## 4. Database Setup
 
-Railway Postgres must enable PostGIS.
+Railway Postgres does **not** need PostGIS. Proximity uses numeric lat/lng plus Haversine in application code.
 
 Migration order:
 
-1. create extension `postgis`
-2. create tables
-3. create indexes
-4. seed demo data
+1. create tables
+2. create indexes
+3. seed demo data
 
 Command:
 
@@ -89,14 +96,14 @@ ALLOW_DEMO_SEED=true DEMO_SEED_CONFIRM=showup2move pnpm db:seed:demo
 
 ## 5. Storage
 
-Preferred production setup:
+Locked production setup:
 
-- R2/S3-compatible bucket for uploaded photos
+- Cloudflare R2 bucket for uploaded photos
 - signed server-side upload/write
 - public read through generated object URLs or CDN base URL
-- Railway volume only as fallback for a single-instance demo
+- no Railway volume for uploads
 
-Reason: object storage survives app restarts, preview deployments, and future horizontal scaling better than a mounted volume.
+Reason: R2 survives app restarts, preview deployments, and future horizontal scaling better than a mounted volume. It is S3-compatible, so the app can use the normal AWS S3 SDK with a Cloudflare endpoint and the `auto` region.
 
 ## 6. Cron
 
@@ -126,7 +133,7 @@ Cron responsibilities:
 1. Push to fork.
 2. GitHub Actions runs checks.
 3. Railway deploys from `main` only after green checks.
-4. Run migrations.
+4. Migrations run through the start command. If disabled for any reason, run `pnpm db:migrate` manually before smoke testing.
 5. Seed demo data.
 6. Verify `/api/health`.
 7. Run smoke demo.
@@ -161,5 +168,7 @@ After every deploy:
 - prompt response
 - group formation
 - chat SSE
+- event chat SSE
 - event page
 - calendar export
+- `/demo` Judge Mode scoring status when enabled

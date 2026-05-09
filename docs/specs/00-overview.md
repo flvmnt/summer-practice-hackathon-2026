@@ -8,7 +8,7 @@ Modern schedules make it hard to maintain fixed sports groups. People want to st
 
 1. **Lowest possible friction** to "I'm playing today." Target: under 60s from cold-open to first ShowUpToday answer for a returning user.
 2. **AI does the boring work** — sport tags from a bio, sport tags from a photo, compatibility scoring, recommendations.
-3. **Real groups form automatically.** A user answering "Yes" to today's prompt should be in a chat with 3-13 other compatible humans within seconds.
+3. **Real groups form automatically.** A user answering "Yes" to today's prompt should be in a chat with the right number of compatible humans for that sport: 2-4 for racket sports, larger squads for team sports, and small packs for running/cycling.
 4. **Production-shaped from day 1.** GDPR-safe, secured, observable, deployed under a real domain.
 
 ## 3. Form factor
@@ -27,7 +27,7 @@ Lighthouse target: **≥ 95 on both mobile and desktop** across Performance / Ac
 
 ## 5. Scoring strategy
 
-Theoretical maximum across the rubric is **16,600p**. Realistic target with quality bar: **~13,500p (≈81%)**. We hit every category, max what's tractable, hit "Up to" caps with judge-impressing polish, and skip nothing.
+Theoretical maximum across the rubric is **16,600p**. The planning pack's `16,900p` total is wrong because Smart Matching is **2,600p**, not 2,800p. Realistic target with quality bar: **~13,000-13,700p** depending on whether optional wearables ship with real proof. We hit the core loop hard, avoid fake credit, and make every claimed row judge-visible.
 
 ### Per-category targets
 
@@ -37,15 +37,15 @@ Theoretical maximum across the rubric is **16,600p**. Realistic target with qual
 | **User Profiles** | 1,300 | **1,300** | curbe auth + sports preferences + photo + skill level. Easy max. |
 | **Smart Matching** | 2,600 | **2,400** | All six features. Proximity uses lat/lng + Haversine; group-size aware via per-sport config. |
 | **AI Enhancements** | 1,600 | **1,600** | Groq text + vision do all four: bio→sports, photo→sports, compatibility, recommendations. |
-| **Communication** | 1,600 | **1,500** | Group chat + event chat + SSE real-time + in-app/email reminders. Web push stays stretch only. |
-| **Event & Location** | 4,100 | **3,500** | Captain assign, auto-event setup, manual events, venues via Overpass, voting, MapLibre map. Price estimation (300p) is heuristic-only. |
-| **Bonus** | 2,100 | **1,500** | Calendar (.ics export), weather (Open-Meteo, free), team balancing, basic gamification, i18n RO/EN, social share. **Strava OAuth = wearables credit.** |
-| **Innovation** | 2,000 | **1,500** | Polished UX, AI used in distinctive ways, technical excellence in deploy/test/security. |
-| **TOTAL** | **16,600** | **~13,500** |
+| **Communication** | 1,600 | **1,500-1,600** | Group chat + real event-scoped chat + SSE real-time + in-app/email reminders. Web push stays stretch only. |
+| **Event & Location** | 4,100 | **3,500-3,900** | Captain assign, auto-event setup, manual events, seeded/cached/Overpass venues, voting, MapLibre map, directions links, privacy-safe map/list fallback. Price estimation is heuristic with confidence labels. |
+| **Bonus** | 2,100 | **1,000-1,500** | Calendar (.ics export), weather (Open-Meteo), team balancing, basic gamification, i18n RO/EN, social share. Wearables count only if Strava OAuth/import or an explicitly accepted demo fixture works. |
+| **Innovation** | 2,000 | **1,500-1,800** | Polished UX, AI Captain Brief, Group Formation Timeline, demo mode, production-shaped deploy/test/security. |
+| **TOTAL** | **16,600** | **~13,000-13,700** |
 
 ### Where we cut
 
-- Wearables: Strava only, not Garmin/Polar/Apple Watch native. Saves 2-4h.
+- Wearables: optional Strava only. Do not claim the 500p row unless OAuth/import works or the judges explicitly accept a labeled fixture.
 - Price estimation: heuristic per-venue type, not real-time scraping. Saves 4-6h.
 - Real-time updates: SSE only, no socket.io. Saves 4-8h.
 - Capacitor mobile wrap: stretch.
@@ -58,8 +58,8 @@ A demo passes if:
 2. The "ShowUpToday?" prompt fires and resolves without manual nudging.
 3. Two simultaneous browsers see chat messages within 2s of each other (SSE).
 4. A photo of someone holding a tennis racket gets `tennis` auto-suggested.
-5. Two users in the same city get matched into the same group; two in different cities don't.
-6. The auto-formed group shows a venue suggestion on a map with rough price tier.
+5. Two users within 1km match; a compatible user outside the configured radius does not. The UI shows the distance gate and explanation.
+6. The auto-formed group shows venue suggestions on a map/list with distance, directions, weather hint, and rough price confidence.
 7. Captain can call a vote, members can vote, result tallies live.
 8. Lighthouse **≥ 95 on both mobile and desktop** across Performance, Accessibility, Best Practices, SEO.
 9. All tests pass in CI; no broken links; no console errors in prod.

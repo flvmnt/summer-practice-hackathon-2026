@@ -9,7 +9,7 @@ For a prompt window:
 - users who answered `yes`
 - optional sport override from the prompt response
 - profile sports and skill levels
-- city/home point and max distance
+- city, home lat/lng, and max distance
 - availability window
 - recent activity signals from Strava, if connected
 - weather and venue data, if event setup is requested
@@ -20,7 +20,7 @@ Hard gates:
 
 1. User answered `yes` for the same prompt.
 2. User has at least one sport in common with the group sport.
-3. User is within max distance or same city fallback.
+3. User is within max distance by Haversine. Same-city text is a fallback only when coordinates are missing and must be labeled lower confidence.
 4. User is not banned/deleted.
 5. User is not already confirmed in another active group for the same prompt window.
 
@@ -40,7 +40,7 @@ for each prompt:
   gather yes responses
   expand each user into candidate sports
   bucket candidates by sport
-  within each sport, bucket by city/proximity
+  within each sport, bucket by proximity using bounding box + Haversine
   sort buckets by count descending
   for each bucket:
     while enough users for sport.sizeMin:
@@ -60,6 +60,12 @@ Transaction/idempotency:
 - unique guard on active membership per prompt/user
 - retry conflict once
 
+Distance rule:
+
+- Use each user's prompt override radius if present, else `users.maxDistanceKm`.
+- Two users are compatible only when both users are within the smaller of their two allowed radii from the candidate group center or seed user.
+- Demo proof must include a near candidate that passes and a far candidate that fails.
+
 ## 4. Ranking Score
 
 Total: 100 points.
@@ -75,7 +81,7 @@ Total: 100 points.
 
 Minimum to auto-match: 55.
 
-Below 55:
+Below 55 or outside the hard distance gate:
 
 - user stays in queue
 - app recommends manual event creation or smaller sport
@@ -101,7 +107,7 @@ Default strategy:
 
 1. prefer users who confirmed participation quickly
 2. prefer users with prior captain achievement
-3. prefer users close to venue centroid
+3. prefer users close to the group center / availability centroid
 4. tie-break randomly
 
 If no clear candidate:
@@ -141,6 +147,7 @@ Inputs:
 - price tier
 - weather
 - indoor/outdoor
+- seeded/cached/manual source reliability
 
 Score: 100 points.
 
@@ -155,6 +162,7 @@ Score: 100 points.
 
 Fallback:
 
+- use seeded local venues first for demo reliability
 - if Overpass fails, use cached venues
 - if no cached venues, captain enters custom location
 
@@ -168,7 +176,14 @@ Fallback:
 | premium club, reservation-only, padel/tennis indoor | `$$$` |
 | unknown | `unknown` |
 
-Never present heuristic prices as exact prices. Label them as "rough price tier".
+Never present heuristic prices as exact prices. Label them as "rough price tier" plus confidence:
+
+| Confidence | Meaning |
+|---|---|
+| `verified` | seeded or imported known venue price |
+| `captain_entered` | captain manually entered/confirmed it |
+| `estimated` | inferred from venue type/tags |
+| `unknown` | no useful signal |
 
 ## 10. Weather Rules
 
@@ -190,7 +205,7 @@ Flow:
 2. search ranked venues
 3. fetch weather
 4. generate plan with deterministic ranking
-5. optionally ask Groq to explain the selected plan
+5. optionally ask Groq to explain the selected plan as an AI Captain Brief
 6. captain confirms or starts a vote
 
 Output:
@@ -202,9 +217,11 @@ type AutoEventCandidate = {
   durationMin: number;
   venueId?: string;
   priceTier?: 'free' | '$' | '$$' | '$$$' | 'unknown';
+  priceConfidence?: 'verified' | 'captain_entered' | 'estimated' | 'unknown';
   weatherHint?: string;
   score: number;
   reason: string;
+  captainBrief?: string;
 };
 ```
 
@@ -223,6 +240,13 @@ Rules:
 - one choice per user
 - captain can close vote early if all confirmed members voted
 - winning option becomes event proposal
+
+Event chat:
+
+- group chat gets a system message when a vote/event is created
+- event chat is a separate message scope keyed by `event_id`
+- event chat opens only to group members/event attendees
+- demo proof must show a message that appears in event chat but not in group chat
 
 ## 13. Tests
 
@@ -247,4 +271,5 @@ E2E:
 - seeded football group forms with 10-14 users
 - seeded tennis group forms with 2-4 users
 - map/venue event flow works with external APIs mocked
-
+- near/far proximity proof works without PostGIS
+- event chat is isolated from group chat

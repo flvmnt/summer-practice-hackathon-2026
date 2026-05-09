@@ -8,12 +8,14 @@
                   │──────────────────│
                   │ id (uuid pk)     │◄──────────────┐
                   │ username uk      │               │
+                  │ full_name        │               │
                   │ password_hash    │               │
                   │ recovery_code_h  │               │
                   │ email?           │               │
                   │ bio?             │               │
                   │ city?            │               │
-                  │ home_point?      │  (PostGIS)    │
+                  │ home_lat/lng?    │               │
+                  │ max_distance_km  │               │
                   │ skill_level?     │               │
                   │ photo_url?       │               │
                   │ locale (ro|en)   │               │
@@ -39,7 +41,7 @@
                               │ id pk          │ │ id pk         │
                               │ window_date    │ │ sport         │
                               │ window_slot    │ │ city?         │
-                              │ created_at     │ │ center_point? │
+                              │ created_at     │ │ center_lat/lng│
                               │ message_text   │ │ size_target   │
                               └────────────────┘ │ status        │
                                                  │ captain_id fk │
@@ -50,7 +52,9 @@
                                                 ▼       ▼         ▼
                                          ┌──────────┐ ┌────────┐ ┌──────────┐
                                          │ messages │ │events  │ │  votes   │
-                                         │ group_id │ │group_id│ │ group_id │
+                                         │ scope    │ │group_id│ │ group_id │
+                                         │ group_id?│ │        │ │ event_id?│
+                                         │ event_id?│ │        │ │         │
                                          │ user_id  │ │created │ │ event_id?│
                                          │ kind     │ │ _by    │ │ topic    │
                                          │ body     │ │when_at │ │ options  │
@@ -74,8 +78,8 @@
                               │ external_id      │
                               │ name             │
                               │ kind             │
-                              │ point (PostGIS)  │
-                              │ price_tier 1..4  │
+                              │ lat/lng          │
+                              │ price/confidence │
                               │ raw_tags jsonb   │
                               └──────────────────┘
 ```
@@ -83,19 +87,23 @@
 ## 2. Tables (Drizzle schema sketch)
 
 > This is illustrative. Actual code goes in `src/db/schema.ts` later.
+> In actual Drizzle code, declare tables in dependency order (for example `events` before event-scoped `messages`) or split references cleanly; the snippets below prioritize readability.
 
 ```ts
 // users — curbe-pattern with sport extensions
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   username: varchar('username', { length: 30 }).notNull().unique(),
+  fullName: varchar('full_name', { length: 80 }).notNull(),
   passwordHash: text('password_hash').notNull(),
   recoveryCodeHash: text('recovery_code_hash').notNull(),
   email: varchar('email', { length: 255 }),
   bio: text('bio'),
   city: varchar('city', { length: 100 }),
-  homePoint: geography('home_point', { srid: 4326, type: 'Point' }),
-  skillLevel: varchar('skill_level', { length: 20 }),  // beginner|intermediate|advanced
+  homeLat: decimal('home_lat', { precision: 9, scale: 6 }),
+  homeLng: decimal('home_lng', { precision: 9, scale: 6 }),
+  maxDistanceKm: smallint('max_distance_km').notNull().default(5),
+  skillLevel: smallint('skill_level'),                 // 1..5 fallback when no per-sport level exists
   photoUrl: text('photo_url'),
   profileVisibility: varchar('profile_visibility', { length: 20 }).notNull().default('public'),
   bannedAt: timestamp('banned_at', { withTimezone: true }),
@@ -106,8 +114,25 @@ export const users = pgTable('users', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   lastSeenAt: timestamp('last_seen_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
-  index('users_home_point_gist').using('gist', t.homePoint),
+  index('users_home_lat_lng_idx').on(t.homeLat, t.homeLng),
 ]);
+
+export const demoRuns = pgTable('demo_runs', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  label: varchar('label', { length: 80 }).notNull(),
+  createdByUserId: uuid('created_by_user_id').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const profilePhotos = pgTable('profile_photos', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  url: text('url').notNull(),
+  objectKey: text('object_key').notNull(),
+  aiStatus: varchar('ai_status', { length: 20 }).notNull().default('pending'), // pending|ready|failed|skipped
+  aiSuggestions: jsonb('ai_suggestions'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
 
 export const userSports = pgTable('user_sports', {
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
@@ -141,6 +166,9 @@ export const availabilityResponses = pgTable('availability_responses', {
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   answer: varchar('answer', { length: 3 }).notNull(),  // yes|no
   sportPrefs: text('sport_prefs').array(),             // override of profile prefs
+  lat: decimal('lat', { precision: 9, scale: 6 }),      // optional one-off prompt location
+  lng: decimal('lng', { precision: 9, scale: 6 }),
+  maxDistanceKm: smallint('max_distance_km'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [uniqueIndex('availability_unique').on(t.promptId, t.userId)]);
 
@@ -150,7 +178,8 @@ export const groups = pgTable('groups', {
   promptId: uuid('prompt_id').references(() => prompts.id, { onDelete: 'set null' }),
   sport: varchar('sport', { length: 40 }).notNull(),
   city: varchar('city', { length: 100 }),
-  centerPoint: geography('center_point', { srid: 4326, type: 'Point' }),
+  centerLat: decimal('center_lat', { precision: 9, scale: 6 }),
+  centerLng: decimal('center_lng', { precision: 9, scale: 6 }),
   sizeTarget: smallint('size_target').notNull(),
   status: varchar('status', { length: 20 }).notNull().default('forming'), // forming|active|done|cancelled
   captainUserId: uuid('captain_user_id').references(() => users.id, { onDelete: 'set null' }),
@@ -165,32 +194,20 @@ export const groupMembers = pgTable('group_members', {
   joinedAt: timestamp('joined_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [primaryKey({ columns: [t.groupId, t.userId] })]);
 
-export const messages = pgTable('messages', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  groupId: uuid('group_id').notNull().references(() => groups.id, { onDelete: 'cascade' }),
-  userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
-  kind: varchar('kind', { length: 20 }).notNull(),  // text|system|vote_started|event_proposed
-  body: text('body').notNull(),
-  meta: jsonb('meta'),
-  deletedAt: timestamp('deleted_at', { withTimezone: true }),
-  deletedByUserId: uuid('deleted_by_user_id').references(() => users.id, { onDelete: 'set null' }),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-}, (t) => [
-  index('messages_group_created_idx').on(t.groupId, t.createdAt),
-]);
-
 export const venues = pgTable('venues', {
   id: uuid('id').primaryKey().defaultRandom(),
   source: varchar('source', { length: 10 }).notNull(),   // osm|manual
   externalId: varchar('external_id', { length: 100 }),
   name: varchar('name', { length: 200 }).notNull(),
   kind: varchar('kind', { length: 40 }).notNull(),       // football_pitch|tennis_court|...
-  point: geography('point', { srid: 4326, type: 'Point' }).notNull(),
+  lat: decimal('lat', { precision: 9, scale: 6 }).notNull(),
+  lng: decimal('lng', { precision: 9, scale: 6 }).notNull(),
   priceTier: smallint('price_tier'),                     // 1=free, 4=premium
+  priceConfidence: varchar('price_confidence', { length: 20 }).notNull().default('estimated'), // verified|captain_entered|estimated|unknown
   rawTags: jsonb('raw_tags'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
-  index('venues_point_gist').using('gist', t.point),
+  index('venues_lat_lng_idx').on(t.lat, t.lng),
   uniqueIndex('venues_source_external_unique').on(t.source, t.externalId),
 ]);
 
@@ -207,9 +224,68 @@ export const events = pgTable('events', {
   status: varchar('status', { length: 20 }).notNull().default('proposed'),  // proposed|confirmed|cancelled|done
   notesText: text('notes_text'),
   weatherCacheJson: jsonb('weather_cache_json'),
+  priceEstimateText: varchar('price_estimate_text', { length: 80 }),
+  priceConfidence: varchar('price_confidence', { length: 20 }).notNull().default('unknown'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
   index('events_group_when_idx').on(t.groupId, t.whenAt),
+]);
+
+export const eventVenueCandidates = pgTable('event_venue_candidates', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  eventId: uuid('event_id').references(() => events.id, { onDelete: 'cascade' }),
+  groupId: uuid('group_id').references(() => groups.id, { onDelete: 'cascade' }),
+  venueId: uuid('venue_id').references(() => venues.id, { onDelete: 'set null' }),
+  score: smallint('score').notNull(),
+  distanceKm: decimal('distance_km', { precision: 6, scale: 2 }),
+  priceTier: smallint('price_tier'),
+  priceConfidence: varchar('price_confidence', { length: 20 }).notNull().default('estimated'),
+  weatherFit: varchar('weather_fit', { length: 20 }),
+  reason: text('reason'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const messages = pgTable('messages', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  scopeType: varchar('scope_type', { length: 10 }).notNull(), // group|event
+  groupId: uuid('group_id').references(() => groups.id, { onDelete: 'cascade' }),
+  eventId: uuid('event_id').references(() => events.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
+  clientId: varchar('client_id', { length: 80 }),        // idempotency for optimistic sends
+  kind: varchar('kind', { length: 20 }).notNull(),       // text|system|vote_started|event_proposed
+  body: text('body').notNull(),
+  meta: jsonb('meta'),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
+  deletedByUserId: uuid('deleted_by_user_id').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  check('messages_scope_exactly_one', sql`
+    (${t.scopeType} = 'group' and ${t.groupId} is not null and ${t.eventId} is null)
+    or (${t.scopeType} = 'event' and ${t.eventId} is not null and ${t.groupId} is null)
+  `),
+  index('messages_group_created_idx').on(t.groupId, t.createdAt),
+  index('messages_event_created_idx').on(t.eventId, t.createdAt),
+  uniqueIndex('messages_client_unique').on(t.userId, t.clientId),
+]);
+
+export const threadReads = pgTable('thread_reads', {
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  scopeType: varchar('scope_type', { length: 10 }).notNull(), // group|event
+  groupId: uuid('group_id').references(() => groups.id, { onDelete: 'cascade' }),
+  eventId: uuid('event_id').references(() => events.id, { onDelete: 'cascade' }),
+  lastMessageId: uuid('last_message_id').references(() => messages.id, { onDelete: 'set null' }),
+  readAt: timestamp('read_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  check('thread_reads_scope_exactly_one', sql`
+    (${t.scopeType} = 'group' and ${t.groupId} is not null and ${t.eventId} is null)
+    or (${t.scopeType} = 'event' and ${t.eventId} is not null and ${t.groupId} is null)
+  `),
+  uniqueIndex('thread_reads_group_unique')
+    .on(t.userId, t.groupId)
+    .where(sql`${t.scopeType} = 'group' and ${t.groupId} is not null`),
+  uniqueIndex('thread_reads_event_unique')
+    .on(t.userId, t.eventId)
+    .where(sql`${t.scopeType} = 'event' and ${t.eventId} is not null`),
 ]);
 
 export const eventAttendees = pgTable('event_attendees', {
@@ -253,6 +329,29 @@ export const authRateLimits = pgTable('auth_rate_limits', {
   failures: smallint('failures').notNull().default(0),
 });
 
+export const notifications = pgTable('notifications', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  type: varchar('type', { length: 40 }).notNull(), // prompt|match|message|event|vote|reminder
+  title: varchar('title', { length: 160 }).notNull(),
+  body: text('body'),
+  href: text('href'),
+  readAt: timestamp('read_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  index('notifications_user_created_idx').on(t.userId, t.createdAt),
+]);
+
+export const aiCache = pgTable('ai_cache', {
+  key: varchar('key', { length: 180 }).primaryKey(),
+  kind: varchar('kind', { length: 40 }).notNull(), // bio|photo|compatibility|captain_brief|event_plan
+  model: varchar('model', { length: 120 }),
+  inputHash: varchar('input_hash', { length: 80 }).notNull(),
+  output: jsonb('output').notNull(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const achievements = pgTable('achievements', {
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   code: varchar('code', { length: 40 }).notNull(),  // first_match|10_yes_streak|captain_x3|...
@@ -260,17 +359,25 @@ export const achievements = pgTable('achievements', {
 }, (t) => [primaryKey({ columns: [t.userId, t.code] })]);
 ```
 
+Demo-owned rows that can be reset must carry either a nullable `demoRunId` FK to `demo_runs`, be reachable only through a marked parent with `ON DELETE CASCADE`, or use another explicit demo ownership marker. The final implementation must cover every seeded/resettable table, including `users`, `profile_photos`, `user_sports`, `prompts`, `availability_responses`, `groups`, `group_members`, `messages`, `thread_reads`, `venues`, `events`, `event_venue_candidates`, `event_attendees`, `votes`, `vote_choices`, `notifications`, `ai_cache`, `achievements`, and optional wearable fixtures. Non-FK caches such as `ai_cache` need `demoRunId` or a `demo:<runId>:` key prefix. Demo reset must never delete rows without that marker or marked-parent cascade.
+
 ## 3. Indexes & invariants
 
 - `users.username` unique (3-30 chars, regex `^[a-zA-Z0-9_-]+$`).
+- `users.full_name` required after onboarding starts (1-80 chars, Unicode letters/marks, spaces, apostrophe, hyphen). Signup stores a temporary default from username until onboarding collects the real display name.
 - One response per (`prompt_id`, `user_id`).
 - One vote choice per (`vote_id`, `user_id`).
+- `users.skill_level` and `user_sports.level` use the same 1..5 scale: 1=beginner, 2=casual, 3=intermediate, 4=advanced, 5=competitive. Per-sport level wins over user fallback level.
 - `groups.size_target` defaults from sport-config table at create time (football=12, tennis=2-4, basketball=8, running=4, badminton=4, volley=12).
 - `events.when_at` must be in the future at action validation time. If enforced in DB, use a trigger, not a time-dependent `CHECK (when_at > now())`.
-- `messages` paginated by `(group_id, created_at DESC, id)` cursor.
-- PostGIS GiST index on `users.home_point`, `groups.center_point`, `venues.point`.
-- Group formation must be transactional and idempotent per `(prompt_id, sport, city/proximity_bucket)` so simultaneous Yes responses do not create duplicate partial groups.
-- Strava tokens are encrypted at rest before insert/update.
+- `messages` paginated by `(scope_type, group_id/event_id, created_at DESC, id)` cursor.
+- Event-scoped messages must have `scope_type='event'` and `event_id`; group-scoped messages must have `scope_type='group'` and `group_id`.
+- Location queries use numeric lat/lng with a bounding-box prefilter and Haversine exact distance in application code.
+- Add normal btree indexes on `users(home_lat, home_lng)`, `groups(center_lat, center_lng)`, and `venues(lat, lng)`.
+- Group formation must be transactional and idempotent per prompt via advisory lock plus active-membership guard so simultaneous Yes responses do not create duplicate groups or memberships.
+- A user must not be an active confirmed member of two groups for the same prompt window. Implement with a transactional lookup/insert guard; add a partial unique index if the final schema stores `prompt_id` redundantly on `group_members`.
+- Strava tokens are encrypted at rest before insert/update if the optional integration ships.
+- Demo reset uses `demo_runs` ownership and must preserve a sentinel non-demo row in integration tests.
 
 ## 4. Sport config (constant in `lib/sports.ts`)
 
@@ -291,7 +398,7 @@ export const SPORTS = {
 
 ## 5. GDPR
 
-- Anonymization path: `users.username = 'deleted_<uuid8>'`, clear `bio/email/photo_url/home_point`. Keep `id` for FK history.
+- Anonymization path: `users.username = 'deleted_<uuid8>'`, `users.full_name = 'Deleted user'`, clear `bio/email/photo_url/home_lat/home_lng`. Keep `id` for FK history.
 - Hard delete path: cascades take down `user_sports`, `availability_responses`, `group_members` (group keeps existing without member), `vote_choices`, `messages.user_id` → `set null`, etc.
 - Right-to-export: dump JSON of all rows where `user_id = me.id`.
 

@@ -1,0 +1,60 @@
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+!.env*.example
+*.pem
+*.p8
+*.p12
+*.key
+id_rsa*
+id_ed25519*
+*credentials*.json
+*secret*.json
+*secrets*.json
+*service-account*.json
+
+# Next.js / build outputs
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Test and coverage output
+coverage/
+playwright-report/
+test-results/
+.nyc_output/
+
+# Local databases and generated artifacts
+*.sqlite
+*.sqlite3
+*.db
+tmp/
+temp/
+
+# Local archives and copied planning packs
+*.zip
+*.tar
+*.tar.gz
+showup2move-planning-pack/

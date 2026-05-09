@@ -6,7 +6,7 @@ Implement in thin vertical slices. The first working product should cover signup
 
 ## 2. Phase 0 - Fork and Project Setup
 
-Goal: fork-based, runnable skeleton.
+Goal: fork-based, runnable skeleton with deploy proof early.
 
 Tasks:
 
@@ -15,13 +15,15 @@ Tasks:
 3. Add pnpm, TypeScript, Tailwind, shadcn/ui, Drizzle, Vitest, Playwright.
 4. Add Railway config.
 5. Add GitHub Actions CI.
-6. Add `/api/health`.
+6. Add `/api/health` with `process: 'up'` first; switch to DB-backed `db: 'up'` once the schema/migration exists.
+7. Add guarded demo-mode env flags and placeholder Judge Mode route.
 
 Done when:
 
 - `pnpm dev` runs
 - `pnpm check` runs
 - Railway deploy opens a blank app with health green
+- early health may be process-only; DB health is required after Phase 1 migrations
 
 ## 3. Phase 1 - Auth and Profiles
 
@@ -31,9 +33,11 @@ Tasks:
 2. Implement iron-session.
 3. Implement signup/login/logout/recovery.
 4. Implement profile settings.
-5. Implement onboarding flow.
+5. Implement Glamingo-inspired onboarding shell, URL step persistence, progress banner, and sticky mobile actions.
 6. Implement sport selection and skill levels.
 7. Implement photo upload and resizing.
+8. Implement Cloudflare R2 upload adapter.
+9. Store profile photo rows and AI analysis status.
 
 Rubric coverage:
 
@@ -58,6 +62,7 @@ Tasks:
 5. Implement proximity matching.
 6. Implement captain assignment.
 7. Implement match confirmation.
+8. Implement queued/no-match state and Group Formation Timeline.
 
 Rubric coverage:
 
@@ -81,8 +86,9 @@ Tasks:
 3. Implement SSE message stream.
 4. Implement event creation.
 5. Implement event RSVP.
-6. Implement event-specific chat context.
-7. Implement reminders as in-app/email first.
+6. Implement event-specific chat as a separate `eventId` thread.
+7. Implement in-app notification center.
+8. Implement reminders as in-app/email first.
 
 Rubric coverage:
 
@@ -95,6 +101,7 @@ Rubric coverage:
 Done when:
 
 - two-browser chat works
+- group chat and event chat are visibly separate
 - event creation and RSVP works
 
 ## 6. Phase 4 - AI and Location
@@ -109,7 +116,9 @@ Tasks:
 6. Implement venue search using Overpass.
 7. Implement MapLibre map.
 8. Implement price tier heuristic.
-9. Implement auto-event setup.
+9. Implement price confidence labels and venue candidates.
+10. Implement auto-event setup.
+11. Implement AI Captain Brief and cached AI fallbacks.
 
 Rubric coverage:
 
@@ -133,7 +142,7 @@ Tasks:
 4. RO/EN i18n.
 5. Social sharing/invites.
 6. Achievements.
-7. Strava OAuth if time allows.
+7. Optional Strava OAuth/import or clearly labeled wearable fixture only if it can be proven honestly.
 
 Done when:
 
@@ -147,9 +156,10 @@ Tasks:
 2. Lighthouse 95+ pass.
 3. Error/loading/empty states.
 4. Demo seed quality pass.
-5. README setup and demo instructions.
-6. Presentation outline.
-7. Railway smoke test.
+5. Judge Mode scoring-proof pass.
+6. README setup and demo instructions.
+7. Presentation outline.
+8. Railway smoke test.
 
 Done when:
 
@@ -165,39 +175,39 @@ Suggested commit flow:
 2. `chore: add railway and ci`
 3. `feat: add database schema and migrations`
 4. `feat: add session auth`
-5. `feat: add onboarding profile flow`
-6. `feat: add sport preferences`
-7. `feat: add photo upload`
-8. `feat: add today prompt`
-9. `feat: add matching engine`
-10. `feat: add groups and captain assignment`
-11. `feat: add chat`
-12. `feat: add event creation`
-13. `feat: add venue search and map`
-14. `feat: add groq bio suggestions`
-15. `feat: add groq photo suggestions`
-16. `feat: add compatibility recommendations`
-17. `feat: add auto event setup`
-18. `feat: add calendar export and weather`
-19. `feat: add i18n and sharing`
-20. `test: add e2e demo flow`
-21. `docs: add demo and deployment guide`
+5. `feat: add onboarding wizard shell`
+6. `feat: add onboarding profile flow`
+7. `feat: add sport preferences`
+8. `feat: add r2 photo upload`
+9. `feat: add today prompt`
+10. `feat: add matching engine`
+11. `feat: add groups and captain assignment`
+12. `feat: add chat`
+13. `feat: add event creation and event chat`
+14. `feat: add notifications`
+15. `feat: add venue search and map`
+16. `feat: add groq bio suggestions`
+17. `feat: add groq photo suggestions`
+18. `feat: add compatibility recommendations`
+19. `feat: add auto event setup and captain brief`
+20. `feat: add calendar export and weather`
+21. `feat: add i18n and sharing`
+22. `feat: add judge mode and demo seed`
+23. `test: add e2e demo flow`
+24. `docs: add demo and deployment guide`
 
-## 10. Hour Budget
+## 10. Scope Priority
 
-| Phase | Hours |
-|---|---:|
-| setup | 2 |
-| auth/profile | 5 |
-| prompt/matching | 6 |
-| chat/events | 6 |
-| AI/location | 8 |
-| bonus | 6 |
-| polish/testing | 5 |
-| buffer | 4 |
-| total | 42 |
+Build all claimed rows, but never let optional integrations block the core proof. The non-negotiable loop is:
 
-If time is shorter, cut Strava first, then gamification, then social sharing. Do not cut the core prompt -> match -> chat -> event loop.
+signup -> onboarding -> ShowUpToday -> deterministic match -> group chat -> event chat -> event plan -> venue/map/vote -> Judge Mode proof.
+
+Optional rows must be either fully proven or clearly marked stretch:
+
+- Wearables: real Strava OAuth/import or labeled fixture only.
+- Web Push: stretch, never required for reminder proof.
+- Google Calendar OAuth: stretch; `.ics` is the committed calendar proof.
+- PWA/native wrap: stretch.
 
 ## 11. Risk Register
 
@@ -206,7 +216,7 @@ If time is shorter, cut Strava first, then gamification, then social sharing. Do
 | Groq unavailable | deterministic fallbacks |
 | Overpass slow | cached venues + manual location |
 | map bundle too heavy | lazy-load MapLibre |
-| Railway volume setup slow | fallback to DB-stored photo path and local uploads in demo |
+| R2 setup takes time | create the bucket and scoped token before coding uploads; keep manual no-photo onboarding as a demo fallback |
 | SSE unstable | polling fallback |
 | too many bonus features | build visible small versions only |
-
+| scoring overclaims | Judge Mode row must link each claim to a live route/screen or mark it stretch |
