@@ -53,6 +53,9 @@ export default async function GroupPage({
   const currentTab = readTab(sp.tab);
   const events = groupResult.data.events;
   const upcomingEvent = events[0] ?? null;
+  const hasFirstMatch = groupResult.data.achievements.some(
+    (achievement) => achievement.code === "first_match",
+  );
 
   // Confirmation status counts. Shape stays stable when statuses widen later.
   const confirmedMembers = members.filter((m) => m.status === "confirmed");
@@ -115,6 +118,32 @@ export default async function GroupPage({
 
   const planSection = (
     <div className="flex flex-col gap-3 px-4 py-4 md:p-0">
+      {hasFirstMatch ? (
+        <Card className="flex items-start gap-3 p-4" variant="card">
+          <span
+            aria-hidden
+            className="grid h-9 w-9 place-items-center"
+            style={{
+              background: "var(--accent-soft)",
+              color: "var(--accent-deep)",
+              borderRadius: 10,
+              flex: "none",
+            }}
+          >
+            <Glyph.check size={18} />
+          </span>
+          <div>
+            <p className="text-sm font-bold">{t("achievement.firstMatchTitle")}</p>
+            <p
+              className="mt-1 text-[13px] leading-snug"
+              style={{ color: "var(--ink-muted)" }}
+            >
+              {t("achievement.firstMatchBody")}
+            </p>
+          </div>
+        </Card>
+      ) : null}
+
       {isCaptain ? (
         <CaptainBriefPanel
           members={briefMembers}
@@ -282,6 +311,13 @@ export default async function GroupPage({
                 <div className="mt-2">
                   <Pill icon={<Glyph.crown size={12} />} variant="accent">
                     {t("captain", { name: captain.fullName })}
+                  </Pill>
+                </div>
+              ) : null}
+              {hasFirstMatch ? (
+                <div className="mt-2">
+                  <Pill icon={<Glyph.check size={12} />} variant="field">
+                    {t("achievement.firstMatchTitle")}
                   </Pill>
                 </div>
               ) : null}

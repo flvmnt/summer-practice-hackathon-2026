@@ -3,6 +3,7 @@
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import {
+  achievements,
   availabilityResponses,
   groupMembers,
   groups,
@@ -205,6 +206,19 @@ async function insertDraftGroup(
       role: member.role,
     })),
   );
+
+  await db
+    .insert(achievements)
+    .values(
+      draft.members.map((member) => ({
+        demoRunId: member.demoRunId,
+        userId: member.userId,
+        code: "first_match",
+      })),
+    )
+    .onConflictDoNothing({
+      target: [achievements.userId, achievements.code],
+    });
 
   return {
     id: group.id,

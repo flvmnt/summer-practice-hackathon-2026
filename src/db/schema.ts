@@ -294,6 +294,24 @@ export const eventInvites = pgTable(
   ],
 );
 
+export const achievements = pgTable(
+  "achievements",
+  {
+    demoRunId: uuid("demo_run_id").references(() => demoRuns.id, {
+      onDelete: "cascade",
+    }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    code: varchar("code", { length: 40 }).notNull(),
+    awardedAt: timestamp("awarded_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.code] }),
+    index("achievements_demo_run_idx").on(table.demoRunId),
+  ],
+);
+
 export const venues = pgTable(
   "venues",
   {

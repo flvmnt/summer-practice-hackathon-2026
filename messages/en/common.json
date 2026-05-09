@@ -247,6 +247,10 @@
     "system": "System",
     "captainBadge": "Captain",
     "playerBadge": "Player",
+    "achievement": {
+      "firstMatchTitle": "First Match",
+      "firstMatchBody": "Earned from a confirmed deterministic group match."
+    },
     "teamBalance": {
       "title": "Team balance",
       "score": "Balanced enough score: {score}/100",

@@ -3,6 +3,7 @@
 import { and, asc, desc, eq, inArray, isNull } from "drizzle-orm";
 import { getDb } from "@/db";
 import {
+  achievements,
   eventAttendees,
   eventVenueCandidates,
   events,
@@ -68,6 +69,10 @@ export type GroupDetails = {
     sport: SportKey;
     status: string;
     whenAt: string;
+  }>;
+  achievements: Array<{
+    code: "first_match";
+    awardedAt: string;
   }>;
 };
 
@@ -284,6 +289,19 @@ export async function getGroupAction(input: {
     .orderBy(desc(events.whenAt))
     .limit(3);
 
+  const currentAchievements = await getDb()
+    .select({
+      code: achievements.code,
+      awardedAt: achievements.awardedAt,
+    })
+    .from(achievements)
+    .where(
+      and(
+        eq(achievements.userId, auth.user.id),
+        eq(achievements.code, "first_match"),
+      ),
+    );
+
   return actionOk({
     currentUserId: auth.user.id,
     group: {
@@ -308,6 +326,10 @@ export async function getGroupAction(input: {
       sport: event.sport as SportKey,
       status: event.status,
       whenAt: event.whenAt.toISOString(),
+    })),
+    achievements: currentAchievements.map((achievement) => ({
+      code: "first_match",
+      awardedAt: achievement.awardedAt.toISOString(),
     })),
   });
 }

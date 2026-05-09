@@ -247,6 +247,10 @@
     "system": "Sistem",
     "captainBadge": "Căpitan",
     "playerBadge": "Jucător",
+    "achievement": {
+      "firstMatchTitle": "Prima potrivire",
+      "firstMatchBody": "Obținută dintr-un grup confirmat prin potrivire deterministă."
+    },
     "teamBalance": {
       "title": "Echilibrare echipe",
       "score": "Scor de echilibru: {score}/100",
