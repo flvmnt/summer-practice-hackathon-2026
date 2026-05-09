@@ -190,8 +190,9 @@ Stretch: optional Web Push or Strava OAuth, still inside the web app unless prod
 | `DATABASE_URL` | web, cron | Postgres |
 | `SESSION_SECRET` | web | iron-session, 64+ char hex |
 | `GROQ_API_KEY` | web, cron | Groq inference |
-| `GROQ_TEXT_MODEL` | web, cron | default `llama-3.3-70b-versatile`; override if Groq permissions differ |
-| `GROQ_VISION_MODEL` | web, cron | default `meta-llama/llama-4-scout-17b-16e-instruct`; override if Groq permissions differ |
+| `GROQ_MODEL_TEXT` / `GROQ_TEXT_MODEL` | web, cron | default `llama-3.3-70b-versatile`; override if Groq permissions differ |
+| `GROQ_MODEL_VISION` / `GROQ_VISION_MODEL` | web, cron | default `meta-llama/llama-4-scout-17b-16e-instruct`; override if Groq permissions differ |
+| `GROQ_TIMEOUT_MS` | web, cron | optional; defaults to 8000 and caps at 30000 |
 | `STRAVA_CLIENT_ID` | web | optional OAuth stretch |
 | `STRAVA_CLIENT_SECRET` | web | optional OAuth stretch |
 | `STRAVA_WEBHOOK_VERIFY_TOKEN` | web | optional Strava webhook verification |

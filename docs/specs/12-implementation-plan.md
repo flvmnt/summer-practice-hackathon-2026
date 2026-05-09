@@ -118,7 +118,7 @@ Tasks:
 8. Implement price tier heuristic.
 9. Implement price confidence labels and venue candidates.
 10. Implement auto-event setup.
-11. Implement AI Captain Brief and cached AI fallbacks.
+11. Implement AI Captain Brief with runtime cache and honest deterministic fallback.
 
 Rubric coverage:
 

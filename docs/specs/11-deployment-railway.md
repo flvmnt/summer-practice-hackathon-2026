@@ -48,8 +48,9 @@ Required:
 | `DATABASE_URL` | Railway Postgres |
 | `SESSION_SECRET` | `openssl rand -hex 32` |
 | `GROQ_API_KEY` | server-side only |
-| `GROQ_TEXT_MODEL` | default `llama-3.3-70b-versatile`, override per Groq project |
-| `GROQ_VISION_MODEL` | default `meta-llama/llama-4-scout-17b-16e-instruct`, override per Groq project |
+| `GROQ_MODEL_TEXT` / `GROQ_TEXT_MODEL` | default `llama-3.3-70b-versatile`, override per Groq project |
+| `GROQ_MODEL_VISION` / `GROQ_VISION_MODEL` | default `meta-llama/llama-4-scout-17b-16e-instruct`, override per Groq project |
+| `GROQ_TIMEOUT_MS` | optional, defaults to 8000 |
 | `PUBLIC_BASE_URL` | production URL |
 | `R2_ENDPOINT` | `https://<account_id>.r2.cloudflarestorage.com` |
 | `R2_BUCKET` | Cloudflare R2 bucket name |

@@ -154,7 +154,7 @@ Rules:
 - lazy-load map and charts
 - image optimize uploads
 - cache venue/weather responses
-- cache AI outputs and seed demo-safe AI cache rows
+- cache runtime AI outputs after real Groq calls; do not seed demo AI cache rows
 - no blocking AI call on initial `/today` render
 - SSE streams reconnect safely
 

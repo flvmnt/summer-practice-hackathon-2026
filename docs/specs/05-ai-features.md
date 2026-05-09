@@ -8,11 +8,11 @@ Primary vendor: **Groq**.
 
 | Task | Default model env | Why |
 |---|---|---|
-| Bio sport extraction | `GROQ_TEXT_MODEL` defaults to `llama-3.3-70b-versatile` | strong structured text reasoning |
-| Compatibility scoring | `GROQ_TEXT_MODEL` | produces useful explanations |
-| Teammate recommendations | `GROQ_TEXT_MODEL` | ranking + explanation |
-| AI Captain Brief | `GROQ_TEXT_MODEL` | concise explainable event plan |
-| Photo sport extraction | `GROQ_VISION_MODEL` defaults to `meta-llama/llama-4-scout-17b-16e-instruct` | current lightweight Groq vision model |
+| Bio sport extraction | `GROQ_MODEL_TEXT` / `GROQ_TEXT_MODEL` defaults to `llama-3.3-70b-versatile` | strong structured text reasoning |
+| Compatibility scoring | `GROQ_MODEL_TEXT` / `GROQ_TEXT_MODEL` | produces useful explanations |
+| Teammate recommendations | `GROQ_MODEL_TEXT` / `GROQ_TEXT_MODEL` | ranking + explanation |
+| AI Captain Brief | `GROQ_MODEL_TEXT` / `GROQ_TEXT_MODEL` | concise explainable event plan |
+| Photo sport extraction | `GROQ_MODEL_VISION` / `GROQ_VISION_MODEL` defaults to `meta-llama/llama-4-scout-17b-16e-instruct` | current lightweight Groq vision model |
 
 Note: model availability can be restricted at the Groq project/org level. During implementation, verify allowed models with `https://api.groq.com/openai/v1/models` and keep model IDs configurable through environment variables.
 
@@ -22,7 +22,7 @@ All calls happen server-side through `src/lib/groq.ts`. Startup health should lo
 
 Every AI call must return JSON parsed by zod. Invalid JSON is retried once with a repair prompt. If still invalid, fall back to deterministic logic.
 
-Every successful response is written to `ai_cache` with an input hash, model id, output JSON, and expiry. Demo seed may preload cache rows so the presentation path survives Groq latency or quota failure.
+Every successful response is written to `ai_cache` with an input hash, model id, output JSON, and expiry. Demo seed must not preload AI rows; when Groq is unavailable, UI copy must say the result is deterministic/manual fallback rather than AI.
 
 ```ts
 type SportSuggestion = {
@@ -260,4 +260,4 @@ E2E:
 - onboarding bio suggestion accepted
 - photo upload suggestion accepted
 - matched group shows compatibility explanation
-- Judge Mode shows cached AI proof and deterministic fallback state
+- Judge Mode shows runtime AI cache proof and deterministic fallback state

@@ -80,7 +80,7 @@ Required:
 - venue search fallback works
 - demo seed/reset affects only demo-owned rows
 - demo reset preserves a sentinel non-demo row
-- AI cache returns seeded fallback when Groq is unavailable
+- AI surfaces return honest deterministic fallback when Groq is unavailable and do not read seeded/mock AI cache rows
 - GDPR export/delete
 
 ## 5. E2E Tests
