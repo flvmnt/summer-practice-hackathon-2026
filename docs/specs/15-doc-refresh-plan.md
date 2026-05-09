@@ -35,6 +35,10 @@ Everything else supports this loop or stays stretch.
 - `.ics` calendar export is the committed calendar proof; Google Calendar OAuth is stretch.
 - Wearables score is claimed only with working Strava OAuth/import or an explicitly accepted labeled fixture.
 - Judge Mode shows rubric rows, live/seeded/fallback proof, health, AI cache status, and demo seed/reset.
+- **Brand:** Direction B sodium-orange (`#FF5C2A`) + astroturf-green (`#1E6E48`) + warm cream (`#FAF7F0`) + Bricolage Grotesque/Inter Tight/JetBrains Mono. Chevron-burst AI mark. Radius scale 10/18/26/32.
+- **Bottom nav:** 5 tabs (Today/Groups/Create/Map/Profile). Floating CTA not used.
+- **Onboarding:** 4 steps - profile, sports, location, photo. Photo is recommended, not blocking.
+- **Distance:** continuous slider 1-10 km.
 
 ## 4. Rejected Pack Scope
 
@@ -89,3 +93,4 @@ Future edits must not reintroduce:
 - Strava credit without proof.
 - Web Push/PWA language as MVP.
 - hour-budget-driven cuts as source of truth.
+- Sparkles AI icon (use chevron-burst); Inter as sole typeface (use Inter Tight + Bricolage); 4-tab nav (5-tab is canon); discrete distance buttons (continuous slider is canon).

@@ -361,6 +361,30 @@ export const achievements = pgTable('achievements', {
 
 Demo-owned rows that can be reset must carry either a nullable `demoRunId` FK to `demo_runs`, be reachable only through a marked parent with `ON DELETE CASCADE`, or use another explicit demo ownership marker. The final implementation must cover every seeded/resettable table, including `users`, `profile_photos`, `user_sports`, `prompts`, `availability_responses`, `groups`, `group_members`, `messages`, `thread_reads`, `venues`, `events`, `event_venue_candidates`, `event_attendees`, `votes`, `vote_choices`, `notifications`, `ai_cache`, `achievements`, and optional wearable fixtures. Non-FK caches such as `ai_cache` need `demoRunId` or a `demo:<runId>:` key prefix. Demo reset must never delete rows without that marker or marked-parent cascade.
 
+## 2.1 AI cache (demo safety)
+
+The AI surfaces (sport extraction, photo vision, captain brief, compatibility, vote rationale) must be deterministic and demo-safe. The `ai_cache` table is the single source of truth for cached outputs and the seed-time pre-bake.
+
+Minimum demo-safe contract:
+
+```sql
+CREATE TABLE ai_cache (
+  input_hash text PRIMARY KEY,
+  output_json jsonb NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+```
+
+The richer Drizzle table already declared above (`key`, `kind`, `model`, `input_hash`, `output`, `expires_at`, `created_at`) is the implementation; the contract above is the minimum interface every consumer must rely on. Demo seed pre-bakes outputs by `input_hash` (or by `kind:input_hash` namespacing for the richer table) so the demo runs offline-safe even when Groq is unreachable.
+
+Rules:
+
+- Every AI call computes `input_hash = sha256(canonicalized_input)` before hitting the model.
+- Lookup is `input_hash` first; on hit, the cached `output_json` is returned with no network call.
+- On miss, the model is called, the response is validated against its zod contract, and the row is written.
+- Demo seed populates fixed `input_hash` rows for every scripted demo step (signup user A's bio, photo vision, captain brief, compatibility, vote rationale). These rows are tagged for demo ownership via `demoRunId` or a `demo:<runId>:` key prefix so demo reset cleans them up.
+- Judge Mode shows AI cache status (`ready` / `loading` / `error`) and a count of seeded rows.
+
 ## 3. Indexes & invariants
 
 - `users.username` unique (3-30 chars, regex `^[a-zA-Z0-9_-]+$`).

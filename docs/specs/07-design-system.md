@@ -4,109 +4,158 @@
 
 Name: **ShowUp2Move**
 
-Brand idea: immediate, social movement. The interface should feel quick and useful: a sports coordination command center with enough warmth to make users want to join.
+Brand idea (Direction B - locked): warm, confident, athletic. The interface reads like a calm command center: a cream daylight surface, a sodium-orange action that always means "do the thing", and an astroturf-green field that signals real play, real venues, real teams. It is fast, tactile, and a little bit human - never a generic SaaS dashboard, never a gamer dark mode, never a pastel social feed.
+
+Mood words:
+
+- daylight, sodium-arc, court chalk, confident type, immediate
+- warm cream surfaces, ink-rich text, one loud accent
+- shows up to play, not to scroll
 
 Avoid:
 
 - generic purple SaaS gradients
-- fitness influencer styling
+- fitness influencer / "athleisure" styling
 - dark-only gamer styling
 - overly playful cartoon visuals
+- pastel social-feed neutrals
+- sparkle / wand / magic-dust AI iconography
 
 Prefer:
 
-- crisp sports field energy
-- clean cards
-- tactile buttons
-- map and schedule cues
-- confident contrast
+- crisp sports field energy with a single warm accent
+- generous radius scale (10/18/26/32) and confident type
+- tactile primary buttons in sodium orange
+- map, schedule, and roster cues
 - privacy-safe map language
 - one clear primary action per screen
 
 ## 2. Logo Concept
 
-Logo mark: **a location pin combined with a forward/play arrow and a court center dot**.
+Wordmark-first identity. Mark: **`s2m`** lowercase, set in Bricolage Grotesque 700, with the `2` styled as a forward arrow (right-pointing chevron-shaped numeral). It reads as "show up to move" without spelling it out, and it stays legible at 16px.
 
-ASCII construction:
+Construction rules:
 
-```text
-      /\
-   __/  \__
-  /   ○    \
-  \__    __/
-     \  /
-      \/
-
-Pin + play arrow + ball/court dot
-```
+- lowercase, tight tracking, no descenders
+- the `2` is the only stylized glyph: its top curve is squared into a forward chevron, suggesting motion without being gimmicky
+- never set the wordmark in Inter, never bolden into a fake "logo" effect, never wrap in a circle/badge
+- pair with the AI mark only inside AI surfaces; the wordmark itself never carries the AI mark
 
 Production SVG should use:
 
-- simple geometric paths
-- no text inside the icon
-- readable at 24px
+- simple geometric paths derived directly from Bricolage Grotesque 700 outlines
+- no descenders, no enclosing shapes
+- readable at 16px (mobile nav) and 24px (favicon)
 - single-color and full-color variants
+- full-color uses sodium orange `--accent` for the chevron-2 only; the `s` and `m` stay in `--ink`
 
 Variants:
 
 | Variant | Use |
 |---|---|
-| icon only | favicon, mobile nav, app header |
-| icon + wordmark | landing header, OG image |
-| monochrome | footer, emails |
+| wordmark only | favicon, mobile nav, app header, OG image, landing header |
+| monochrome | footer, emails, print |
 | inverted | dark header or map overlay |
+| split-color | full-color marketing (orange `2`, ink `s`/`m`) |
 
 Wordmark:
 
-- `ShowUp2Move`
-- use a strong sans face, semibold
-- keep `2` visually compact, not gimmicky
+- `s2m` (lowercase only)
+- Bricolage Grotesque 700, tracking -1%
+- the `2` is the only stylized character; nothing else is decorated
+- in long-form marketing copy, the product name is written `ShowUp2Move`; the wordmark is `s2m`
 
 ## 3. Color Palette
 
-Primary palette:
+Direction B - sodium orange + astroturf green on warm cream. These tokens are the canonical source. Tailwind/CSS variables must mirror them exactly.
 
-| Token | Hex | Use |
+Surfaces and ink:
+
+| Token | Hex / value | Use |
 |---|---|---|
-| `--navy` | `#101828` | app chrome, primary text |
-| `--lime` | `#B7F34A` | primary "Yes" action, availability |
-| `--court` | `#2563EB` | links, secondary emphasis |
-| `--coral` | `#FF6B4A` | alerts, "Not today", destructive states |
-| `--mint` | `#DDFCE8` | soft success surfaces |
-| `--cloud` | `#F7F9FC` | page background |
-| `--ink` | `#101828` | primary text |
-| `--muted` | `#667085` | secondary text |
-| `--line` | `#D7DEE8` | borders |
-| `--surface` | `#FFFFFF` | cards and panels |
-| `--danger` | `#DC2626` | destructive/error |
+| `--bg` | `#FAF7F0` | page background (warm cream) |
+| `--bg-alt` | `#F4EFE5` | secondary page background, banded sections |
+| `--surface` | `#FFFFFF` | cards, sheets, dialogs |
+| `--surface-2` | `#FBF8F2` | nested or inset surfaces inside a card |
+| `--ink` | `#0E1A1F` | primary text, icons |
+| `--ink-2` | `#2A3942` | secondary text, captions |
+| `--ink-muted` | `rgba(14,26,31,0.62)` | tertiary copy, helper text |
+| `--ink-faint` | `rgba(14,26,31,0.36)` | placeholder, disabled labels |
+| `--line` | `rgba(14,26,31,0.10)` | hairline borders, dividers |
+| `--line-2` | `rgba(14,26,31,0.18)` | stronger borders, focus outline base |
 
-Use lime sparingly and with navy text for contrast. The app itself stays mostly white/cloud surfaces with navy text, court-blue links/maps, and coral warnings. Do not let the UI become a one-note green template.
+Action accent (sodium orange) - the one loud color:
+
+| Token | Hex / value | Use |
+|---|---|---|
+| `--accent` | `#FF5C2A` | primary CTA, ShowUpToday Yes, key brand strokes |
+| `--accent-deep` | `#E84A1B` | accent hover/active, pressed state |
+| `--accent-soft` | `#FFE4D6` | accent badge background, selected chip fill |
+| `--accent-tint` | `#FFF1E8` | hover surface for accent-adjacent rows |
+| `--on-accent` | `#1A0A03` | text/icons on top of `--accent` (high contrast on orange) |
+
+Field (astroturf) - the team / venue / map color:
+
+| Token | Hex / value | Use |
+|---|---|---|
+| `--field` | `#1E6E48` | venue chips, captain badge, map field, formation pitch |
+| `--field-soft` | `#DCEDE2` | success surfaces, "going" status, group available |
+| `--field-ink` | `#FFFFFF` | text on `--field` fills |
+
+State colors:
+
+| Token | Hex / value | Use |
+|---|---|---|
+| `--alert` | `#C8331E` | destructive, critical errors, declined, vote tie-break |
+| `--alert-soft` | `#FBE3DD` | alert badge background |
+| `--warn` | `#B8741B` | low-confidence pricing, weather warning, queue |
+| `--warn-soft` | `#F8ECCC` | warn badge background |
+
+Usage rules:
+
+- Exactly one `--accent` action per screen. If you need a second orange element, it is the wrong screen.
+- `--field` is reserved for "this is real play": venue chips, captain badge, formation pitch background, going-status pill. Do not use it as a generic success color outside group/event surfaces.
+- Page bodies stay on `--bg`. Cards stay on `--surface`. Do not stack three surface tints on one screen.
+- Body text always uses `--ink`. Never use `--accent` for body copy.
+- Never reintroduce `--navy`, `--lime`, `--court`, `--coral`, `--mint`, `--cloud`, or `--danger` from the previous palette - those tokens are retired.
+- Dark mode is out of scope for the hackathon; only the warm cream Direction B is implemented.
 
 ## 4. Type
 
-Recommended stack:
+Three-face system, all loaded via Google Fonts:
 
 ```css
-font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+--font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+--font-body:    'Inter Tight',         ui-sans-serif, system-ui, sans-serif;
+--font-mono:    'JetBrains Mono',      ui-monospace,  SFMono-Regular, Menlo, monospace;
 ```
 
-Scale:
+Roles:
 
-| Token | Size | Use |
-|---|---:|---|
-| display | 40/44 | landing headline only |
-| h1 | 28/34 | screen titles |
-| h2 | 22/28 | sections |
-| body | 16/24 | normal copy |
-| small | 14/20 | metadata |
-| micro | 12/16 | badges |
+- **Display - Bricolage Grotesque 700.** Wordmark, hero headlines, landing titles, marketing one-liners. Tight tracking. Never used for body copy.
+- **Body - Inter Tight 400 / 500 / 600.** All running UI text, labels, buttons, chat. Inter Tight only - **plain Inter is forbidden** because it does not match the optical sizing of Bricolage and ships visibly differently from Inter Tight.
+- **Mono - JetBrains Mono 500.** Numbers, codes, scores, recovery codes, vote tallies, timers, lat/lng readouts. Anything that needs to feel measured.
+
+Scale (mobile / desktop):
+
+| Token | Size (mobile / desktop) | Face | Use |
+|---|---|---|---|
+| display | 40 / 64 | display | landing hero, demo screens only |
+| h1 | 28 / 34 | display | screen titles |
+| h2 | 22 / 28 | display or body 600 | sections, card headers |
+| body | 15 / 17 | body 400 / 500 | running copy |
+| small | 13 / 14 | body 500 | metadata, helper |
+| micro | 11 / 12 | body 600 or mono 500 | chips, confidence badges, micro labels |
 
 Rules:
 
-- no negative letter spacing
-- no viewport-based font sizing
-- buttons must keep text within bounds at 360px
-- dense surfaces use h2 or smaller, never hero-sized headings
+- Inter (without "Tight") is forbidden. If you see it imported, replace it with `Inter Tight`.
+- Display face is reserved for `display`, `h1`, and select `h2` headers. Never set body or buttons in Bricolage Grotesque.
+- Mono is reserved for numeric / code content. Do not set sentences in mono.
+- No viewport-based font sizing.
+- Buttons must keep text within bounds at 360px width.
+- Dense surfaces (Judge Mode rows, group rosters) use `body` or smaller, never display sizes.
+- Tracking: display -1%; body 0; mono 0. No negative letter spacing on body text.
 
 ## 5. Component Rules
 
@@ -138,6 +187,11 @@ Required components:
 - ScoringProofRow
 - FormationTimeline
 - CaptainBriefPanel
+- VoteCard
+- RatchetRow
+- Glyph (chevron-burst AI mark wrapper)
+- MapBg (warm cream map canvas with stroke pattern)
+- MapPin (sodium-orange pin with field-green dot)
 
 Cards:
 
@@ -160,10 +214,22 @@ Buttons:
 --mobile-pad: 16px;
 --desktop-pad: 32px;
 --nav-height-mobile: 64px;
---radius-card: 8px;
---radius-control: 8px;
+
+/* Direction B radius scale */
+--r-pill: 999px;     /* pills, full-rounded buttons, segmented controls */
+--r-chip: 10px;      /* chips, small badges, tags */
+--r-card: 18px;      /* inner cards, list rows, message bubbles */
+--r-surface: 26px;   /* hero cards, primary CTAs, sheets */
+--r-shell: 32px;     /* full-screen sheets, mobile shell, dialogs */
+
 --tap-target: 44px;
 ```
+
+Radius rules:
+
+- Never use 8px or 12px radii. The scale is 10/18/26/32 (plus pill).
+- A button on a card uses `--r-pill` or `--r-surface`; the card itself uses `--r-card` or `--r-surface`. The button is always at least one step smaller than its container.
+- Sheets and dialogs use `--r-shell` on the top corners on mobile.
 
 Mobile:
 
@@ -229,6 +295,25 @@ Before demo:
 - Lighthouse 95+ on mobile and desktop
 - no console errors
 - Judge Mode proof rows do not claim stretch integrations unless a real route or labeled fixture exists
+
+## 11. AI Mark
+
+The AI surfaces in this product never use a sparkle, wand, or magic-dust glyph. The canonical mark is the **chevron-burst Glyph**: two stacked, slightly rotated 14px squares with a chevron stroke through them, drawn in `--accent` on `--accent-soft`.
+
+Usage:
+
+- Wherever the user is looking at AI-generated content (sport extraction, photo analysis, captain brief, compatibility explanation, vote rationale), the chevron-burst Glyph sits to the left of the heading or chip.
+- Confidence is communicated in `mono` micro text under the chip ("92%"), never as the only signal.
+- Glyph size: 14px in chips, 18px in section headers, 24px in hero AI panels.
+- Glyph color: stroke `--accent`, fill `--accent-soft`. On `--field` surfaces use `--field-ink` stroke on a `--field` fill.
+
+Forbidden:
+
+- Lucide `sparkles` icon for AI affordances. (Use `Glyph` instead.)
+- Lucide `wand-2` / `wand-sparkles` for AI affordances.
+- Generic gradient halos, "AI" pill text, or rainbow shimmer.
+
+The Glyph component is the single source of truth - if a designer drops a sparkle into a mock, it does not get implemented.
 
 ## 10. Visual Identity in Demo
 

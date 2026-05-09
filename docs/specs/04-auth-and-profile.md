@@ -121,7 +121,8 @@ Step 2: Sports
 `/onboarding/location`
 Step 3: Location
   city input + "use my location"
-  distance slider: 1km, 3km, 5km, 10km
+  distance slider: continuous range 1.0 km - 10.0 km, step 0.5 km
+  live mono readout below the track (e.g. `5.5 km`)
   stores `homeLat`, `homeLng`, and `maxDistanceKm`
 
 /onboarding/photo
