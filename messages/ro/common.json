@@ -298,8 +298,8 @@
       "optionalBody": "Sari peste pasul acesta și adaugă o poză mai târziu din profil.",
       "skipPrimary": "Sari peste. Deschide Today",
       "tryUploadLabel": "Încearcă încărcarea pozei",
-      "tryUploadDescription": "Alege o poză și pornește analiza AI. Salvarea finală încă se finisează, așa că poți face previzualizarea aici și să termini fără ea.",
-      "previewOnly": "Doar previzualizare locală. Folosește Sari peste ca să continui fără salvare.",
+      "tryUploadDescription": "Alege o poză, salveaz-o în profil și pornește analiza AI live când Groq este configurat.",
+      "previewOnly": "Încărcăm poza...",
       "errorImageType": "Alege un fișier imagine (JPG, PNG sau WebP).",
       "errorTooLarge": "Imaginea este prea mare. Alege una sub 8 MB.",
       "errorUnsupported": "Folosește o imagine JPG, PNG sau WebP.",
@@ -310,7 +310,7 @@
       "aiPicked": "AI a ales",
       "aiPaused": "Vederea AI este offline.",
       "aiPausedSub": "Salvăm poza și o poți analiza mai târziu.",
-      "aiUnavailable": "Analiza AI a pozei vine în curând.",
+      "aiUnavailable": "Analiza AI a pozei cere un model Groq vision configurat. Nu am adăugat sugestii fallback.",
       "skip": "Sari peste",
       "finish": "Finalizează",
       "back": "Înapoi"
@@ -458,6 +458,12 @@
     "system": "Sistem",
     "captainBadge": "Căpitan",
     "playerBadge": "Jucător",
+    "invited": {
+      "title": "Ai fost invitat în acest grup",
+      "body": "Acceptă ca să intri în meci sau refuză dacă nu ți se potrivește.",
+      "accept": "Acceptă",
+      "decline": "Refuză"
+    },
     "achievement": {
       "firstMatchTitle": "Prima potrivire",
       "firstMatchBody": "Obținută dintr-un grup confirmat prin potrivire deterministă."
@@ -500,6 +506,7 @@
       "table_tennis": "Tenis de masă"
     },
     "tabs": {
+      "ariaLabel": "Secțiunile grupului",
       "plan": "Plan",
       "chat": "Chat",
       "players": "Jucători"
@@ -526,6 +533,7 @@
       }
     },
     "players": {
+      "membersAriaLabel": "Membrii grupului",
       "confirmParticipation": "Confirmă participarea",
       "statusConfirmed": "Confirmat",
       "statusMaybe": "Poate",
@@ -822,7 +830,7 @@
         },
         "compatibility-explanation": {
           "label": "Explicatie compatibilitate AI",
-          "note": "Scorul de compatibilitate apare pe profilurile publice, cu fallback determinist cand AI-ul lipseste."
+          "note": "Profilurile publice apeleaza scorul de compatibilitate prin Groq cand este configurat; fara output AI seedat."
         },
         "group-screen": {
           "label": "Ecran grup cu taburi mobile",
@@ -870,19 +878,19 @@
         },
         "ai-bio-extraction": {
           "label": "Extragere AI sporturi din bio",
-          "note": "Extragere text Groq cu fallback determinist pe cuvinte cheie cand AI-ul lipseste."
+          "note": "Apeleaza extractia text Groq pe bio-uri reale cand GROQ_API_KEY este configurat; fara output AI seedat."
         },
         "ai-photo-extraction": {
           "label": "Extragere AI sporturi din poza",
-          "note": "Analiza pozei apeleaza Groq vision cand e configurat, cu sugestii deterministe ca fallback."
+          "note": "Butonul de analiza apeleaza Groq vision pe imaginea incarcata cand este configurat; fallback-ul offline nu inventeaza sugestii."
         },
         "ai-compatibility-score": {
           "label": "Scor compatibilitate AI (cache)",
-          "note": "Scorul de compatibilitate cache-uit este live pe profilurile publice, cu prag determinist de siguranta."
+          "note": "Scorul de potrivire din profil public este calculat live, cache-uit dupa primul apel Groq si niciodata pre-seedat."
         },
         "ai-captain-brief": {
           "label": "Brief Capitan AI (rezumat actiuni)",
-          "note": "Panoul de rezumat al capitanului consuma briefingul Groq, cu fallback determinist."
+          "note": "Paginile de eveniment apeleaza Groq pentru brief-ul capitanului cand este configurat; textul determinist este doar fallback offline."
         },
         "ai-recommendations": {
           "label": "Recomandari inteligente coechipieri",
@@ -989,15 +997,15 @@
     }
   },
   "sidebar": {
-    "ariaLabel": "Aplicatie",
-    "primaryAriaLabel": "Principala",
-    "notifications": "Notificari",
-    "notificationsWithCount": "Notificari, {count} necitite",
+    "ariaLabel": "Aplicație",
+    "primaryAriaLabel": "Principală",
+    "notifications": "Notificări",
+    "notificationsWithCount": "Notificări, {count} necitite",
     "items": {
       "today": "Today",
       "groups": "Grupuri",
-      "create": "Creeaza",
-      "map": "Harta",
+      "create": "Creează",
+      "map": "Hartă",
       "profile": "Profil"
     }
   },
@@ -1076,14 +1084,19 @@
     "back": "Înapoi la Astăzi"
   },
   "groupsList": {
+    "eyebrow": "Grupuri",
     "title": "Grupurile tale",
     "subtitle": "Grupurile active din care faci parte.",
+    "statsLabel": "Statistici grupuri",
+    "activeCount": "{count, plural, one {# activ} few {# active} other {# active}}",
+    "captainCount": "{count, plural, one {# căpitan} few {# căpitani} other {# căpitani}}",
     "captainBadge": "Căpitan",
     "openGroup": "Deschide",
     "memberCount": "{count}/{target} jucători",
     "emptyTitle": "Niciun grup încă",
     "emptyBody": "Răspunde la promptul de azi pentru a forma primul grup.",
-    "emptyAction": "Deschide Today"
+    "emptyAction": "Deschide Today",
+    "back": "Înapoi la Today"
   },
   "eventsList": {
     "title": "Evenimentele tale",
