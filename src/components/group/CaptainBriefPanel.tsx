@@ -79,6 +79,8 @@ export async function CaptainBriefPanel({
   return (
     <section
       aria-label={t("ariaLabel")}
+      aria-live="polite"
+      aria-busy={loading}
       className={cn("flex flex-col gap-3 p-4", className)}
       style={{
         background: "var(--surface)",
