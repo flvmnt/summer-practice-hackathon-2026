@@ -112,7 +112,15 @@ function CreateEventFormInner({
   }
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={submit}>
+    <form
+      className="flex flex-col gap-4"
+      onSubmit={submit}
+      style={{
+        // Reserve room so the last field is not hidden behind the
+        // sticky submit bar. 56px bar height + 12px breathing room.
+        paddingBottom: 68,
+      }}
+    >
       <Select
         label={copy.sportLabel}
         value={sport}
@@ -198,16 +206,37 @@ function CreateEventFormInner({
         ) : null}
       </div>
 
-      <button
-        type="submit"
-        disabled={pending}
-        aria-busy={pending}
-        className="btn-s2m"
-        style={{ minHeight: 48, fontSize: 15 }}
+      {/*
+       * Sticky submit CTA. Sits above the MobileTabBar (78px) on mobile and
+       * pinned to the viewport bottom on md+ where the tabbar is hidden.
+       * Mirrors the surface/blur/shadow tokens used by WizardStickyActionBar
+       * so the action plane reads consistently across creation surfaces.
+       */}
+      <div
+        className="fixed right-0 bottom-[78px] left-0 z-30 md:bottom-0 md:left-[240px]"
+        style={{
+          background: "color-mix(in oklch, var(--surface) 94%, transparent)",
+          borderTop: "1px solid var(--line)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          paddingTop: 12,
+          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)",
+          boxShadow: "0 -10px 28px -18px rgba(14, 26, 31, 0.22)",
+        }}
       >
-        <Glyph.plus size={16} />
-        {pending ? copy.submitting : copy.submit}
-      </button>
+        <div className="mx-auto w-full max-w-xl px-5">
+          <button
+            type="submit"
+            disabled={pending}
+            aria-busy={pending}
+            className="btn-s2m w-full"
+            style={{ minHeight: 48, fontSize: 15 }}
+          >
+            <Glyph.plus size={16} />
+            {pending ? copy.submitting : copy.submit}
+          </button>
+        </div>
+      </div>
     </form>
   );
 }
