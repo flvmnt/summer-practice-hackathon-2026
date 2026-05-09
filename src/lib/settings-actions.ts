@@ -47,9 +47,9 @@ export async function updateProfileBasicsAction(
     return actionError("validation", { fieldErrors: fieldErrorsFrom(parsed.error) });
   }
 
-  const current = await getCurrentUser();
-  if (!current) {
-    return actionError("unauthorized");
+  const auth = await requireUserForAction();
+  if (!auth.ok) {
+    return actionError(auth.error);
   }
 
   return updateOnboardingProfileAction(parsed.data);
@@ -65,9 +65,9 @@ export async function updateSportsPrefsAction(
     });
   }
 
-  const current = await getCurrentUser();
-  if (!current) {
-    return actionError("unauthorized");
+  const auth = await requireUserForAction();
+  if (!auth.ok) {
+    return actionError(auth.error);
   }
 
   return setUserSportsAction(parsed.data);
@@ -81,9 +81,9 @@ export async function updateLocationAction(
     return actionError("validation", { fieldErrors: fieldErrorsFrom(parsed.error) });
   }
 
-  const current = await getCurrentUser();
-  if (!current) {
-    return actionError("unauthorized");
+  const auth = await requireUserForAction();
+  if (!auth.ok) {
+    return actionError(auth.error);
   }
 
   return updateOnboardingLocationAction(parsed.data);
