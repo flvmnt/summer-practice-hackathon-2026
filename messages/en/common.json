@@ -5,7 +5,7 @@
     "login": "Log in",
     "signup": "Sign up",
     "eyebrow": "Haufe summer practice 2026",
-    "title": "Show up - there's a game forming near you.",
+    "title": "Show up — there's a game forming near you.",
     "subtitle": "A mobile-first sports matching app for spontaneous football, tennis, basketball, and running groups in Timișoara.",
     "openToday": "Open Today",
     "judgeMode": "Judge Mode",
@@ -43,7 +43,7 @@
       "back": "Back",
       "eyebrow": "Account",
       "title": "Create your ShowUp2Move account.",
-      "body": "Pick a username and password. We show one recovery code right after signup - the MVP does not use email or phone resets.",
+      "body": "Pick a username and password. We show one recovery code right after signup — the MVP does not use email or phone resets.",
       "cardTitle": "Start with a private recovery code",
       "cardBody": "Save it once. It's the only account-recovery path in this phase.",
       "hasAccount": "Already have an account?",
@@ -235,7 +235,7 @@
         "pro": "Pro"
       },
       "aiSuggestionsLabel": "Suggested for you",
-      "aiSuggestionsHint": "From your bio - tap to add",
+      "aiSuggestionsHint": "From your bio — tap to add",
       "empty": "Select at least one sport to continue.",
       "next": "Next"
     },
@@ -269,8 +269,8 @@
       "cityLabel": "City",
       "useLocation": "Use my location",
       "locating": "Locating…",
-      "locationDenied": "Location denied - type your city manually.",
-      "locationError": "Couldn't read your location - type your city manually.",
+      "locationDenied": "Location denied — type your city manually.",
+      "locationError": "Couldn't read your location — type your city manually.",
       "locationOk": "Got it. We'll use this for distance only.",
       "distanceLabel": "How far will you travel?",
       "km": "km",
@@ -280,11 +280,11 @@
     "photo": {
       "stepLabel": "Step 4 of 4",
       "title": "Add a photo",
-      "subtitle": "Optional - helps your team recognize you.",
+      "subtitle": "Optional — helps your team recognize you.",
       "dropZoneTitle": "Drop a photo here",
-      "dropZoneSub": "Optional - JPG, PNG, or HEIC.",
+      "dropZoneSub": "Optional — JPG, PNG, or HEIC.",
       "changePhoto": "Choose a different photo",
-      "uploadComing": "Photo uploads are being wired up - your photo will save in a later step.",
+      "uploadComing": "Photo uploads are being wired up — your photo will save in a later step.",
       "analyze": "Analyze with AI",
       "analyzing": "Reading the photo…",
       "aiPicked": "AI picked",
@@ -352,7 +352,7 @@
       },
       "queued": {
         "title": "We're looking for your group",
-        "subhead": "Hold tight - we're scanning every nearby player who said yes today.",
+        "subhead": "Hold tight — we're scanning every nearby player who said yes today.",
         "lookingFor": "Looking for {sport}",
         "searchingLabel": "Searching",
         "elapsedJustNow": "just now",
@@ -536,7 +536,7 @@
       "empty": {
         "heading": "No plan locked in yet",
         "body": {
-          "captain": "Lock a venue and kickoff time when you're ready - your squad sees updates instantly.",
+          "captain": "Lock a venue and kickoff time when you're ready — your squad sees updates instantly.",
           "viewer": "Your captain will pin the venue, kickoff time, and weather once decided."
         },
         "venue": {
@@ -713,7 +713,7 @@
       "aiCacheLoaded": "{count} entries cached",
       "aiCacheEmpty": "Empty",
       "build": "Build",
-      "seedEmptyHint": "Demo not seeded yet - run /api/demo/seed",
+      "seedEmptyHint": "Demo not seeded yet — run /api/demo/seed",
       "aiCacheEmptyHint": "Cache warms after the first AI call"
     },
     "controls": {
@@ -965,10 +965,10 @@
       "title": "Privacy",
       "body": "Decide what others can see.",
       "visibilityLabel": "Profile visibility",
-      "public": "Public - anyone with the username link",
-      "private": "Private - only members of your groups",
+      "public": "Public — anyone with the username link",
+      "private": "Private — only members of your groups",
       "approxLocation": "Show approximate home location only",
-      "approxLocationBody": "We always round and jitter your home - it never appears precisely on the map.",
+      "approxLocationBody": "We always round and jitter your home — it never appears precisely on the map.",
       "alwaysOn": "Always on"
     },
     "reminders": {
@@ -980,7 +980,7 @@
     "integrations": {
       "title": "Integrations",
       "body": "Connect external services.",
-      "strava": "Connect Strava - coming soon",
+      "strava": "Connect Strava — coming soon",
       "stravaBody": "Strava OAuth/import is on the bonus track."
     }
   },
@@ -1086,7 +1086,7 @@
       },
       "step3": {
         "title": "ShowUpToday?",
-        "body": "One tap each morning. Yes - we look for nearby players right now."
+        "body": "One tap each morning. Yes — we look for nearby players right now."
       },
       "step4": {
         "title": "Match + meet",
@@ -1121,7 +1121,7 @@
   "leaderboard": {
     "kicker": "Leaderboard",
     "title": "Players this week",
-    "body": "Points are awarded for showing up, captaining, and keeping streaks alive. Stub leaderboard - real ranking lands with the matching telemetry.",
+    "body": "Points are awarded for showing up, captaining, and keeping streaks alive. Stub leaderboard — real ranking lands with the matching telemetry.",
     "col": {
       "rank": "Rank",
       "player": "Player",

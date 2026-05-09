@@ -8,7 +8,9 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { WizardMobileHeader } from "@/components/onboarding/WizardMobileHeader";
 import { WizardStickyActionBar } from "@/components/onboarding/WizardStickyActionBar";
 import type { AppLocale } from "@/i18n/routing";
-import { type SportKey } from "@/lib/sports";
+import { extractSportsFromPhotoAction } from "@/lib/photo-actions";
+import { type SportKey, SPORT_KEYS } from "@/lib/sports";
+import { uploadProfilePhotoAction } from "@/lib/upload-actions";
 
 const SPORT_GLYPHS: Partial<Record<SportKey, keyof typeof Glyph>> = {
   football: "football",
@@ -38,22 +40,14 @@ type Suggestion = {
 };
 
 type AiState = "idle" | "loading" | "ok" | "down";
-
-/**
- * Local stub for photo→sports analysis. Wave 0 audit found no
- * `photoAnalyzeAction` server action wired in `src/lib`. This stub keeps
- * the demo flow visible; a later wave (A11/A12) will swap to real Groq
- * vision via the server action.
- */
-function localPhotoAnalyze(): Suggestion[] {
-  return [
-    { sport: "tennis", confidence: 0.76, source: "from photo" },
-    { sport: "running", confidence: 0.62, source: "from photo" },
-    { sport: "football", confidence: 0.58, source: "from photo" },
-  ];
-}
+type UploadState = "idle" | "uploading" | "uploaded" | "failed";
 
 const ACCEPTED_TYPES = "image/jpeg,image/png,image/webp,image/heic,image/heif";
+
+const SPORT_KEY_SET = new Set<SportKey>(SPORT_KEYS);
+function isSportKey(value: string): value is SportKey {
+  return SPORT_KEY_SET.has(value as SportKey);
+}
 
 export type PhotoFormProps = {
   locale: AppLocale;
@@ -64,42 +58,80 @@ export function PhotoForm({ locale, initialPhotoUrl }: PhotoFormProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialPhotoUrl);
+  const [pickedFile, setPickedFile] = useState<File | null>(null);
   const [statusBanner, setStatusBanner] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [uploadState, setUploadState] = useState<UploadState>("idle");
   const [aiState, setAiState] = useState<AiState>("idle");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [picked, setPicked] = useState<Set<SportKey>>(new Set());
   const [isPending, startTransition] = useTransition();
 
-  function handleFile(file: File) {
+  async function handleFile(file: File) {
     if (!file.type.startsWith("image/")) {
       setStatusBanner("Pick an image file (JPG, PNG, or HEIC).");
       return;
     }
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
-    // R2 upload route is not yet wired - surface a friendly status banner so
-    // the demo flow is honest about what's saved vs. local-preview.
-    setStatusBanner("Photo uploads are being wired up - your photo will save in a later step.");
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+    setPickedFile(file);
     setAiState("idle");
     setSuggestions([]);
     setPicked(new Set());
+    setStatusBanner("Uploading photo…");
+    setUploadState("uploading");
+    try {
+      const formData = new FormData();
+      formData.append("photo", file);
+      const result = await uploadProfilePhotoAction(formData);
+      if (result.ok) {
+        setUploadState("uploaded");
+        setStatusBanner(null);
+      } else {
+        setUploadState("failed");
+        setStatusBanner(
+          result.error === "too_large"
+            ? "Photo is too large (max 8 MB)."
+            : result.error === "unsupported_mime"
+              ? "Only JPG, PNG, or WEBP photos are accepted."
+              : "Upload failed. Try again.",
+        );
+      }
+    } catch {
+      setUploadState("failed");
+      setStatusBanner("Upload failed. Try again.");
+    }
   }
 
-  function handleAnalyze() {
-    if (!previewUrl) return;
+  async function handleAnalyze() {
+    if (!pickedFile) return;
     setAiState("loading");
     setSuggestions([]);
-    window.setTimeout(() => {
-      try {
-        const result = localPhotoAnalyze();
-        setSuggestions(result);
-        setPicked(new Set(result.slice(0, 2).map((s) => s.sport)));
-        setAiState("ok");
-      } catch {
+    try {
+      const formData = new FormData();
+      formData.append("photo", pickedFile);
+      const result = await extractSportsFromPhotoAction(formData);
+      if (!result.ok) {
         setAiState("down");
+        return;
       }
-    }, 520);
+      const mapped: Suggestion[] = result.suggestions
+        .filter((s) => isSportKey(s.sport))
+        .map((s) => ({
+          sport: s.sport as SportKey,
+          confidence: s.confidence,
+          source: result.source === "ai" ? "from photo" : "fallback hint",
+        }));
+      if (mapped.length === 0) {
+        setAiState("down");
+        return;
+      }
+      setSuggestions(mapped);
+      setPicked(new Set(mapped.slice(0, 2).map((s) => s.sport)));
+      setAiState("ok");
+    } catch {
+      setAiState("down");
+    }
   }
 
   function togglePick(sport: SportKey) {
@@ -136,7 +168,7 @@ export function PhotoForm({ locale, initialPhotoUrl }: PhotoFormProps) {
       className="mx-auto flex w-full max-w-md flex-col"
       style={{ minHeight: "100dvh", background: "var(--bg)" }}
     >
-      <div className="flex flex-1 flex-col gap-5 px-5 pt-5 pb-6">
+      <div className="flex flex-1 flex-col gap-5 px-5 pt-5 pb-32">
         <WizardMobileHeader
           step={4}
           total={4}
