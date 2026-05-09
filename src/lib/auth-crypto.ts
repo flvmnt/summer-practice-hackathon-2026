@@ -1,13 +1,13 @@
 import bcrypt from "bcryptjs";
 import { generateRecoveryCode, normalizeRecoveryCode } from "@/lib/recovery";
 
-const BCRYPT_COST = 10;
+const BCRYPT_COST = 12;
 
 export const DUMMY_PASSWORD_HASH =
-  "$2b$10$SJHQwrdDNhXuMbGsTQ.RNOqleuTox9V/OvJ4p32nr/.Zjuyo/sWWW";
+  "$2b$12$A.427bJiyPIQfn/Xnu0/ouf/mDDXunuQbhlv9HrA0g0iQz5TjOkUe";
 
 export const DUMMY_RECOVERY_HASH =
-  "$2b$10$UKC7djKyGa6FP4QN1dt5.OtytV3zWNm3tLEfQ6e4yyoMByO3JrOMK";
+  "$2b$12$M5CWKa.eQubwznTufoPXV.G4mEUdc2wmgIn7SP3F0DWdUj0QrMyk2";
 
 export function hashPassword(password: string) {
   return bcrypt.hash(password, BCRYPT_COST);
