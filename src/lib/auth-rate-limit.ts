@@ -114,17 +114,19 @@ export async function recordAuthFailure({
 }: AuthRateLimitOptions): Promise<AuthRateLimitStatus> {
   const sql = getSqlClient();
   const windowStart = new Date(now.getTime() - windowSeconds * 1000);
+  const nowIso = now.toISOString();
+  const windowStartIso = windowStart.toISOString();
   const [row] = await sql<AuthRateLimitRow[]>`
     insert into auth_rate_limits (bucket, window_started_at, failures)
-    values (${bucket}, ${now}, 1)
+    values (${bucket}, ${nowIso}::timestamptz, 1)
     on conflict (bucket) do update set
       window_started_at = case
-        when auth_rate_limits.window_started_at <= ${windowStart}
-        then ${now}
+        when auth_rate_limits.window_started_at <= ${windowStartIso}::timestamptz
+        then ${nowIso}::timestamptz
         else auth_rate_limits.window_started_at
       end,
       failures = case
-        when auth_rate_limits.window_started_at <= ${windowStart}
+        when auth_rate_limits.window_started_at <= ${windowStartIso}::timestamptz
         then 1
         else auth_rate_limits.failures + 1
       end

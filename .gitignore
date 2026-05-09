@@ -44,6 +44,7 @@ pnpm-debug.log*
 coverage/
 playwright-report/
 test-results/
+.playwright-cli/
 .nyc_output/
 
 # Local databases and generated artifacts

@@ -21,7 +21,7 @@ export type GroupMessage = {
   id: string;
   body: string;
   kind: string;
-  createdAt: Date;
+  createdAt: string;
   user: {
     id: string;
     username: string;
@@ -100,7 +100,7 @@ async function loadGroupMessages(groupId: string, limit: number): Promise<GroupM
     id: row.id,
     body: row.body,
     kind: row.kind,
-    createdAt: row.createdAt,
+    createdAt: row.createdAt.toISOString(),
     user: row.userId
       ? {
           id: row.userId,
@@ -214,7 +214,10 @@ export async function postMessageAction(
   if (message) {
     return actionOk({
       message: {
-        ...message,
+        id: message.id,
+        body: message.body,
+        kind: message.kind,
+        createdAt: message.createdAt.toISOString(),
         user: {
           id: auth.user.id,
           username: auth.user.username,
@@ -246,7 +249,10 @@ export async function postMessageAction(
 
   return actionOk({
     message: {
-      ...existing,
+      id: existing.id,
+      body: existing.body,
+      kind: existing.kind,
+      createdAt: existing.createdAt.toISOString(),
       user: {
         id: auth.user.id,
         username: auth.user.username,
