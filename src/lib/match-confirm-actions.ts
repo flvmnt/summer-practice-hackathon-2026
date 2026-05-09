@@ -33,10 +33,11 @@ function reasonToError(
 export async function confirmMembershipAction(
   formData: FormData,
 ): Promise<ActionResult<{ status: "confirmed" }>> {
-  const user = await getCurrentUser();
-  if (!user) {
-    return actionError("unauthorized");
+  const auth = await requireUserForAction();
+  if (!auth.ok) {
+    return actionError(auth.error);
   }
+  const user = auth.user;
 
   const parsed = inputSchema.safeParse({
     groupId: readField(formData, "groupId"),
@@ -63,10 +64,11 @@ export async function confirmMembershipAction(
 export async function declineMembershipAction(
   formData: FormData,
 ): Promise<ActionResult<{ status: "declined" }>> {
-  const user = await getCurrentUser();
-  if (!user) {
-    return actionError("unauthorized");
+  const auth = await requireUserForAction();
+  if (!auth.ok) {
+    return actionError(auth.error);
   }
+  const user = auth.user;
 
   const parsed = inputSchema.safeParse({
     groupId: readField(formData, "groupId"),
