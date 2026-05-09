@@ -61,7 +61,9 @@
         "recoveryBody": "You'll need this code if you ever reset your password.",
         "recoveryWarning": "It will not be shown again.",
         "continue": "Continue to profile"
-      }
+      },
+      "weakPassword": "Use at least 8 characters.",
+      "rateLimited": "Too many signups from this device. Try again shortly."
     },
     "login": {
       "back": "Back",
@@ -109,7 +111,31 @@
         "successBody": "Save this new recovery code. The old one no longer works.",
         "recoveryWarning": "It will not be shown again.",
         "continue": "Continue to Today"
-      }
+      },
+      "step1": "1. Identify",
+      "step2": "2. New password",
+      "step3": "3. Done"
+    },
+    "brandLine": "Show up. Move.",
+    "brandTagline": "A pickup game is forming nearby.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "recoveryReveal": {
+      "eyebrow": "Save your code",
+      "title": "Save this recovery code.",
+      "body": "It's the only way back into your account if you forget your password. We can't recover this for you.",
+      "label": "Your recovery code",
+      "copy": "Copy code",
+      "copied": "Copied",
+      "download": "Download as .txt",
+      "downloaded": "Downloaded",
+      "savedConfirm": "I have saved it somewhere safe",
+      "continue": "Continue to profile",
+      "privacy": "We can't recover this for you. Save it now.",
+      "toastCopiedTitle": "Copied",
+      "toastCopiedBody": "Your recovery code is on the clipboard.",
+      "toastDownloadedTitle": "Saved",
+      "toastDownloadedBody": "Recovery code saved as .txt"
     }
   },
   "onboarding": {
@@ -135,7 +161,26 @@
         "successTitle": "Profile saved",
         "successBody": "Sports, profile photo, and location are the next onboarding steps.",
         "continue": "Choose sports"
-      }
+      },
+      "stepLabel": "Step 1 of 4",
+      "subtitle": "Set your display name and bio.",
+      "fullName": "Full name",
+      "fullNamePlaceholder": "Alex Ionescu",
+      "usernameLabel": "Username",
+      "bio": "Short bio",
+      "bioPlaceholder": "What do you play, when are you usually free, and what kind of group feels right?",
+      "bioCount": "{count}/240",
+      "suggestSports": "Suggest sports",
+      "aiPicked": "AI picked",
+      "aiThinking": "Reading your bio…",
+      "aiPaused": "AI is taking a break",
+      "aiPausedSub": "Pick sports manually on the next step.",
+      "bioRequired": "Add a short bio before continuing.",
+      "fullNameRequired": "Enter your full name to continue.",
+      "genericError": "Something went wrong. Try again.",
+      "unauthorized": "Log in again before saving your profile.",
+      "next": "Next",
+      "aiUnavailable": "AI suggestions are paused right now."
     },
     "sports": {
       "back": "Back",
@@ -172,7 +217,24 @@
           "hiking": "Hiking",
           "table_tennis": "Table tennis"
         }
-      }
+      },
+      "headerTitle": "Choose sports",
+      "headerSubtitle": "Pick what you like to play",
+      "tile": {
+        "football": "Football",
+        "basketball": "Basketball",
+        "tennis": "Tennis",
+        "padel": "Padel",
+        "running": "Running",
+        "volley": "Volley"
+      },
+      "level": {
+        "beginner": "Beginner",
+        "casual": "Casual",
+        "pro": "Pro"
+      },
+      "empty": "Select at least one sport to continue.",
+      "next": "Next"
     },
     "location": {
       "back": "Back",
@@ -198,7 +260,37 @@
         "successTitle": "Location saved",
         "successBody": "The account now has the required profile, sports, and proximity fields for ShowUpToday.",
         "continue": "Open Today"
-      }
+      },
+      "headerTitle": "Where can you play?",
+      "headerSubtitle": "City and how far you'll travel",
+      "cityLabel": "City",
+      "useLocation": "Use my location",
+      "locating": "Locating…",
+      "locationDenied": "Location denied — type your city manually.",
+      "locationError": "Couldn't read your location — type your city manually.",
+      "locationOk": "Got it. We'll use this for distance only.",
+      "distanceLabel": "How far will you travel?",
+      "km": "km",
+      "radiusChip": "Within {distance} km of {city}",
+      "next": "Next"
+    },
+    "photo": {
+      "stepLabel": "Step 4 of 4",
+      "title": "Add a photo",
+      "subtitle": "Optional — helps your team recognize you.",
+      "dropZoneTitle": "Drop a photo here",
+      "dropZoneSub": "Optional — JPG, PNG, or HEIC.",
+      "changePhoto": "Choose a different photo",
+      "uploadComing": "Photo uploads are being wired up — your photo will save in a later step.",
+      "analyze": "Analyze with AI",
+      "analyzing": "Reading the photo…",
+      "aiPicked": "AI picked",
+      "aiPaused": "AI vision is offline.",
+      "aiPausedSub": "We'll save the photo and you can analyze later.",
+      "aiUnavailable": "AI photo analysis is coming soon.",
+      "skip": "Skip",
+      "finish": "Finish",
+      "back": "Back"
     }
   },
   "today": {
@@ -234,6 +326,49 @@
         "hiking": "Hiking",
         "table_tennis": "Table tennis"
       }
+    },
+    "greeting": "Today",
+    "windowLabel": "Live · today",
+    "weather": {
+      "clear": "Clear, 18°C"
+    },
+    "nearby": {
+      "label": "playing today"
+    },
+    "searching": {
+      "headline": "Matching you…",
+      "matchingLabel": "Matching",
+      "aiLabel": "AI scoring",
+      "aiDescription": "weighing skill, schedule and proximity",
+      "range": {
+        "nearby": "nearby {sport} players",
+        "available": "available now",
+        "fits": "high compatibility fits"
+      }
+    },
+    "found": {
+      "in": "You're in",
+      "confirm": "Confirm participation",
+      "why": "Why this group?",
+      "venueName": "Suggested venue nearby",
+      "venueSub": "Captain will lock the spot · ~2 km"
+    },
+    "queued": {
+      "title": "You're in the queue",
+      "searchingLabel": "Searching",
+      "planB": "Plan B",
+      "tryRun": "Try a nearby run instead",
+      "createSmall": "Create a small manual event"
+    },
+    "saidNo": {
+      "title": "Rest day logged.",
+      "change": "Change to Yes"
+    },
+    "confirmed": {
+      "label": "Confirmed",
+      "startsLabel": "Starts soon",
+      "openChat": "Open chat",
+      "calendar": "Add to calendar"
     }
   },
   "group": {
@@ -287,6 +422,44 @@
       "yoga": "Yoga",
       "hiking": "Hiking",
       "table_tennis": "Table tennis"
+    },
+    "tabs": {
+      "plan": "Plan",
+      "chat": "Chat",
+      "players": "Players"
+    },
+    "header": {
+      "countSuffix": "{count}/{target}"
+    },
+    "plan": {
+      "whyThisGroup": "Why this group?",
+      "reason": {
+        "distance": "Within distance gate",
+        "sport": "Same sport",
+        "skill": "Skill mix balanced",
+        "size": "Group size fit"
+      },
+      "event": {
+        "proposed": "Event proposed",
+        "going": "Going · {count}",
+        "maybe": "Maybe · {count}",
+        "no": "No · {count}",
+        "open": "Open event",
+        "pickVenue": "Pick a venue",
+        "tapToSuggest": "Tap to suggest"
+      }
+    },
+    "players": {
+      "confirmParticipation": "Confirm participation",
+      "statusConfirmed": "Confirmed",
+      "statusMaybe": "Maybe",
+      "statusPending": "Pending"
+    },
+    "chat": {
+      "empty": {
+        "title": "No messages yet",
+        "body": "Say where and when works for you."
+      }
     }
   },
   "event": {
@@ -370,12 +543,84 @@
       "yoga": "Yoga",
       "hiking": "Hiking",
       "table_tennis": "Table tennis"
+    },
+    "tabs": {
+      "details": "Details",
+      "chat": "Event chat",
+      "vote": "Vote"
+    },
+    "copyInvite": "Copy invite",
+    "inviteCopied": "Invite copied",
+    "inviteCopyError": "Could not copy",
+    "icsToast": "Calendar downloaded",
+    "rsvp": {
+      "saved": "RSVP updated"
+    },
+    "mapPreviewLabel": "Map preview",
+    "vote": {
+      "title": "Vote: choose a venue",
+      "closeVote": "Close vote",
+      "closedNotice": "Voting is closed."
+    },
+    "captainReveal": {
+      "pillLabel": "Captain auto-suggest",
+      "versionLabel": "auto · v1",
+      "headline": "Suggested plan",
+      "reasoning": "8 members voted after 18:00, weather is clear, venue is closest to the group center.",
+      "confirmPlan": "Confirm plan",
+      "startVote": "Start vote",
+      "suggestSomethingElse": "Suggest something else",
+      "suggestSomethingElseToast": "Coming soon",
+      "confirmedToast": "Plan confirmed"
     }
   },
   "demo": {
-    "title": "Judge Mode placeholder",
+    "eyebrow": "Judge Mode",
+    "title": "Rubric proof, live.",
+    "body": "Each row points to the screen or route that proves it. Status colors are honest: live, seeded, fallback, pending.",
     "enabledBody": "Demo proof is enabled by environment flag. Scoring rows stay unclaimed until later phases add live or seeded proof.",
-    "disabledBody": "Demo proof is disabled by environment flag. Scoring rows stay unclaimed until later phases add live or seeded proof."
+    "disabledBody": "Demo proof is disabled by environment flag. Scoring rows stay unclaimed until later phases add live or seeded proof.",
+    "health": {
+      "ariaLabel": "Demo environment status",
+      "label": "Railway",
+      "up": "green",
+      "down": "red",
+      "unknown": "yellow",
+      "seed": "Demo seed",
+      "seedLoaded": "{users} users · {groups} groups · {events} events",
+      "seedEmpty": "Empty",
+      "aiCache": "AI cache",
+      "aiCacheLoaded": "{count} entries cached",
+      "aiCacheEmpty": "Empty",
+      "build": "Build"
+    },
+    "controls": {
+      "seed": "Seed demo",
+      "seeding": "Seeding...",
+      "reset": "Reset demo",
+      "resetting": "Resetting...",
+      "scriptedFlow": "Open scripted flow",
+      "resetTitle": "Reset demo data?",
+      "resetBody": "This wipes demo-owned rows. Real accounts are protected by the demo_run_id ownership marker.",
+      "resetConfirm": "Reset",
+      "cancel": "Cancel",
+      "toastSeedOk": "Seeded",
+      "toastSeedFailed": "Seed failed",
+      "toastResetOk": "Reset complete",
+      "toastResetFailed": "Reset failed",
+      "notWired": "Action not wired yet - run scripts/seed-demo.ts from CLI."
+    },
+    "rubricLegend": {
+      "live": "Live",
+      "seeded": "Seeded",
+      "fallback": "Fallback",
+      "pending": "Pending"
+    },
+    "totals": {
+      "total": "Total",
+      "claimed": "Claimed",
+      "max": "Max"
+    }
   },
   "invitePreview": {
     "back": "Back to ShowUp2Move",
@@ -412,5 +657,338 @@
     "title": "Page not found",
     "body": "This route is not part of the current ShowUp2Move phase.",
     "back": "Back to ShowUp2Move"
+  },
+  "map": {
+    "title": "Nearby venues",
+    "subtitle": "Public pickup spots near you. Map needs your location to plot you exactly.",
+    "searchPlaceholder": "Search venues",
+    "useMyLocation": "Use my location",
+    "allSports": "All sports",
+    "directions": "Directions",
+    "join": "Join",
+    "startGame": "Start a game here",
+    "locationDeniedTitle": "Location unavailable",
+    "locationDeniedBody": "We can show events but cannot sort by distance.",
+    "privacyNotice": "Privacy: we never store your exact home address. Pins are public venues only.",
+    "loadingMap": "Loading map",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "recenter": "Recenter",
+    "filtersLabel": "Filter venues",
+    "timeToday": "Today",
+    "timeTomorrow": "Tomorrow",
+    "distanceUnknown": "Distance unknown",
+    "kmAway": "{km} km",
+    "priceFree": "Free",
+    "priceLow": "Low cost",
+    "priceMedium": "Medium cost",
+    "selectVenuePrompt": "Tap a pin to see venue details.",
+    "list": {
+      "header": "Public venues",
+      "fallbackHint": "Showing nearby venues by city."
+    },
+    "back": "Back",
+    "sport": {
+      "football": "Football",
+      "basketball": "Basketball",
+      "tennis": "Tennis",
+      "running": "Running",
+      "volleyball": "Volleyball",
+      "badminton": "Badminton",
+      "cycling": "Cycling",
+      "yoga": "Yoga",
+      "hiking": "Hiking",
+      "table_tennis": "Table tennis"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "eyebrow": "Inbox",
+    "markAllRead": "Mark all read",
+    "markRead": "Mark read",
+    "unreadCount": "{count} unread",
+    "allCaughtUp": "All caught up",
+    "emptyTitle": "You're caught up",
+    "emptyBody": "New matches, votes, and event updates will appear here.",
+    "filters": {
+      "all": "All",
+      "unread": "Unread",
+      "match": "Match",
+      "vote": "Vote",
+      "event": "Event",
+      "chat": "Chat"
+    },
+    "kinds": {
+      "matchReady": "Match",
+      "voteClosing": "Vote",
+      "eventConfirmed": "Event",
+      "chatMention": "Chat"
+    },
+    "bell": {
+      "label": "Notifications",
+      "labelUnread": "Notifications, {count} unread"
+    },
+    "back": "Back to Today"
+  },
+  "groupsList": {
+    "title": "Your groups",
+    "subtitle": "Active groups you're a member of.",
+    "captainBadge": "Captain",
+    "openGroup": "Open",
+    "memberCount": "{count}/{target} players",
+    "emptyTitle": "No groups yet",
+    "emptyBody": "Answer today's prompt to form your first group.",
+    "emptyAction": "Go to Today"
+  },
+  "eventsList": {
+    "title": "Your events",
+    "subtitle": "Upcoming and past events you're attending.",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "all": "All",
+    "createNew": "Create event",
+    "emptyTitle": "No events yet",
+    "emptyBody": "Create one or wait for today's match.",
+    "emptyAction": "Create event",
+    "rsvp": {
+      "going": "Going",
+      "maybe": "Maybe",
+      "declined": "Declined"
+    }
+  },
+  "eventsNew": {
+    "title": "Create event",
+    "subtitle": "Set up a public pickup before today's match.",
+    "sportLabel": "Sport",
+    "timeLabel": "When",
+    "venueLabel": "Venue",
+    "venueSearch": "Search venues",
+    "suggestedVenues": "Suggested nearby",
+    "selectedVenue": "Selected venue",
+    "submit": "Create event",
+    "comingSoon": "Manual event creation is coming soon. Captains can create group-linked events from the group plan."
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Profile, sports, location, privacy, reminders.",
+    "tabs": {
+      "profile": "Profile",
+      "sports": "Sports",
+      "location": "Location",
+      "privacy": "Privacy",
+      "reminders": "Reminders",
+      "integrations": "Integrations"
+    },
+    "profile": {
+      "title": "Profile",
+      "body": "How other players see you.",
+      "fullNameLabel": "Display name",
+      "bioLabel": "Short bio",
+      "save": "Save profile",
+      "saved": "Profile saved"
+    },
+    "sports": {
+      "title": "Sports",
+      "body": "Pick up to six sports and your level.",
+      "empty": "No sports selected yet.",
+      "editHint": "Edit your sports during onboarding for now. Inline editing here is coming soon."
+    },
+    "location": {
+      "title": "Location",
+      "body": "City and how far you'll travel. We never store your exact home address.",
+      "cityLabel": "City",
+      "distanceLabel": "Travel radius (km)",
+      "editHint": "Inline editing of location is coming soon."
+    },
+    "privacy": {
+      "title": "Privacy",
+      "body": "Decide what others can see.",
+      "visibilityLabel": "Profile visibility",
+      "public": "Public — anyone with the username link",
+      "private": "Private — only members of your groups",
+      "approxLocation": "Show approximate home location only",
+      "approxLocationBody": "We always round and jitter your home — it never appears precisely on the map.",
+      "alwaysOn": "Always on"
+    },
+    "reminders": {
+      "title": "Reminders",
+      "body": "We'll nudge you about prompts and events.",
+      "email": "Email reminders coming soon",
+      "emailBody": "We'll surface this once Resend is wired in."
+    },
+    "integrations": {
+      "title": "Integrations",
+      "body": "Connect external services.",
+      "strava": "Connect Strava — coming soon",
+      "stravaBody": "Strava OAuth/import is on the bonus track."
+    }
+  },
+  "publicProfile": {
+    "title": "Public profile",
+    "private": "This profile is private.",
+    "privateBody": "Only members of shared groups can see it.",
+    "cityLabel": "City",
+    "sportsLabel": "Sports",
+    "matchTitle": "Compatibility",
+    "matchSubtitle": "Estimated match with you",
+    "matchBreakdown": {
+      "sport": "Shared sports",
+      "skill": "Skill match",
+      "distance": "Within travel radius"
+    },
+    "notFoundTitle": "Player not found",
+    "notFoundBody": "This username doesn't exist or has been removed.",
+    "back": "Back"
+  },
+  "judge": {
+    "eyebrow": "Judge Mode",
+    "title": "Rubric proof, live.",
+    "body": "Each row points to the screen or route that proves it. Status colors are honest: live, seeded, fallback, pending.",
+    "health": "Railway",
+    "healthUp": "green",
+    "healthDown": "red",
+    "healthUnknown": "yellow",
+    "seedLoaded": "{users} users · {groups} groups · {events} events",
+    "seedEmpty": "Empty",
+    "aiCache": "{count} entries cached",
+    "aiCacheEmpty": "Empty",
+    "build": "Build",
+    "controls": {
+      "seed": "Seed demo",
+      "seeding": "Seeding",
+      "reset": "Reset demo",
+      "resetting": "Resetting",
+      "scriptedFlow": "Open scripted flow",
+      "resetTitle": "Reset demo data?",
+      "resetBody": "This wipes demo-owned rows. Real accounts stay intact.",
+      "resetConfirm": "Reset",
+      "cancel": "Cancel",
+      "toastSeedOk": "Seeded",
+      "toastSeedFailed": "Seed failed",
+      "toastResetOk": "Reset complete",
+      "toastResetFailed": "Reset failed",
+      "notWired": "Action not wired yet"
+    },
+    "legend": {
+      "live": "Live",
+      "seeded": "Seeded",
+      "fallback": "Fallback",
+      "pending": "Pending"
+    },
+    "totals": "Total",
+    "claimed": "Claimed",
+    "max": "Max"
+  },
+  "landing": {
+    "nav": {
+      "login": "Log in",
+      "signup": "Sign up"
+    },
+    "eyebrow": "Sports matching · Timișoara",
+    "headline": "Show up. Move. Today.",
+    "subhead": "ShowUp2Move matches you with nearby players for football, basketball, tennis and more. AI does the matching. You just show up.",
+    "cta": {
+      "primary": "Start playing",
+      "secondary": "View demo"
+    },
+    "proof": {
+      "private": "Private location",
+      "venues": "Real venues",
+      "ai": "AI matchmaking"
+    },
+    "live": {
+      "title": "Real product. Real venues.",
+      "kicker": "What you'll see",
+      "football": {
+        "title": "Football today",
+        "body": "12/14 nearby · 1.4 km"
+      },
+      "tennis": {
+        "title": "Pick a venue",
+        "body": "Group voting · 4 votes in"
+      },
+      "map": {
+        "title": "Public venues",
+        "body": "Sorted by distance · weather · price"
+      }
+    },
+    "how": {
+      "kicker": "How it works",
+      "title": "Four taps from idea to kickoff.",
+      "step1": {
+        "title": "Sign up",
+        "body": "Username + password. A recovery code, never an email blast."
+      },
+      "step2": {
+        "title": "Set sports + location",
+        "body": "Pick what you play. Drop a fuzzy home pin. We never store the exact one."
+      },
+      "step3": {
+        "title": "ShowUpToday?",
+        "body": "One tap each morning. Yes — we look for nearby players right now."
+      },
+      "step4": {
+        "title": "Match + meet",
+        "body": "Captain auto-creates the event. Vote on the venue. Show up. Game on."
+      }
+    },
+    "why": {
+      "kicker": "Why ShowUp2Move",
+      "title": "Built for Saturday-morning energy.",
+      "ai": {
+        "title": "AI matchmaking",
+        "body": "Find groups by sport, skill, and proximity in seconds."
+      },
+      "venues": {
+        "title": "Real venues",
+        "body": "Suggested venues with weather, price tier, and directions."
+      },
+      "show": {
+        "title": "Just show up",
+        "body": "Captain auto-creates the event. You confirm. Game on."
+      }
+    },
+    "footer": {
+      "tagline": "ShowUp2Move. Spontaneous sports matching for Timișoara.",
+      "demo": "Demo",
+      "github": "GitHub",
+      "privacy": "Privacy (soon)",
+      "copyright": "© 2026 ShowUp2Move · Haufe summer practice",
+      "builtIn": "Built in Timișoara"
+    }
+  },
+  "leaderboard": {
+    "kicker": "Leaderboard",
+    "title": "Players this week",
+    "body": "Points are awarded for showing up, captaining, and keeping streaks alive. Stub leaderboard — real ranking lands with the matching telemetry.",
+    "col": {
+      "rank": "Rank",
+      "player": "Player",
+      "points": "Points"
+    },
+    "topGroups": "Top groups",
+    "achievements": "Achievements unlocked",
+    "unlocked": "Unlocked",
+    "stub": "Stub data · TODO",
+    "back": "Today"
+  },
+  "calendar": {
+    "kicker": "Calendar",
+    "title": "Your calendar",
+    "body": "Confirmed events you said yes to. Each row exports a clean .ics you can drop into Apple/Google Calendar.",
+    "upcoming": "Upcoming events",
+    "empty": {
+      "title": "No events yet",
+      "body": "Say yes on Today and we'll find you a group. Confirmed events show up here with a one-tap calendar export.",
+      "cta": "Open Today"
+    },
+    "download": "Download .ics",
+    "toast": "Calendar file ready",
+    "rsvp": {
+      "going": "Going",
+      "tentative": "Tentative"
+    },
+    "stub": "Stub data · TODO",
+    "back": "Today"
   }
 }

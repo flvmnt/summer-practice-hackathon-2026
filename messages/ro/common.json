@@ -61,7 +61,9 @@
         "recoveryBody": "Vei avea nevoie de cod dacă resetezi parola.",
         "recoveryWarning": "Nu va mai fi afișat din nou.",
         "continue": "Continuă la profil"
-      }
+      },
+      "weakPassword": "Folosește cel puțin 8 caractere.",
+      "rateLimited": "Prea multe încercări de pe acest dispozitiv. Încearcă în curând."
     },
     "login": {
       "back": "Înapoi",
@@ -109,7 +111,31 @@
         "successBody": "Salvează acest cod nou de recuperare. Codul vechi nu mai funcționează.",
         "recoveryWarning": "Nu va mai fi afișat din nou.",
         "continue": "Continuă la Today"
-      }
+      },
+      "step1": "1. Identificare",
+      "step2": "2. Parolă nouă",
+      "step3": "3. Gata"
+    },
+    "brandLine": "Arată-te. Joacă.",
+    "brandTagline": "Se formează un meci lângă tine.",
+    "showPassword": "Arată parola",
+    "hidePassword": "Ascunde parola",
+    "recoveryReveal": {
+      "eyebrow": "Salvează codul",
+      "title": "Salvează acest cod de recuperare.",
+      "body": "Este singura cale înapoi în cont dacă uiți parola. Nu îl putem recupera pentru tine.",
+      "label": "Codul tău de recuperare",
+      "copy": "Copiază codul",
+      "copied": "Copiat",
+      "download": "Descarcă .txt",
+      "downloaded": "Descărcat",
+      "savedConfirm": "L-am salvat undeva în siguranță",
+      "continue": "Continuă spre profil",
+      "privacy": "Nu îl putem recupera pentru tine. Salvează-l acum.",
+      "toastCopiedTitle": "Copiat",
+      "toastCopiedBody": "Codul de recuperare e în clipboard.",
+      "toastDownloadedTitle": "Salvat",
+      "toastDownloadedBody": "Codul de recuperare salvat ca .txt"
     }
   },
   "onboarding": {
@@ -135,7 +161,26 @@
         "successTitle": "Profil salvat",
         "successBody": "Sporturile, poza de profil și locația sunt următorii pași de onboarding.",
         "continue": "Alege sporturi"
-      }
+      },
+      "stepLabel": "Pasul 1 din 4",
+      "subtitle": "Setează numele afișat și o scurtă bio.",
+      "fullName": "Nume complet",
+      "fullNamePlaceholder": "Alex Ionescu",
+      "usernameLabel": "Nume utilizator",
+      "bio": "Bio scurtă",
+      "bioPlaceholder": "Ce sport joci, când ești liber și ce fel de grup ți se potrivește?",
+      "bioCount": "{count}/240",
+      "suggestSports": "Sugerează sporturi",
+      "aiPicked": "AI a ales",
+      "aiThinking": "Citesc bio-ul…",
+      "aiPaused": "AI ia o pauză",
+      "aiPausedSub": "Alege sporturi manual la pasul următor.",
+      "bioRequired": "Adaugă o scurtă bio înainte să continui.",
+      "fullNameRequired": "Adaugă numele complet pentru a continua.",
+      "genericError": "A apărut o eroare. Încearcă din nou.",
+      "unauthorized": "Reautentifică-te pentru a salva profilul.",
+      "next": "Continuă",
+      "aiUnavailable": "Sugestiile AI sunt în pauză momentan."
     },
     "sports": {
       "back": "Înapoi",
@@ -172,7 +217,24 @@
           "hiking": "Drumeție",
           "table_tennis": "Tenis de masă"
         }
-      }
+      },
+      "headerTitle": "Alege sporturile",
+      "headerSubtitle": "Bifează ce-ți place să joci",
+      "tile": {
+        "football": "Fotbal",
+        "basketball": "Baschet",
+        "tennis": "Tenis",
+        "padel": "Padel",
+        "running": "Alergare",
+        "volley": "Volei"
+      },
+      "level": {
+        "beginner": "Începător",
+        "casual": "Recreativ",
+        "pro": "Pro"
+      },
+      "empty": "Alege cel puțin un sport pentru a continua.",
+      "next": "Înainte"
     },
     "location": {
       "back": "Înapoi",
@@ -198,7 +260,37 @@
         "successTitle": "Locație salvată",
         "successBody": "Contul are acum câmpurile obligatorii pentru profil, sporturi și proximitate în ShowUpToday.",
         "continue": "Deschide Today"
-      }
+      },
+      "headerTitle": "Unde poți juca?",
+      "headerSubtitle": "Orașul și distanța pe care o parcurgi",
+      "cityLabel": "Oraș",
+      "useLocation": "Folosește locația mea",
+      "locating": "Se localizează…",
+      "locationDenied": "Locația refuzată — scrie orașul manual.",
+      "locationError": "N-am putut citi locația — scrie orașul manual.",
+      "locationOk": "Am notat. O folosim doar pentru distanță.",
+      "distanceLabel": "Cât de departe te deplasezi?",
+      "km": "km",
+      "radiusChip": "În {distance} km de {city}",
+      "next": "Înainte"
+    },
+    "photo": {
+      "stepLabel": "Pasul 4 din 4",
+      "title": "Adaugă o poză",
+      "subtitle": "Opțional — ajută echipa să te recunoască.",
+      "dropZoneTitle": "Trage o poză aici",
+      "dropZoneSub": "Opțional — JPG, PNG sau HEIC.",
+      "changePhoto": "Alege altă poză",
+      "uploadComing": "Încărcarea pozelor se conectează în curând — vei putea salva în alt pas.",
+      "analyze": "Analizează cu AI",
+      "analyzing": "Citesc poza…",
+      "aiPicked": "AI a ales",
+      "aiPaused": "Vederea AI este offline.",
+      "aiPausedSub": "Salvăm poza și o poți analiza mai târziu.",
+      "aiUnavailable": "Analiza AI a pozei vine în curând.",
+      "skip": "Sari peste",
+      "finish": "Finalizează",
+      "back": "Înapoi"
     }
   },
   "today": {
@@ -234,6 +326,49 @@
         "hiking": "Drumeție",
         "table_tennis": "Tenis de masă"
       }
+    },
+    "greeting": "Astăzi",
+    "windowLabel": "Live · azi",
+    "weather": {
+      "clear": "Senin, 18°C"
+    },
+    "nearby": {
+      "label": "joacă astăzi"
+    },
+    "searching": {
+      "headline": "Te potrivim…",
+      "matchingLabel": "Potrivire",
+      "aiLabel": "Scor AI",
+      "aiDescription": "cântărește nivel, program și distanță",
+      "range": {
+        "nearby": "jucători {sport} în apropiere",
+        "available": "disponibili acum",
+        "fits": "potriviri de compatibilitate ridicată"
+      }
+    },
+    "found": {
+      "in": "Ești înăuntru",
+      "confirm": "Confirmă participarea",
+      "why": "De ce acest grup?",
+      "venueName": "Loc sugerat în apropiere",
+      "venueSub": "Căpitanul fixează locul · ~2 km"
+    },
+    "queued": {
+      "title": "Ești în coadă",
+      "searchingLabel": "Caut",
+      "planB": "Planul B",
+      "tryRun": "Încearcă o alergare în apropiere",
+      "createSmall": "Creează un eveniment mic"
+    },
+    "saidNo": {
+      "title": "Zi de odihnă marcată.",
+      "change": "Schimbă în Da"
+    },
+    "confirmed": {
+      "label": "Confirmat",
+      "startsLabel": "Începe curând",
+      "openChat": "Deschide chat",
+      "calendar": "Adaugă în calendar"
     }
   },
   "group": {
@@ -287,6 +422,44 @@
       "yoga": "Yoga",
       "hiking": "Drumeție",
       "table_tennis": "Tenis de masă"
+    },
+    "tabs": {
+      "plan": "Plan",
+      "chat": "Chat",
+      "players": "Jucători"
+    },
+    "header": {
+      "countSuffix": "{count}/{target}"
+    },
+    "plan": {
+      "whyThisGroup": "De ce această echipă?",
+      "reason": {
+        "distance": "În raza de distanță",
+        "sport": "Același sport",
+        "skill": "Mix de nivel echilibrat",
+        "size": "Mărime de grup potrivită"
+      },
+      "event": {
+        "proposed": "Eveniment propus",
+        "going": "Vin · {count}",
+        "maybe": "Poate · {count}",
+        "no": "Nu · {count}",
+        "open": "Deschide evenimentul",
+        "pickVenue": "Alege o locație",
+        "tapToSuggest": "Apasă pentru sugestii"
+      }
+    },
+    "players": {
+      "confirmParticipation": "Confirmă participarea",
+      "statusConfirmed": "Confirmat",
+      "statusMaybe": "Poate",
+      "statusPending": "În așteptare"
+    },
+    "chat": {
+      "empty": {
+        "title": "Niciun mesaj încă",
+        "body": "Spune când și unde îți convine."
+      }
     }
   },
   "event": {
@@ -370,12 +543,84 @@
       "yoga": "Yoga",
       "hiking": "Drumeție",
       "table_tennis": "Tenis de masă"
+    },
+    "tabs": {
+      "details": "Detalii",
+      "chat": "Chat eveniment",
+      "vote": "Vot"
+    },
+    "copyInvite": "Copiază invitația",
+    "inviteCopied": "Invitație copiată",
+    "inviteCopyError": "Nu s-a putut copia",
+    "icsToast": "Calendar descărcat",
+    "rsvp": {
+      "saved": "RSVP actualizat"
+    },
+    "mapPreviewLabel": "Previzualizare hartă",
+    "vote": {
+      "title": "Vot: alegeți o locație",
+      "closeVote": "Închide votul",
+      "closedNotice": "Votul este închis."
+    },
+    "captainReveal": {
+      "pillLabel": "Sugestie auto pentru căpitan",
+      "versionLabel": "auto · v1",
+      "headline": "Plan sugerat",
+      "reasoning": "8 membri au votat după 18:00, vremea este senină, iar locația este cea mai apropiată de centrul grupului.",
+      "confirmPlan": "Confirmă planul",
+      "startVote": "Pornește votul",
+      "suggestSomethingElse": "Sugerează altceva",
+      "suggestSomethingElseToast": "În curând",
+      "confirmedToast": "Plan confirmat"
     }
   },
   "demo": {
-    "title": "Placeholder pentru Mod juriu",
+    "eyebrow": "Mod juriu",
+    "title": "Dovadă live pentru punctaj.",
+    "body": "Fiecare rând duce la ecranul sau ruta care îl dovedește. Culorile sunt oneste: live, demo, fallback, în lucru.",
     "enabledBody": "Dovada demo este activată prin variabilă de mediu. Rândurile de scor rămân nerevendicate până când fazele următoare adaugă dovezi live sau seeded.",
-    "disabledBody": "Dovada demo este dezactivată prin variabilă de mediu. Rândurile de scor rămân nerevendicate până când fazele următoare adaugă dovezi live sau seeded."
+    "disabledBody": "Dovada demo este dezactivată prin variabilă de mediu. Rândurile de scor rămân nerevendicate până când fazele următoare adaugă dovezi live sau seeded.",
+    "health": {
+      "ariaLabel": "Statusul mediului demo",
+      "label": "Railway",
+      "up": "verde",
+      "down": "roșu",
+      "unknown": "galben",
+      "seed": "Seed demo",
+      "seedLoaded": "{users} useri · {groups} grupuri · {events} evenimente",
+      "seedEmpty": "Gol",
+      "aiCache": "Cache AI",
+      "aiCacheLoaded": "{count} intrări în cache",
+      "aiCacheEmpty": "Gol",
+      "build": "Build"
+    },
+    "controls": {
+      "seed": "Populează demo",
+      "seeding": "Se populează...",
+      "reset": "Resetează demo",
+      "resetting": "Se resetează...",
+      "scriptedFlow": "Deschide flux scriptat",
+      "resetTitle": "Resetezi datele demo?",
+      "resetBody": "Șterge doar rândurile demo. Conturile reale sunt protejate prin demo_run_id.",
+      "resetConfirm": "Resetează",
+      "cancel": "Anulează",
+      "toastSeedOk": "Populat",
+      "toastSeedFailed": "Populare eșuată",
+      "toastResetOk": "Reset făcut",
+      "toastResetFailed": "Reset eșuat",
+      "notWired": "Acțiunea nu este conectată încă - rulează scripts/seed-demo.ts din CLI."
+    },
+    "rubricLegend": {
+      "live": "Live",
+      "seeded": "Demo",
+      "fallback": "Fallback",
+      "pending": "În lucru"
+    },
+    "totals": {
+      "total": "Total",
+      "claimed": "Revendicat",
+      "max": "Maxim"
+    }
   },
   "invitePreview": {
     "back": "Înapoi la ShowUp2Move",
@@ -412,5 +657,338 @@
     "title": "Pagina nu a fost găsită",
     "body": "Această rută nu face parte din faza curentă ShowUp2Move.",
     "back": "Înapoi la ShowUp2Move"
+  },
+  "map": {
+    "title": "Locuri din apropiere",
+    "subtitle": "Terenuri publice din apropiere. Harta are nevoie de locația ta pentru a te plasa exact.",
+    "searchPlaceholder": "Caută locuri",
+    "useMyLocation": "Folosește locația mea",
+    "allSports": "Toate sporturile",
+    "directions": "Direcții",
+    "join": "Intră",
+    "startGame": "Începe un joc aici",
+    "locationDeniedTitle": "Locația indisponibilă",
+    "locationDeniedBody": "Putem afișa evenimente, dar nu le putem sorta după distanță.",
+    "privacyNotice": "Confidențialitate: nu salvăm niciodată adresa ta exactă. Punctele de pe hartă sunt doar locuri publice.",
+    "loadingMap": "Se încarcă harta",
+    "zoomIn": "Mărește",
+    "zoomOut": "Micșorează",
+    "recenter": "Recentrează",
+    "filtersLabel": "Filtrează locuri",
+    "timeToday": "Astăzi",
+    "timeTomorrow": "Mâine",
+    "distanceUnknown": "Distanță necunoscută",
+    "kmAway": "{km} km",
+    "priceFree": "Gratis",
+    "priceLow": "Cost mic",
+    "priceMedium": "Cost mediu",
+    "selectVenuePrompt": "Apasă un punct pentru detalii.",
+    "list": {
+      "header": "Locuri publice",
+      "fallbackHint": "Afișăm locuri din oraș."
+    },
+    "back": "Înapoi",
+    "sport": {
+      "football": "Fotbal",
+      "basketball": "Baschet",
+      "tennis": "Tenis",
+      "running": "Alergare",
+      "volleyball": "Volei",
+      "badminton": "Badminton",
+      "cycling": "Ciclism",
+      "yoga": "Yoga",
+      "hiking": "Drumeție",
+      "table_tennis": "Tenis de masă"
+    }
+  },
+  "notifications": {
+    "title": "Notificari",
+    "eyebrow": "Mesagerie",
+    "markAllRead": "Marcheaza toate citite",
+    "markRead": "Marcheaza citit",
+    "unreadCount": "{count} necitite",
+    "allCaughtUp": "Esti la zi",
+    "emptyTitle": "Esti la zi",
+    "emptyBody": "Aici vor aparea meciuri noi, voturi si actualizari de evenimente.",
+    "filters": {
+      "all": "Toate",
+      "unread": "Necitite",
+      "match": "Meci",
+      "vote": "Vot",
+      "event": "Eveniment",
+      "chat": "Chat"
+    },
+    "kinds": {
+      "matchReady": "Meci",
+      "voteClosing": "Vot",
+      "eventConfirmed": "Eveniment",
+      "chatMention": "Chat"
+    },
+    "bell": {
+      "label": "Notificari",
+      "labelUnread": "Notificari, {count} necitite"
+    },
+    "back": "Inapoi la Astazi"
+  },
+  "groupsList": {
+    "title": "Grupurile tale",
+    "subtitle": "Grupurile active din care faci parte.",
+    "captainBadge": "Căpitan",
+    "openGroup": "Deschide",
+    "memberCount": "{count}/{target} jucători",
+    "emptyTitle": "Niciun grup încă",
+    "emptyBody": "Răspunde la promptul de azi pentru a forma primul grup.",
+    "emptyAction": "Deschide Today"
+  },
+  "eventsList": {
+    "title": "Evenimentele tale",
+    "subtitle": "Evenimente viitoare și trecute la care participi.",
+    "upcoming": "Viitoare",
+    "past": "Trecute",
+    "all": "Toate",
+    "createNew": "Creează eveniment",
+    "emptyTitle": "Niciun eveniment",
+    "emptyBody": "Creează unul sau așteaptă matchul de azi.",
+    "emptyAction": "Creează eveniment",
+    "rsvp": {
+      "going": "Vin",
+      "maybe": "Poate",
+      "declined": "Refuzat"
+    }
+  },
+  "eventsNew": {
+    "title": "Creează eveniment",
+    "subtitle": "Pregătește un meci public.",
+    "sportLabel": "Sport",
+    "timeLabel": "Când",
+    "venueLabel": "Locație",
+    "venueSearch": "Caută locații",
+    "suggestedVenues": "Sugerate în apropiere",
+    "selectedVenue": "Locație selectată",
+    "submit": "Creează eveniment",
+    "comingSoon": "Crearea manuală de evenimente vine în curând. Căpitanii pot crea evenimente din planul grupului."
+  },
+  "settings": {
+    "title": "Setări",
+    "subtitle": "Profil, sporturi, locație, confidențialitate, reminder-e.",
+    "tabs": {
+      "profile": "Profil",
+      "sports": "Sporturi",
+      "location": "Locație",
+      "privacy": "Confidențialitate",
+      "reminders": "Reminder-e",
+      "integrations": "Integrări"
+    },
+    "profile": {
+      "title": "Profil",
+      "body": "Cum te văd ceilalți jucători.",
+      "fullNameLabel": "Nume afișat",
+      "bioLabel": "Bio scurt",
+      "save": "Salvează profilul",
+      "saved": "Profil salvat"
+    },
+    "sports": {
+      "title": "Sporturi",
+      "body": "Alege până la șase sporturi și nivelul tău.",
+      "empty": "Niciun sport selectat încă.",
+      "editHint": "Editează sporturile în onboarding deocamdată. Editare inline aici vine curând."
+    },
+    "location": {
+      "title": "Locație",
+      "body": "Oraș și raza de călătorie. Nu salvăm niciodată adresa exactă.",
+      "cityLabel": "Oraș",
+      "distanceLabel": "Raza (km)",
+      "editHint": "Editare inline a locației vine curând."
+    },
+    "privacy": {
+      "title": "Confidențialitate",
+      "body": "Decide ce văd ceilalți.",
+      "visibilityLabel": "Vizibilitate profil",
+      "public": "Public — oricine cu linkul",
+      "private": "Privat — doar membri din grupurile tale",
+      "approxLocation": "Doar locație aproximativă",
+      "approxLocationBody": "Locația ta de acasă este mereu rotunjită — nu apare niciodată exact.",
+      "alwaysOn": "Mereu activ"
+    },
+    "reminders": {
+      "title": "Reminder-e",
+      "body": "Te avertizăm despre prompt și evenimente.",
+      "email": "Reminder pe email curând",
+      "emailBody": "Apare odată ce Resend este conectat."
+    },
+    "integrations": {
+      "title": "Integrări",
+      "body": "Conectează servicii externe.",
+      "strava": "Conectează Strava — în curând",
+      "stravaBody": "OAuth/import Strava este pe traseul bonus."
+    }
+  },
+  "publicProfile": {
+    "title": "Profil public",
+    "private": "Acest profil este privat.",
+    "privateBody": "Doar membrii grupurilor comune îl pot vedea.",
+    "cityLabel": "Oraș",
+    "sportsLabel": "Sporturi",
+    "matchTitle": "Compatibilitate",
+    "matchSubtitle": "Match estimativ cu tine",
+    "matchBreakdown": {
+      "sport": "Sporturi comune",
+      "skill": "Match nivel",
+      "distance": "În raza ta"
+    },
+    "notFoundTitle": "Jucător negăsit",
+    "notFoundBody": "Acest username nu există sau a fost șters.",
+    "back": "Înapoi"
+  },
+  "judge": {
+    "eyebrow": "Mod jurat",
+    "title": "Dovadă pe punctaj, live.",
+    "body": "Fiecare rând duce la ecranul care îl dovedește. Culorile sunt oneste: live, demo, fallback, în lucru.",
+    "health": "Railway",
+    "healthUp": "verde",
+    "healthDown": "roșu",
+    "healthUnknown": "galben",
+    "seedLoaded": "{users} useri · {groups} grupuri · {events} evenimente",
+    "seedEmpty": "Gol",
+    "aiCache": "{count} intrări în cache",
+    "aiCacheEmpty": "Gol",
+    "build": "Build",
+    "controls": {
+      "seed": "Populează demo",
+      "seeding": "Se populează",
+      "reset": "Resetează demo",
+      "resetting": "Se resetează",
+      "scriptedFlow": "Deschide flux scriptat",
+      "resetTitle": "Resetezi datele demo?",
+      "resetBody": "Șterge doar rândurile demo. Conturile reale rămân.",
+      "resetConfirm": "Resetează",
+      "cancel": "Anulează",
+      "toastSeedOk": "Populat",
+      "toastSeedFailed": "Populare eșuată",
+      "toastResetOk": "Reset făcut",
+      "toastResetFailed": "Reset eșuat",
+      "notWired": "Acțiunea nu este conectată încă"
+    },
+    "legend": {
+      "live": "Live",
+      "seeded": "Demo",
+      "fallback": "Fallback",
+      "pending": "În lucru"
+    },
+    "totals": "Total",
+    "claimed": "Revendicat",
+    "max": "Maxim"
+  },
+  "landing": {
+    "nav": {
+      "login": "Autentificare",
+      "signup": "Înscrie-te"
+    },
+    "eyebrow": "Sport pe potrivă · Timișoara",
+    "headline": "Vino. Mișcă-te. Azi.",
+    "subhead": "ShowUp2Move te potrivește cu jucători din apropiere pentru fotbal, baschet, tenis și nu numai. AI-ul face potrivirea. Tu doar te prezinți.",
+    "cta": {
+      "primary": "Începe să joci",
+      "secondary": "Vezi demo"
+    },
+    "proof": {
+      "private": "Locație privată",
+      "venues": "Locuri reale",
+      "ai": "Potrivire AI"
+    },
+    "live": {
+      "title": "Produs real. Terenuri reale.",
+      "kicker": "Ce vei vedea",
+      "football": {
+        "title": "Fotbal azi",
+        "body": "12/14 în apropiere · 1.4 km"
+      },
+      "tennis": {
+        "title": "Alege terenul",
+        "body": "Vot în grup · 4 voturi"
+      },
+      "map": {
+        "title": "Locuri publice",
+        "body": "Sortate după distanță · vreme · preț"
+      }
+    },
+    "how": {
+      "kicker": "Cum funcționează",
+      "title": "Patru pași de la idee la fluier.",
+      "step1": {
+        "title": "Înscrie-te",
+        "body": "Utilizator + parolă. Un cod de recuperare, fără emailuri în plus."
+      },
+      "step2": {
+        "title": "Sporturi + locație",
+        "body": "Alege ce joci. Pune un punct aproximativ. Locația exactă rămâne privată."
+      },
+      "step3": {
+        "title": "Ieși azi?",
+        "body": "Un singur tap dimineața. Da — căutăm jucători din apropiere acum."
+      },
+      "step4": {
+        "title": "Potrivire + întâlnire",
+        "body": "Căpitanul creează evenimentul. Votezi locul. Vii. Începe meciul."
+      }
+    },
+    "why": {
+      "kicker": "De ce ShowUp2Move",
+      "title": "Făcut pentru energia de sâmbătă dimineața.",
+      "ai": {
+        "title": "Potrivire AI",
+        "body": "Găsești grupuri după sport, nivel și proximitate în secunde."
+      },
+      "venues": {
+        "title": "Locuri reale",
+        "body": "Sugestii cu vreme, preț și direcții."
+      },
+      "show": {
+        "title": "Doar vino",
+        "body": "Căpitanul creează evenimentul. Tu confirmi. Începe meciul."
+      }
+    },
+    "footer": {
+      "tagline": "ShowUp2Move. Potriviri spontane de sport în Timișoara.",
+      "demo": "Demo",
+      "github": "GitHub",
+      "privacy": "Confidențialitate (în curând)",
+      "copyright": "© 2026 ShowUp2Move · Practica de vară Haufe",
+      "builtIn": "Construit în Timișoara"
+    }
+  },
+  "leaderboard": {
+    "kicker": "Clasament",
+    "title": "Jucători săptămâna aceasta",
+    "body": "Punctele se acordă pentru prezență, conducere și serii. Clasament demonstrativ — clasamentul real vine cu telemetria potrivirilor.",
+    "col": {
+      "rank": "Loc",
+      "player": "Jucător",
+      "points": "Puncte"
+    },
+    "topGroups": "Grupuri de top",
+    "achievements": "Realizări deblocate",
+    "unlocked": "Deblocat",
+    "stub": "Date demonstrative · TODO",
+    "back": "Azi"
+  },
+  "calendar": {
+    "kicker": "Calendar",
+    "title": "Calendarul tău",
+    "body": "Evenimente confirmate. Fiecare rând exportă un .ics curat pentru Apple/Google Calendar.",
+    "upcoming": "Evenimente viitoare",
+    "empty": {
+      "title": "Niciun eveniment",
+      "body": "Spune da în Azi și îți găsim un grup. Evenimentele confirmate apar aici cu export rapid.",
+      "cta": "Deschide Azi"
+    },
+    "download": "Descarcă .ics",
+    "toast": "Fișier calendar gata",
+    "rsvp": {
+      "going": "Vin",
+      "tentative": "Posibil"
+    },
+    "stub": "Date demonstrative · TODO",
+    "back": "Azi"
   }
 }

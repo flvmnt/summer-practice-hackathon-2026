@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { AIMark } from "@/components/ui/AIMark";
 import { Glyph } from "@/components/ui/Glyph";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -111,6 +112,7 @@ export function ProfileForm({
   locale,
 }: ProfileFormProps) {
   const router = useRouter();
+  const t = useTranslations("onboarding.profile");
   const [fullName, setFullName] = useState(defaultFullName ?? "");
   const [bio, setBio] = useState(defaultBio ?? "");
   const [fullNameError, setFullNameError] = useState<string | undefined>();
@@ -127,7 +129,7 @@ export function ProfileForm({
 
   function handleSuggest() {
     if (!bio.trim()) {
-      setBioError("Add a short bio before continuing.");
+      setBioError(t("bioRequired"));
       return;
     }
     setBioError(undefined);
@@ -168,11 +170,11 @@ export function ProfileForm({
     const trimmedBio = bio.trim();
 
     if (!trimmedName) {
-      setFullNameError("Enter your full name to continue.");
+      setFullNameError(t("fullNameRequired"));
       return;
     }
     if (!trimmedBio) {
-      setBioError("Add a short bio before continuing.");
+      setBioError(t("bioRequired"));
       return;
     }
     if (bioOverLimit) {
@@ -194,8 +196,8 @@ export function ProfileForm({
         if (!nameMsg && !bioMsg) {
           setFormError(
             result.error === "unauthorized"
-              ? "Log in again before saving your profile."
-              : "Something went wrong. Try again.",
+              ? t("unauthorized")
+              : t("genericError"),
           );
         }
         return;
@@ -220,9 +222,9 @@ export function ProfileForm({
         <WizardMobileHeader
           step={1}
           total={4}
-          stepLabel="Step 1 of 4"
-          title="How should people see you?"
-          subtitle="Set your display name and bio."
+          stepLabel={t("stepLabel")}
+          title={t("title")}
+          subtitle={t("subtitle")}
         />
 
         {/* Full name */}
@@ -232,7 +234,7 @@ export function ProfileForm({
             className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
             style={{ color: "var(--ink-muted)" }}
           >
-            Full name
+            {t("fullName")}
           </label>
           <input
             id="profile-full-name"
@@ -242,7 +244,7 @@ export function ProfileForm({
             maxLength={NAME_MAX}
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            placeholder="Alex Ionescu"
+            placeholder={t("fullNamePlaceholder")}
             className="w-full text-[16px] leading-snug border-[1.5px] focus:outline-none"
             style={{
               padding: "12px 14px",
@@ -273,7 +275,7 @@ export function ProfileForm({
             className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
             style={{ color: "var(--ink-muted)" }}
           >
-            Username
+            {t("usernameLabel")}
           </span>
           <div
             className="inline-flex items-center gap-2 self-start px-3 py-2 text-[13px] font-semibold"
@@ -299,7 +301,7 @@ export function ProfileForm({
               className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
               style={{ color: "var(--ink-muted)" }}
             >
-              Short bio
+              {t("bio")}
             </label>
             <span
               className="mono text-[10px] font-bold"
@@ -318,7 +320,7 @@ export function ProfileForm({
             maxLength={BIO_MAX + 40}
             value={bio}
             onChange={(e) => setBio(e.target.value)}
-            placeholder="What do you play, when are you usually free, and what kind of group feels right?"
+            placeholder={t("bioPlaceholder")}
             className="w-full text-[16px] leading-snug border-[1.5px] focus:outline-none"
             style={{
               padding: "12px 14px",
@@ -371,7 +373,7 @@ export function ProfileForm({
           >
             <AIMark size={14} />
             <span>
-              {aiState === "loading" ? "Reading your bio…" : "Suggest sports"}
+              {aiState === "loading" ? t("aiThinking") : t("suggestSports")}
             </span>
           </button>
 
@@ -390,7 +392,7 @@ export function ProfileForm({
                 style={{ color: "var(--accent-deep)" }}
               >
                 <AIMark size={12} />
-                AI picked
+                {t("aiPicked")}
               </div>
               <div className="flex flex-wrap gap-x-2 gap-y-3">
                 {suggestions.map((suggestion, index) => {
@@ -460,13 +462,13 @@ export function ProfileForm({
                 style={{ color: "var(--alert)" }}
               >
                 <Glyph.spark size={14} />
-                AI is taking a break
+                {t("aiPaused")}
               </div>
               <p
                 className="mt-1 text-[12px]"
                 style={{ color: "var(--ink-muted)", lineHeight: 1.4 }}
               >
-                Pick sports manually on the next step.
+                {t("aiPausedSub")}
               </p>
             </div>
           ) : null}
@@ -484,9 +486,9 @@ export function ProfileForm({
       </div>
 
       <WizardStickyActionBar
-        secondaryLabel="Back"
+        secondaryLabel={t("back")}
         secondaryHref={`/${locale}`}
-        primaryLabel="Next"
+        primaryLabel={t("next")}
         primaryIcon={<Glyph.arrow size={14} />}
         onPrimary={handleNext}
         primaryLoading={isPending}
