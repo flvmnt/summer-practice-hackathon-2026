@@ -1,0 +1,23 @@
+{
+  "notifications.title": "Notifications",
+  "notifications.eyebrow": "Inbox",
+  "notifications.markAllRead": "Mark all read",
+  "notifications.markRead": "Mark read",
+  "notifications.unreadCount": "{count} unread",
+  "notifications.allCaughtUp": "All caught up",
+  "notifications.emptyTitle": "You're caught up",
+  "notifications.emptyBody": "New matches, votes, and event updates will appear here.",
+  "notifications.filters.all": "All",
+  "notifications.filters.unread": "Unread",
+  "notifications.filters.match": "Match",
+  "notifications.filters.vote": "Vote",
+  "notifications.filters.event": "Event",
+  "notifications.filters.chat": "Chat",
+  "notifications.kinds.matchReady": "Match",
+  "notifications.kinds.voteClosing": "Vote",
+  "notifications.kinds.eventConfirmed": "Event",
+  "notifications.kinds.chatMention": "Chat",
+  "notifications.bell.label": "Notifications",
+  "notifications.bell.labelUnread": "Notifications, {count} unread",
+  "notifications.back": "Back to Today"
+}

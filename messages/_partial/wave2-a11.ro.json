@@ -1,0 +1,23 @@
+{
+  "notifications.title": "Notificari",
+  "notifications.eyebrow": "Mesagerie",
+  "notifications.markAllRead": "Marcheaza toate citite",
+  "notifications.markRead": "Marcheaza citit",
+  "notifications.unreadCount": "{count} necitite",
+  "notifications.allCaughtUp": "Esti la zi",
+  "notifications.emptyTitle": "Esti la zi",
+  "notifications.emptyBody": "Aici vor aparea meciuri noi, voturi si actualizari de evenimente.",
+  "notifications.filters.all": "Toate",
+  "notifications.filters.unread": "Necitite",
+  "notifications.filters.match": "Meci",
+  "notifications.filters.vote": "Vot",
+  "notifications.filters.event": "Eveniment",
+  "notifications.filters.chat": "Chat",
+  "notifications.kinds.matchReady": "Meci",
+  "notifications.kinds.voteClosing": "Vot",
+  "notifications.kinds.eventConfirmed": "Eveniment",
+  "notifications.kinds.chatMention": "Chat",
+  "notifications.bell.label": "Notificari",
+  "notifications.bell.labelUnread": "Notificari, {count} necitite",
+  "notifications.back": "Inapoi la Astazi"
+}
