@@ -9,6 +9,7 @@ import {
   groupMembers,
   groups,
   messages,
+  userSports,
   users,
   venues,
   voteChoices,
@@ -58,6 +59,7 @@ export type GroupDetails = {
     status: string;
     username: string;
     fullName: string;
+    skillLevel: number;
   }>;
   messages: GroupMessage[];
   events: Array<{
@@ -252,10 +254,21 @@ export async function getGroupAction(input: {
       status: groupMembers.status,
       username: users.username,
       fullName: users.fullName,
+      profileSkillLevel: users.skillLevel,
+      sportSkillLevel: userSports.level,
     })
     .from(groupMembers)
     .innerJoin(users, eq(users.id, groupMembers.userId))
-    .where(eq(groupMembers.groupId, parsed.data.groupId));
+    .leftJoin(
+      userSports,
+      and(eq(userSports.userId, users.id), eq(userSports.sport, group.sport)),
+    )
+    .where(
+      and(
+        eq(groupMembers.groupId, parsed.data.groupId),
+        eq(groupMembers.status, "confirmed"),
+      ),
+    );
 
   const groupEvents = await getDb()
     .select({
@@ -279,7 +292,14 @@ export async function getGroupAction(input: {
       sizeTarget: group.sizeTarget,
       captainUserId: group.captainUserId,
     },
-    members,
+    members: members.map((member) => ({
+      userId: member.userId,
+      role: member.role,
+      status: member.status,
+      username: member.username,
+      fullName: member.fullName,
+      skillLevel: member.sportSkillLevel ?? member.profileSkillLevel ?? 3,
+    })),
     messages: await loadGroupMessages(parsed.data.groupId, parsed.data.limit),
     events: groupEvents.map((event) => ({
       id: event.id,

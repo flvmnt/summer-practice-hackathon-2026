@@ -247,6 +247,13 @@
     "system": "System",
     "captainBadge": "Captain",
     "playerBadge": "Player",
+    "teamBalance": {
+      "title": "Team balance",
+      "score": "Balanced enough score: {score}/100",
+      "team": "Team {team}: {average} avg skill",
+      "member": "{name} · level {level}",
+      "shuffle": "Shuffle teams"
+    },
     "planTitle": "Event plan",
     "eventListTitle": "{sport} plan",
     "noEvent": "The captain has not created an event plan yet.",

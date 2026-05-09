@@ -247,6 +247,13 @@
     "system": "Sistem",
     "captainBadge": "Căpitan",
     "playerBadge": "Jucător",
+    "teamBalance": {
+      "title": "Echilibrare echipe",
+      "score": "Scor de echilibru: {score}/100",
+      "team": "Echipa {team}: medie nivel {average}",
+      "member": "{name} · nivel {level}",
+      "shuffle": "Amestecă echipele"
+    },
     "planTitle": "Plan de eveniment",
     "eventListTitle": "Plan de {sport}",
     "noEvent": "Căpitanul nu a creat încă un plan de eveniment.",

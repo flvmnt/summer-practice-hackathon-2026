@@ -1,12 +1,18 @@
-import { CalendarDays, MessageSquareText, Trophy, UsersRound } from "lucide-react";
+import {
+  CalendarDays,
+  MessageSquareText,
+  Trophy,
+  UsersRound,
+} from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CreateGroupEventForm } from "@/components/group/CreateGroupEventForm";
 import { GroupChatForm } from "@/components/group/GroupChatForm";
+import { TeamBalancePanel } from "@/components/group/TeamBalancePanel";
 import type { AppLocale } from "@/i18n/routing";
 import { getGroupAction } from "@/lib/chat";
-import type { SportKey } from "@/lib/sports";
+import { SPORTS, type SportKey } from "@/lib/sports";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +33,7 @@ export default async function GroupPage({
   const group = groupResult.data.group;
   const members = groupResult.data.members;
   const captain = members.find((member) => member.userId === group.captainUserId);
+  const showTeamBalance = SPORTS[group.sport].evenTeams && members.length >= 2;
 
   return (
     <main className="mx-auto grid min-h-screen w-full max-w-6xl gap-5 px-5 py-6 lg:grid-cols-[0.75fr_1.25fr_0.85fr]">
@@ -132,6 +139,13 @@ export default async function GroupPage({
             </li>
           ))}
         </ul>
+        {showTeamBalance ? (
+          <TeamBalancePanel
+            canShuffle={groupResult.data.currentUserId === group.captainUserId}
+            copy={t.raw("teamBalance")}
+            members={members}
+          />
+        ) : null}
       </section>
     </main>
   );
