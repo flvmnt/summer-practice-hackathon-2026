@@ -114,7 +114,8 @@
       },
       "step1": "1. Identificare",
       "step2": "2. Parolă nouă",
-      "step3": "3. Gata"
+      "step3": "3. Gata",
+      "stepsAria": "Pași recuperare"
     },
     "brandLine": "Arată-te. Joacă.",
     "brandTagline": "Se formează un meci lângă tine.",
@@ -416,7 +417,7 @@
         "calendarPending": "Export calendar în pregătire"
       }
     },
-    "greeting": "Astăzi",
+    "greeting": "Acasă",
     "windowLabel": "Live · azi",
     "weather": {
       "clear": "Senin, 18°C"
@@ -952,7 +953,7 @@
   },
   "walkthrough": {
     "steps": {
-      "today": "Azi",
+      "today": "Acasă",
       "groups": "Grupuri",
       "group": "Grup",
       "event": "Eveniment",
@@ -1018,7 +1019,7 @@
     "retry": "Încearcă din nou",
     "backToToday": "Înapoi acasă",
     "sections": {
-      "today": "Today",
+      "today": "acasă",
       "groups": "grupurile tale",
       "group": "acest grup",
       "events": "evenimentele tale",
@@ -1033,7 +1034,7 @@
     "notifications": "Notificări",
     "notificationsWithCount": "Notificări, {count} necitite",
     "items": {
-      "today": "Today",
+      "today": "Acasă",
       "groups": "Grupuri",
       "create": "Creează",
       "map": "Hartă",
@@ -1043,6 +1044,7 @@
   "map": {
     "title": "Locuri din apropiere",
     "subtitle": "Terenuri publice din apropiere. Harta are nevoie de locația ta pentru a te plasa exact.",
+    "venueDetailsAria": "Detalii loc",
     "searchPlaceholder": "Caută locuri",
     "useMyLocation": "Folosește locația mea",
     "allSports": "Toate sporturile",
@@ -1112,7 +1114,7 @@
       "label": "Notificări",
       "labelUnread": "Notificări, {count} necitite"
     },
-    "back": "Înapoi la Astăzi",
+    "back": "Înapoi acasă",
     "emptyAction": "Înapoi acasă",
     "emptyFilteredTitle": "Nimic la acest filtru",
     "emptyFilteredBody": "Încearcă alt filtru sau arată toate.",
@@ -1167,6 +1169,7 @@
   "settings": {
     "title": "Setări",
     "subtitle": "Profil, sporturi, locație, confidențialitate, reminder-e.",
+    "sectionsAria": "Secțiuni setări",
     "tabs": {
       "profile": "Profil",
       "sports": "Sporturi",
@@ -1366,7 +1369,7 @@
     "achievements": "Realizări deblocate",
     "unlocked": "Deblocat",
     "stub": "Date demonstrative · TODO",
-    "back": "Azi"
+    "back": "Acasă"
   },
   "calendar": {
     "kicker": "Calendar",
@@ -1376,7 +1379,7 @@
     "empty": {
       "title": "Niciun eveniment",
       "body": "Spune da în Azi și îți găsim un grup. Evenimentele confirmate apar aici cu export rapid.",
-      "cta": "Deschide Azi"
+      "cta": "Deschide Acasă"
     },
     "download": "Descarcă .ics",
     "toast": "Fișier calendar gata",
@@ -1385,12 +1388,47 @@
       "tentative": "Posibil"
     },
     "stub": "Date demonstrative · TODO",
-    "back": "Azi"
+    "back": "Acasă"
   },
   "chat": {
     "connection": {
       "live": "Live",
       "reconnecting": "Se reconectează..."
+    }
+  },
+  "groups": {
+    "invite": {
+      "recommendations": {
+        "title": "Coechipieri recomandați",
+        "subtitle": "Sortați după potrivirea sportului, distanță și compatibilitate.",
+        "captainOnly": "Doar pentru căpitan",
+        "noResults": "Nu există candidați compatibili încă. Lasă promptul deschis și revino mai târziu.",
+        "matchPercent": "{score}% potrivire",
+        "distanceLabel": "{km} km distanță",
+        "sameCity": "Același oraș",
+        "explainAi": "Explicație AI",
+        "explainFallback": "Potrivire deterministă",
+        "invite": "Invită",
+        "inviting": "Se invită",
+        "invited": "Invitat",
+        "errors": {
+          "unauthorized": "Doar căpitanul poate invita coechipieri recomandați.",
+          "conflict": "Acest jucător este deja într-un alt grup pentru acest prompt.",
+          "notFound": "Acest jucător nu mai este disponibil.",
+          "generic": "Invitația nu a putut fi trimisă. Încearcă din nou."
+        }
+      }
+    }
+  },
+  "ui": {
+    "sheet": {
+      "close": "Închide panoul"
+    },
+    "dialog": {
+      "close": "Închide dialogul"
+    },
+    "toast": {
+      "dismiss": "Închide notificarea"
     }
   }
 }

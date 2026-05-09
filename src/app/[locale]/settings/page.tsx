@@ -33,6 +33,7 @@ const COPY = {
     eyebrow: "Settings",
     title: "Settings",
     subtitle: "Profile, sports, location, privacy, integrations.",
+    sectionsAria: "Settings sections",
     tabs: {
       profile: "Profile",
       sports: "Sports",
@@ -118,6 +119,7 @@ const COPY = {
     eyebrow: "Setări",
     title: "Setări",
     subtitle: "Profil, sporturi, locație, confidențialitate, integrări.",
+    sectionsAria: "Secțiuni setări",
     tabs: {
       profile: "Profil",
       sports: "Sporturi",
@@ -375,7 +377,11 @@ export default async function SettingsPage({
       </header>
 
       <div className="md:px-8 md:pt-6">
-        <SettingsTabs sections={sectionDefs} current={section} />
+        <SettingsTabs
+          sections={sectionDefs}
+          current={section}
+          ariaLabel={copy.sectionsAria}
+        />
       </div>
 
       <div className="mx-auto w-full max-w-3xl px-5 pt-4 md:px-8 md:pt-6">

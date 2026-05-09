@@ -1,6 +1,6 @@
 "use client";
 
-import type { StyleSpecification } from "maplibre-gl";
+import maplibregl, { type StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef, useState } from "react";
 import { MapBg } from "./MapBg";
@@ -29,17 +29,11 @@ const SPORT_LABEL: Record<SportKey, string> = {
   table_tennis: "🏓",
 };
 
-/**
- * Inner map renderer - mounts MapLibre with real tiles. Uses MapTiler vector
- * style when NEXT_PUBLIC_MAPTILER_KEY is set, otherwise falls back to keyless
- * OpenStreetMap raster tiles. The `MapBg` SVG only kicks in if MapLibre itself
- * fails to initialise (network-free or CSP-blocked environments).
- */
-const OSM_RASTER_STYLE = {
-  version: 8 as const,
+const OSM_RASTER_STYLE: StyleSpecification = {
+  version: 8,
   sources: {
     osm: {
-      type: "raster" as const,
+      type: "raster",
       tiles: [
         "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
         "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -50,9 +44,15 @@ const OSM_RASTER_STYLE = {
       maxzoom: 19,
     },
   },
-  layers: [{ id: "osm", type: "raster" as const, source: "osm" }],
+  layers: [{ id: "osm", type: "raster", source: "osm" }],
 };
 
+/**
+ * Inner map renderer. Init happens once per `tileKey`; venues/userLocation/
+ * selection updates are pushed into the live map instance via separate
+ * effects so the map is never torn down mid-load when geolocation resolves
+ * or the venue filter changes. Mirrors the pattern in /Users/flv/curbe.
+ */
 export function MapInner({
   venues,
   selectedVenueId,
@@ -60,119 +60,234 @@ export function MapInner({
   userLocation,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [mapLibreReady, setMapLibreReady] = useState(false);
-  const [mapLibreFailed, setMapLibreFailed] = useState(false);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const markersRef = useRef<Map<string, maplibregl.Marker>>(new Map());
+  const onSelectRef = useRef(onSelectVenue);
+  const [mapReady, setMapReady] = useState(false);
+  const [mapFailed, setMapFailed] = useState(false);
+  const [reinitKey, setReinitKey] = useState(0);
 
   const tileKey = process.env.NEXT_PUBLIC_MAPTILER_KEY;
 
   useEffect(() => {
-    if (!containerRef.current) return;
-    let map: { remove: () => void } | null = null;
+    onSelectRef.current = onSelectVenue;
+  }, [onSelectVenue]);
+
+  // bfcache + WebGL-context-lost recovery (same pattern as curbe).
+  useEffect(() => {
+    function reinit() {
+      const map = mapRef.current;
+      if (map) {
+        try {
+          map.remove();
+        } catch {
+          // already torn down; ignore
+        }
+      }
+      mapRef.current = null;
+      markersRef.current.clear();
+      setMapReady(false);
+      setReinitKey((k) => k + 1);
+    }
+    function onPageShow(e: PageTransitionEvent) {
+      if (e.persisted) reinit();
+    }
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
+
+  // Init map once (per tileKey/reinit). Does NOT depend on venues/userLocation
+  // so geolocation resolving or filter chips changing won't tear down a
+  // half-loaded map.
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || mapRef.current) return;
     let cancelled = false;
 
-    (async () => {
-      try {
-        const maplibre = await import("maplibre-gl");
-        if (cancelled || !containerRef.current) return;
+    const style: string | StyleSpecification = tileKey
+      ? `https://api.maptiler.com/maps/dataviz/style.json?key=${tileKey}`
+      : OSM_RASTER_STYLE;
 
-        const center = userLocation ?? DEFAULT_CENTER;
-        const style: string | StyleSpecification = tileKey
-          ? `https://api.maptiler.com/maps/dataviz/style.json?key=${tileKey}`
-          : (OSM_RASTER_STYLE as unknown as StyleSpecification);
-        const instance = new maplibre.Map({
-          container: containerRef.current,
-          style,
-          center: [center.lon, center.lat],
-          zoom: 13,
-          attributionControl: { compact: true },
-        });
-        instance.addControl(new maplibre.NavigationControl({ visualizePitch: false }), "top-right");
-
-        instance.on("load", () => {
-          if (cancelled) return;
-          for (const venue of venues) {
-            const el = document.createElement("button");
-            el.type = "button";
-            el.setAttribute("aria-label", venue.name);
-            el.style.width = "32px";
-            el.style.height = "32px";
-            el.style.borderRadius = "999px";
-            el.style.border = "2px solid white";
-            el.style.cursor = "pointer";
-            el.style.background = venue.eventAt ? "var(--accent)" : "var(--field)";
-            el.style.boxShadow = "0 4px 10px rgba(14,26,31,0.25)";
-            el.style.color = "white";
-            el.style.fontSize = "14px";
-            el.textContent = SPORT_LABEL[venue.sport] ?? "•";
-            el.addEventListener("click", () => onSelectVenue(venue.id));
-            new maplibre.Marker({ element: el })
-              .setLngLat([venue.lon, venue.lat])
-              .addTo(instance);
-          }
-          setMapLibreReady(true);
-        });
-
-        instance.on("error", () => {
-          if (!cancelled) setMapLibreFailed(true);
-        });
-
-        map = instance;
-
-        // Safety net: if MapLibre never fires `load` (CSP-blocked tiles,
-        // CORS reject, missing CSS dimensions), fall back to the SVG bg
-        // after 6s instead of leaving the user staring at a blank tan box.
-        window.setTimeout(() => {
-          if (cancelled) return;
-          setMapLibreReady((ready) => {
-            if (!ready) setMapLibreFailed(true);
-            return ready;
-          });
-        }, 6000);
-      } catch {
-        if (!cancelled) setMapLibreFailed(true);
+    let instance: maplibregl.Map;
+    try {
+      instance = new maplibregl.Map({
+        container,
+        style,
+        center: [DEFAULT_CENTER.lon, DEFAULT_CENTER.lat],
+        zoom: 13,
+        attributionControl: { compact: true },
+        canvasContextAttributes: { preserveDrawingBuffer: true },
+      });
+    } catch {
+      if (!cancelled) {
+        queueMicrotask(() => setMapFailed(true));
       }
-    })();
+      return;
+    }
+    mapRef.current = instance;
+    instance.addControl(
+      new maplibregl.NavigationControl({ visualizePitch: false }),
+      "top-right",
+    );
+
+    instance.on("load", () => {
+      if (cancelled) return;
+      setMapReady(true);
+      // Resize once after first paint so an initially-zero-height container
+      // (laid out after the map mounted) gets re-measured.
+      requestAnimationFrame(() => instance.resize());
+    });
+    instance.on("error", () => {
+      if (!cancelled) setMapFailed(true);
+    });
+    function onContextLost(e: Event) {
+      e.preventDefault();
+      try {
+        instance.remove();
+      } catch {
+        // ignore
+      }
+      mapRef.current = null;
+      markersRef.current.clear();
+      setMapReady(false);
+      setReinitKey((k) => k + 1);
+    }
+    instance.getCanvas().addEventListener("webglcontextlost", onContextLost);
+
+    // Safety net: if `load` never fires (CSP, offline, broken tile host),
+    // fall back to the SVG bg after 6s.
+    const failTimer = window.setTimeout(() => {
+      if (!cancelled && !mapRef.current?.loaded()) setMapFailed(true);
+    }, 6000);
+
+    // ResizeObserver: tab-switching to /map can leave the canvas at the wrong
+    // size if the parent flexbox slot was 0px when init ran. Force a resize
+    // whenever the container resizes.
+    const ro = new ResizeObserver(() => {
+      mapRef.current?.resize();
+    });
+    ro.observe(container);
 
     return () => {
       cancelled = true;
-      map?.remove();
+      window.clearTimeout(failTimer);
+      ro.disconnect();
+      try {
+        instance.getCanvas().removeEventListener("webglcontextlost", onContextLost);
+      } catch {
+        // canvas already gone
+      }
+      try {
+        instance.remove();
+      } catch {
+        // ignore
+      }
+      mapRef.current = null;
+      markersRef.current.clear();
     };
-  }, [tileKey, venues, onSelectVenue, userLocation]);
+  }, [tileKey, reinitKey]);
 
-  // Recenter when selected venue changes (real-map path only).
+  // Sync markers with the venues prop. Add new, remove stale, recolor
+  // existing — never tear down the map.
   useEffect(() => {
-    // No-op placeholder; real-map recenter happens above on load.
-    void selectedVenueId;
-  }, [selectedVenueId]);
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    const markers = markersRef.current;
+    const seen = new Set<string>();
 
-  if (!mapLibreFailed) {
+    for (const venue of venues) {
+      seen.add(venue.id);
+      let marker = markers.get(venue.id);
+      if (!marker) {
+        const el = document.createElement("button");
+        el.type = "button";
+        el.setAttribute("aria-label", venue.name);
+        el.style.width = "32px";
+        el.style.height = "32px";
+        el.style.borderRadius = "999px";
+        el.style.border = "2px solid white";
+        el.style.cursor = "pointer";
+        el.style.boxShadow = "0 4px 10px rgba(14,26,31,0.25)";
+        el.style.color = "white";
+        el.style.fontSize = "14px";
+        el.textContent = SPORT_LABEL[venue.sport] ?? "•";
+        el.addEventListener("click", () => onSelectRef.current(venue.id));
+        marker = new maplibregl.Marker({ element: el })
+          .setLngLat([venue.lon, venue.lat])
+          .addTo(map);
+        markers.set(venue.id, marker);
+      } else {
+        marker.setLngLat([venue.lon, venue.lat]);
+      }
+      const isSelected = venue.id === selectedVenueId;
+      const el = marker.getElement();
+      el.style.background = venue.eventAt
+        ? "var(--accent)"
+        : isSelected
+          ? "var(--accent-deep)"
+          : "var(--field)";
+      el.style.transform = isSelected ? "scale(1.15)" : "";
+    }
+    for (const [id, marker] of markers) {
+      if (!seen.has(id)) {
+        marker.remove();
+        markers.delete(id);
+      }
+    }
+  }, [venues, selectedVenueId, mapReady]);
+
+  // Recenter when the user location resolves (or selected venue changes).
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    if (selectedVenueId) {
+      const v = venues.find((x) => x.id === selectedVenueId);
+      if (v) {
+        map.flyTo({ center: [v.lon, v.lat], zoom: 14, duration: 600 });
+        return;
+      }
+    }
+    const center = userLocation ?? DEFAULT_CENTER;
+    map.flyTo({ center: [center.lon, center.lat], zoom: 13, duration: 600 });
+  }, [userLocation, selectedVenueId, venues, mapReady]);
+
+  if (!mapFailed) {
     return (
-      <div className="relative h-full w-full" style={{ background: "var(--bg-alt)" }}>
+      <div
+        className="relative h-full w-full"
+        style={{ background: "var(--bg-alt)" }}
+      >
         <div ref={containerRef} className="absolute inset-0" />
-        {!mapLibreReady ? (
+        {!mapReady ? (
           <div
             aria-hidden
-            className="absolute inset-0"
+            className="absolute inset-0 grid place-items-center"
             style={{ background: "var(--bg-alt)" }}
-          />
+          >
+            <div
+              className="h-8 w-8 animate-spin rounded-full border-2 border-t-transparent"
+              style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }}
+            />
+          </div>
         ) : null}
       </div>
     );
   }
 
-  // SVG fallback: project lat/lon → viewport based on a small bounding box
-  // around the chosen center. Pins are clickable.
+  // SVG fallback when MapLibre cannot initialise (offline / CSP / WebGL off).
   const center = userLocation ?? DEFAULT_CENTER;
   const VIEW_W = 390;
   const VIEW_H = 768;
-  // ~1.6 km half-span horizontally, 3 km vertically
   const SPAN_LON = 0.022;
   const SPAN_LAT = 0.014;
 
   function project(lat: number, lon: number) {
     const x = ((lon - center.lon) / SPAN_LON) * (VIEW_W / 2) + VIEW_W / 2;
     const y = -((lat - center.lat) / SPAN_LAT) * (VIEW_H / 2) + VIEW_H / 2;
-    return { x: Math.max(20, Math.min(VIEW_W - 20, x)), y: Math.max(40, Math.min(VIEW_H - 40, y)) };
+    return {
+      x: Math.max(20, Math.min(VIEW_W - 20, x)),
+      y: Math.max(40, Math.min(VIEW_H - 40, y)),
+    };
   }
 
   return (

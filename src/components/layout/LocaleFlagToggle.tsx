@@ -103,14 +103,15 @@ export function LocaleFlagToggle({
           style={{
             position: "absolute",
             right: 0,
-            bottom: `calc(100% + 6px)`,
+            top: `calc(100% + 6px)`,
             minWidth: 160,
+            maxWidth: "min(240px, calc(100vw - 16px))",
             background: "var(--surface)",
             border: "1px solid var(--line)",
             borderRadius: "var(--r-card)",
             boxShadow: "var(--shadow-3)",
             padding: 4,
-            zIndex: 30,
+            zIndex: 50,
           }}
         >
           {LOCALES.map((option) => {
