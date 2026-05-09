@@ -141,7 +141,6 @@ export function Hero({ locale, demoEnabled }: Props) {
                 }}
               >
                 Start playing
-                <Glyph.arrow size={18} />
               </Link>
               <Link
                 href={demoHref}
