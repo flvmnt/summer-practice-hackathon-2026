@@ -90,6 +90,174 @@ const DEMO_USERS: DemoUserSeed[] = [
       { sport: "volleyball", level: 3 },
     ],
   },
+  {
+    username: "demo_andrei",
+    fullName: "Andrei Dumitru",
+    bio: "Five-a-side football regular, Sunday hikes.",
+    city: "Timisoara",
+    homeLat: 45.7569,
+    homeLng: 21.2143,
+    maxDistanceKm: 6,
+    skillLevel: 4,
+    sports: [
+      { sport: "football", level: 4 },
+      { sport: "hiking", level: 3 },
+    ],
+  },
+  {
+    username: "demo_elena",
+    fullName: "Elena Vasilescu",
+    bio: "Defender on a women-friendly football team, also yoga.",
+    city: "Timisoara",
+    homeLat: 45.7612,
+    homeLng: 21.2305,
+    maxDistanceKm: 6,
+    skillLevel: 3,
+    sports: [
+      { sport: "football", level: 3 },
+      { sport: "yoga", level: 2 },
+    ],
+  },
+  {
+    username: "demo_mihai",
+    fullName: "Mihai Georgescu",
+    bio: "Goalkeeper and table tennis on weekends.",
+    city: "Timisoara",
+    homeLat: 45.7437,
+    homeLng: 21.2342,
+    maxDistanceKm: 7,
+    skillLevel: 4,
+    sports: [
+      { sport: "football", level: 4 },
+      { sport: "table_tennis", level: 3 },
+    ],
+  },
+  {
+    username: "demo_cristina",
+    fullName: "Cristina Munteanu",
+    bio: "Casual football, badminton league after work.",
+    city: "Timisoara",
+    homeLat: 45.7681,
+    homeLng: 21.2218,
+    maxDistanceKm: 6,
+    skillLevel: 3,
+    sports: [
+      { sport: "football", level: 3 },
+      { sport: "badminton", level: 3 },
+    ],
+  },
+  {
+    username: "demo_vlad",
+    fullName: "Vlad Stoica",
+    bio: "Wing forward, also basketball pickup.",
+    city: "Timisoara",
+    homeLat: 45.7355,
+    homeLng: 21.2102,
+    maxDistanceKm: 7,
+    skillLevel: 4,
+    sports: [
+      { sport: "football", level: 4 },
+      { sport: "basketball", level: 3 },
+    ],
+  },
+  {
+    username: "demo_diana",
+    fullName: "Diana Lupu",
+    bio: "Mid-skill football, big into cycling on weekends.",
+    city: "Timisoara",
+    homeLat: 45.7702,
+    homeLng: 21.2487,
+    maxDistanceKm: 8,
+    skillLevel: 3,
+    sports: [
+      { sport: "football", level: 3 },
+      { sport: "cycling", level: 4 },
+    ],
+  },
+  {
+    username: "demo_tudor",
+    fullName: "Tudor Pavel",
+    bio: "Striker, plus basketball when teams need a sub.",
+    city: "Timisoara",
+    homeLat: 45.7423,
+    homeLng: 21.2025,
+    maxDistanceKm: 6,
+    skillLevel: 4,
+    sports: [
+      { sport: "football", level: 4 },
+      { sport: "basketball", level: 3 },
+    ],
+  },
+  {
+    username: "demo_oana",
+    fullName: "Oana Tanase",
+    bio: "Football and tennis, both casual.",
+    city: "Timisoara",
+    homeLat: 45.7588,
+    homeLng: 21.2047,
+    maxDistanceKm: 5,
+    skillLevel: 3,
+    sports: [
+      { sport: "football", level: 3 },
+      { sport: "tennis", level: 2 },
+    ],
+  },
+  {
+    username: "demo_bogdan",
+    fullName: "Bogdan Iliescu",
+    bio: "Basketball captain, occasional volleyball.",
+    city: "Timisoara",
+    homeLat: 45.7464,
+    homeLng: 21.2391,
+    maxDistanceKm: 6,
+    skillLevel: 4,
+    sports: [
+      { sport: "basketball", level: 4 },
+      { sport: "volleyball", level: 3 },
+    ],
+  },
+  {
+    username: "demo_raluca",
+    fullName: "Raluca Stoian",
+    bio: "Tennis 4x/week, plus casual running.",
+    city: "Timisoara",
+    homeLat: 45.7501,
+    homeLng: 21.2154,
+    maxDistanceKm: 5,
+    skillLevel: 4,
+    sports: [
+      { sport: "tennis", level: 4 },
+      { sport: "running", level: 3 },
+    ],
+  },
+  {
+    username: "demo_sorin",
+    fullName: "Sorin Albu",
+    bio: "Trail running and group hikes around Banat.",
+    city: "Timisoara",
+    homeLat: 45.7669,
+    homeLng: 21.2389,
+    maxDistanceKm: 8,
+    skillLevel: 3,
+    sports: [
+      { sport: "running", level: 4 },
+      { sport: "hiking", level: 3 },
+    ],
+  },
+  {
+    username: "demo_gabriela",
+    fullName: "Gabriela Petre",
+    bio: "Yoga 3x/week, occasional badminton with friends.",
+    city: "Timisoara",
+    homeLat: 45.7556,
+    homeLng: 21.2109,
+    maxDistanceKm: 5,
+    skillLevel: 3,
+    sports: [
+      { sport: "yoga", level: 4 },
+      { sport: "badminton", level: 2 },
+    ],
+  },
 ];
 
 const DEMO_VENUES = [
@@ -238,20 +406,32 @@ export async function seedDemo(
       .returning({ id: prompts.id });
     const promptId = insertedPrompt!.id;
 
-    await tx.insert(availabilityResponses).values(
-      DEMO_USERS.map((seed) => ({
-        demoRunId: activeDemoRunId,
-        promptId,
-        userId: userIdByUsername.get(seed.username)!,
-        answer: "yes" as const,
-        sportPrefs: ["football"],
-        lat: seed.homeLat.toFixed(6),
-        lng: seed.homeLng.toFixed(6),
-        maxDistanceKm: seed.maxDistanceKm,
-      })),
+    const footballSeeds = DEMO_USERS.filter((seed) =>
+      seed.sports.some((entry) => entry.sport === "football"),
     );
 
-    const captainUserId = userIdByUsername.get(DEMO_USERS[0]!.username)!;
+    await tx.insert(availabilityResponses).values(
+      DEMO_USERS.map((seed) => {
+        const prefs = seed.sports.some((entry) => entry.sport === "football")
+          ? ["football"]
+          : seed.sports.map((entry) => entry.sport);
+        return {
+          demoRunId: activeDemoRunId,
+          promptId,
+          userId: userIdByUsername.get(seed.username)!,
+          answer: "yes" as const,
+          sportPrefs: prefs,
+          lat: seed.homeLat.toFixed(6),
+          lng: seed.homeLng.toFixed(6),
+          maxDistanceKm: seed.maxDistanceKm,
+        };
+      }),
+    );
+
+    const captainSeed = footballSeeds[0]!;
+    const captainUserId = userIdByUsername.get(captainSeed.username)!;
+    const FOOTBALL_SIZE_IDEAL = 12;
+    const groupRoster = footballSeeds.slice(0, FOOTBALL_SIZE_IDEAL);
     const [insertedGroup] = await tx
       .insert(groups)
       .values({
@@ -261,7 +441,7 @@ export async function seedDemo(
         city: "Timisoara",
         centerLat: TIMISOARA.lat.toFixed(6),
         centerLng: TIMISOARA.lng.toFixed(6),
-        sizeTarget: DEMO_USERS.length,
+        sizeTarget: groupRoster.length,
         status: "active",
         captainUserId,
       })
@@ -269,7 +449,7 @@ export async function seedDemo(
     const groupId = insertedGroup!.id;
 
     await tx.insert(groupMembers).values(
-      DEMO_USERS.map((seed, idx) => ({
+      groupRoster.map((seed, idx) => ({
         demoRunId: activeDemoRunId,
         groupId,
         promptId,
@@ -297,7 +477,7 @@ export async function seedDemo(
     const eventId = insertedEvent!.id;
 
     await tx.insert(eventAttendees).values(
-      DEMO_USERS.map((seed) => ({
+      groupRoster.map((seed) => ({
         eventId,
         userId: userIdByUsername.get(seed.username)!,
         status: "going",

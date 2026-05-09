@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { Glyph } from "@/components/ui/Glyph";
 import { Pill } from "@/components/ui/Pill";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { ProfilePhotoEditor } from "@/components/settings/ProfilePhotoEditor";
 import { SettingsSection } from "@/components/settings/SettingsSection";
 import {
   togglePublicVisibilityAction,
@@ -53,6 +54,9 @@ type Copy = {
   publicHint: string;
   privateHint: string;
   approxLocationBody: string;
+  photoChangeLabel: string;
+  photoUploadingLabel: string;
+  photoErrorTooLarge: string;
 };
 
 const BIO_MAX = 240;
@@ -223,6 +227,7 @@ export type InlineEditPanelsProps = {
   initial: {
     fullName: string;
     bio: string | null;
+    photoUrl: string | null;
     city: string | null;
     homeLat: string | null;
     homeLng: string | null;
@@ -244,6 +249,7 @@ export function InlineEditPanels(props: InlineEditPanelsProps) {
         <ProfileEditor
           fullName={props.initial.fullName}
           bio={props.initial.bio}
+          photoUrl={props.initial.photoUrl}
           copy={props.copy}
         />
       </SettingsSection>
@@ -291,10 +297,12 @@ export function InlineEditPanels(props: InlineEditPanelsProps) {
 function ProfileEditor({
   fullName: initialFullName,
   bio: initialBio,
+  photoUrl,
   copy,
 }: {
   fullName: string;
   bio: string | null;
+  photoUrl: string | null;
   copy: Copy;
 }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -348,7 +356,17 @@ function ProfileEditor({
 
   if (!isEditing) {
     return (
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
+        <ProfilePhotoEditor
+          fullName={savedFullName}
+          initialPhotoUrl={photoUrl}
+          copy={{
+            changeLabel: copy.photoChangeLabel,
+            uploadingLabel: copy.photoUploadingLabel,
+            errorGeneric: copy.errorGeneric,
+            errorTooLarge: copy.photoErrorTooLarge,
+          }}
+        />
         <div className="flex flex-col gap-2">
           <ReadField label={copy.fullNameLabel} value={savedFullName} />
           <ReadField

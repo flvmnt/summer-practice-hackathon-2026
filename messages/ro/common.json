@@ -844,60 +844,60 @@
           "note": "Starea de potrivire apelează confirmMembershipAction inainte de deschiderea grupului."
         },
         "compatibility-explanation": {
-          "label": "Explicatie compatibilitate AI",
+          "label": "Explicație compatibilitate AI",
           "note": "Profilurile publice apelează scorul de compatibilitate prin Groq când este configurat; fără output AI seedat."
         },
         "group-screen": {
           "label": "Ecran grup cu taburi mobile",
-          "note": "Taburi Plan / Chat / Jucatori; pastila capitan; panou echilibru echipe."
+          "note": "Taburi Plan / Chat / Jucători; pastilă căpitan; panou echilibru echipe."
         },
         "group-chat": {
           "label": "Chat de grup realtime (SSE)",
-          "note": "Chatul de grup persistent este live. Dovada streamului SSE rămâne in lucru."
+          "note": "Chatul de grup persistent este live. Dovada streamului SSE rămâne în lucru."
         },
         "manual-event": {
-          "label": "Creare eveniment de grup de catre capitan",
-          "note": "Crearea evenimentelor legate de grup este conectata; evenimentele publice rămân in afara scopului."
+          "label": "Creare eveniment de grup de către căpitan",
+          "note": "Crearea evenimentelor legate de grup este conectată; evenimentele publice rămân în afara scopului."
         },
         "event-chat": {
           "label": "Chat pe eveniment (separat de grup)",
           "note": "Cheie eventId; izolat de chatul de grup."
         },
         "captain-assignment": {
-          "label": "Atribuire automata a capitanului",
-          "note": "Selectia determinista a capitanului (cel mai rapid răspuns) este salvata pe grup."
+          "label": "Atribuire automată a căpitanului",
+          "note": "Selecția deterministă a căpitanului (cel mai rapid răspuns) este salvată pe grup."
         },
         "auto-event-setup": {
-          "label": "Setare automata eveniment + Brief Capitan AI",
+          "label": "Setare automată eveniment + Brief Căpitan AI",
           "note": "Pagina de eveniment apelează generateCaptainBrief cu fallback determinist când Groq nu răspunde."
         },
         "voting": {
           "label": "Vot / sondaj de grup",
-          "note": "Voturi live numarate; capitanul poate decide manual ca fallback."
+          "note": "Voturi live numărate; căpitanul poate decide manual ca fallback."
         },
         "team-balance": {
           "label": "Echilibrare echipe după skill",
           "note": "Panou cu echipe echilibrate prin snake-draft."
         },
         "venue-suggestions": {
-          "label": "Sugestii terenuri cu distanță + nivel de pret",
-          "note": "Baza de date de terenuri seedata + sortare după distanță + intrare manuala de catre capitan ca fallback."
+          "label": "Sugestii terenuri cu distanță + nivel de preț",
+          "note": "Bază de date de terenuri seedată + sortare după distanță + intrare manuală de către căpitan ca fallback."
         },
         "maps-fallback": {
           "label": "Harta MapLibre + lista fallback + direcții",
-          "note": "Incarcare lazy MapLibre; fallback lista când locatia e refuzata; linkuri de direcții."
+          "note": "Încărcare lazy MapLibre; fallback listă când locația e refuzată; linkuri de direcții."
         },
         "weather-aware": {
-          "label": "Recomandari in functie de vreme (Open-Meteo)",
-          "note": "Open-Meteo cu reguli pentru ploaie/vant/frig; fallback din cache daca API-ul intarzie."
+          "label": "Recomandări în funcție de vreme (Open-Meteo)",
+          "note": "Open-Meteo cu reguli pentru ploaie/vânt/frig; fallback din cache dacă API-ul întârzie."
         },
         "ai-bio-extraction": {
           "label": "Extragere AI sporturi din bio",
-          "note": "Apeleaza extracția text Groq pe bio-uri reale când GROQ_API_KEY este configurat; fără output AI seedat."
+          "note": "Apelează extracția text Groq pe bio-uri reale când GROQ_API_KEY este configurat; fără output AI seedat."
         },
         "ai-photo-extraction": {
-          "label": "Extragere AI sporturi din poza",
-          "note": "Butonul de analiza apelează Groq vision pe imaginea încărcată când este configurat; fallback-ul offline nu inventeaza sugestii."
+          "label": "Extragere AI sporturi din poză",
+          "note": "Butonul de analiză apelează Groq vision pe imaginea încărcată când este configurat; fallback-ul offline nu inventează sugestii."
         },
         "ai-compatibility-score": {
           "label": "Scor compatibilitate AI (cache)",

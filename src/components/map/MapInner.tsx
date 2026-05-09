@@ -1,6 +1,7 @@
 "use client";
 
 import type { StyleSpecification } from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef, useState } from "react";
 import { MapBg } from "./MapBg";
 import { MapPin } from "./MapPin";
@@ -72,9 +73,6 @@ export function MapInner({
     (async () => {
       try {
         const maplibre = await import("maplibre-gl");
-        await import("maplibre-gl/dist/maplibre-gl.css").catch(() => {
-          /* CSS may already be bundled or unavailable; ignore. */
-        });
         if (cancelled || !containerRef.current) return;
 
         const center = userLocation ?? DEFAULT_CENTER;

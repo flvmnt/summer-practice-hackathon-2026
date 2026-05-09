@@ -95,6 +95,9 @@ const COPY = {
       privateHint: "Only members of your groups can see your profile.",
       approxLocationBody:
         "We always round and jitter your home - it never appears precisely on the map.",
+      photoChangeLabel: "Change photo",
+      photoUploadingLabel: "Uploading...",
+      photoErrorTooLarge: "Image is too large. Use under 8 MB.",
       sportLabels: {
         football: "Football",
         basketball: "Basketball",
@@ -177,6 +180,9 @@ const COPY = {
       privateHint: "Doar membrii grupurilor tale îți văd profilul.",
       approxLocationBody:
         "Locația ta de acasă este mereu rotunjită - nu apare niciodată exact.",
+      photoChangeLabel: "Schimbă poza",
+      photoUploadingLabel: "Se încarcă...",
+      photoErrorTooLarge: "Imaginea este prea mare. Folosește sub 8 MB.",
       sportLabels: {
         football: "Fotbal",
         basketball: "Baschet",
@@ -221,17 +227,21 @@ export default async function SettingsPage({
     redirect(`/${locale}/login`);
   }
 
-  const [visibilityRows, unread] = await Promise.all([
+  const [profileRows, unread] = await Promise.all([
     getDb()
-      .select({ profileVisibility: users.profileVisibility })
+      .select({
+        profileVisibility: users.profileVisibility,
+        photoUrl: users.photoUrl,
+      })
       .from(users)
       .where(eq(users.id, user.id))
       .limit(1),
     unreadCount(user.id),
   ]);
-  const [visibilityRow] = visibilityRows;
+  const [profileRow] = profileRows;
 
-  const isPublic = (visibilityRow?.profileVisibility ?? "public") === "public";
+  const isPublic = (profileRow?.profileVisibility ?? "public") === "public";
+  const photoUrl = profileRow?.photoUrl ?? null;
 
   const copy = COPY[locale];
   const section = readSection(sp.section);
@@ -352,6 +362,7 @@ export default async function SettingsPage({
               initial={{
                 fullName: user.fullName,
                 bio: user.bio,
+                photoUrl,
                 city: user.city,
                 homeLat: user.homeLat,
                 homeLng: user.homeLng,
