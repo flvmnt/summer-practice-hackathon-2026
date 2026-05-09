@@ -9,6 +9,10 @@ import { GroupChatForm } from "@/components/group/GroupChatForm";
 import { GroupHeader } from "@/components/group/GroupHeader";
 import { GroupMembersList } from "@/components/group/GroupMembersList";
 import { GroupTabs, type GroupTabId } from "@/components/group/GroupTabs";
+import {
+  RecommendedTeammates,
+  type RecommendedTeammatesCopy,
+} from "@/components/group/RecommendedTeammates";
 import { TeamBalancePanel } from "@/components/group/TeamBalancePanel";
 import { HeaderBell } from "@/components/layout/HeaderBell";
 import { Card } from "@/components/ui/Card";
@@ -21,6 +25,10 @@ import {
   declineMembershipAction,
 } from "@/lib/match-confirm-actions";
 import { unreadCount } from "@/lib/notifications";
+import {
+  recommendTeammatesForGroup,
+  type RecommendationCandidate,
+} from "@/lib/recommendations";
 import { SPORTS, type SportKey } from "@/lib/sports";
 
 export const dynamic = "force-dynamic";
@@ -136,6 +144,41 @@ export default async function GroupPage({
     reconnectingLabel: tConn("reconnecting"),
   };
 
+  // Smart teammate recommendations: spec docs/specs/05-ai-features.md
+  // section 6 says recs surface in the manual event invite drawer for
+  // captains. We render a captain-only panel using the deterministic
+  // ranking from recommendTeammatesForGroup; AI enrichment is best
+  // effort, the deterministic baseline always wins on auth/eligibility.
+  let recommendations: RecommendationCandidate[] = [];
+  if (isCaptain) {
+    try {
+      recommendations = await recommendTeammatesForGroup(group.id);
+    } catch {
+      recommendations = [];
+    }
+  }
+  const tRecs = await getTranslations("groups.invite.recommendations");
+  const recommendationsCopy: RecommendedTeammatesCopy = {
+    title: tRecs("title"),
+    subtitle: tRecs("subtitle"),
+    captainOnly: tRecs("captainOnly"),
+    noResults: tRecs("noResults"),
+    matchPercent: tRecs.raw("matchPercent") as string,
+    distanceLabel: tRecs.raw("distanceLabel") as string,
+    sameCity: tRecs("sameCity"),
+    explainAi: tRecs("explainAi"),
+    explainFallback: tRecs("explainFallback"),
+    invite: tRecs("invite"),
+    inviting: tRecs("inviting"),
+    invited: tRecs("invited"),
+    errors: {
+      unauthorized: tRecs("errors.unauthorized"),
+      conflict: tRecs("errors.conflict"),
+      notFound: tRecs("errors.notFound"),
+      generic: tRecs("errors.generic"),
+    },
+  };
+
   /* ------------------ shared section renderers ------------------ */
 
   const planSection = (
@@ -240,6 +283,14 @@ export default async function GroupPage({
           viewerIsCaptain={isCaptain}
           suggestedTime={eventDateLabel}
           weather={null}
+        />
+      ) : null}
+
+      {isCaptain ? (
+        <RecommendedTeammates
+          groupId={group.id}
+          candidates={recommendations}
+          copy={recommendationsCopy}
         />
       ) : null}
 
@@ -481,6 +532,14 @@ export default async function GroupPage({
                 }
                 viewerIsCaptain={isCaptain}
                 weather={null}
+              />
+            ) : null}
+
+            {isCaptain ? (
+              <RecommendedTeammates
+                groupId={group.id}
+                candidates={recommendations}
+                copy={recommendationsCopy}
               />
             ) : null}
 
