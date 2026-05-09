@@ -9,7 +9,7 @@ const booleanFlag = z
 const serverEnvSchema = z.object({
   ALLOW_DEMO_MODE: booleanFlag,
   ALLOW_DEMO_SEED: booleanFlag,
-  DEMO_MODE_SECRET: z.string().min(16).optional().or(z.literal("")),
+  DEMO_MODE_SECRET: z.string().min(64).optional().or(z.literal("")),
   DEMO_SEED_CONFIRM: z.string().optional(),
   DATABASE_URL: z.string().url().optional(),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),

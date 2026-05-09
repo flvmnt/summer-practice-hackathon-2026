@@ -24,7 +24,8 @@ export const fullNameSchema = z
   .trim()
   .min(1, "full_name_required")
   .max(80, "full_name_too_long")
-  .regex(/^[\p{L}\p{M}' -]+$/u, "invalid_full_name");
+  .regex(/^[\p{L}\p{M}' -]+$/u, "invalid_full_name")
+  .refine((value) => /[\p{L}\p{M}]/u.test(value), "invalid_full_name");
 
 export const localeSchema = z.enum(routing.locales);
 

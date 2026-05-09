@@ -33,6 +33,7 @@ describe("auth contracts", () => {
     expect(fullNameSchema.parse("Ana-Maria Popescu")).toBe("Ana-Maria Popescu");
     expect(fullNameSchema.parse("Ștefan O'Neil")).toBe("Ștefan O'Neil");
     expect(() => fullNameSchema.parse("")).toThrow();
+    expect(() => fullNameSchema.parse("---")).toThrow();
   });
 
   it("does not validate login with a blank password", () => {
