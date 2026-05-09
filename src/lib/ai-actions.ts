@@ -1,7 +1,7 @@
 "use server";
 
 import { extractSportsFromBio } from "@/lib/ai/bio-extract";
-import { getCurrentUser } from "@/lib/auth-current-user";
+import { requireUserForAction } from "@/lib/auth-current-user";
 import {
   AUTH_RATE_LIMIT_POLICIES,
   aiBioUserBucket,
@@ -19,10 +19,11 @@ export type ExtractSportsActionResult =
     };
 
 export async function extractSportsForCurrentUserAction(): Promise<ExtractSportsActionResult> {
-  const user = await getCurrentUser();
-  if (!user) {
-    return { ok: false, error: "unauthorized" } as const;
+  const auth = await requireUserForAction();
+  if (!auth.ok) {
+    return auth;
   }
+  const user = auth.user;
 
   const limit = await checkAuthRateLimit({
     bucket: aiBioUserBucket(user.id),
@@ -57,13 +58,13 @@ export async function extractSportsFromBioTextAction(input: {
     return { ok: false, error: "validation" } as const;
   }
 
-  const user = await getCurrentUser();
-  if (!user) {
-    return { ok: false, error: "unauthorized" } as const;
+  const auth = await requireUserForAction();
+  if (!auth.ok) {
+    return auth;
   }
 
   const limit = await checkAuthRateLimit({
-    bucket: aiBioUserBucket(user.id),
+    bucket: aiBioUserBucket(auth.user.id),
     ...AUTH_RATE_LIMIT_POLICIES.aiBioUser,
   });
   if (limit.limited) {
