@@ -1,0 +1,53 @@
+{
+  "home": {
+    "languageSwitch": "RO",
+    "health": "Health",
+    "eyebrow": "Haufe summer practice 2026",
+    "title": "Show up for the game that is already forming nearby.",
+    "subtitle": "A mobile-first sports matching app for spontaneous football, tennis, basketball, and running groups in Timisoara.",
+    "openToday": "Open Today",
+    "judgeMode": "Judge Mode",
+    "loopSteps": [
+      "Sign up",
+      "Onboard",
+      "ShowUpToday",
+      "Match",
+      "Group chat",
+      "Event plan",
+      "Map vote",
+      "Calendar export"
+    ],
+    "proofCards": [
+      {
+        "title": "Deterministic first",
+        "text": "Hard matching rules stay explainable; AI enriches suggestions without owning eligibility gates."
+      },
+      {
+        "title": "Event-scoped chat",
+        "text": "Group coordination and event threads are separate proof surfaces, not one combined message stream."
+      },
+      {
+        "title": "Privacy-safe location",
+        "text": "Venue pins and approximate group centers are visible; exact home coordinates stay private."
+      },
+      {
+        "title": "Honest Judge Mode",
+        "text": "Rubric rows must point to live, seeded, or fallback evidence before they are claimed."
+      }
+    ]
+  },
+  "today": {
+    "title": "ShowUpToday is next.",
+    "body": "Phase 0 only proves the deployable shell. Auth, onboarding, prompts, matching, and chat land in the documented order before this page claims rubric credit."
+  },
+  "demo": {
+    "title": "Judge Mode placeholder",
+    "enabledBody": "Demo proof is enabled by environment flag. Scoring rows stay unclaimed until later phases add live or seeded proof.",
+    "disabledBody": "Demo proof is disabled by environment flag. Scoring rows stay unclaimed until later phases add live or seeded proof."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "This route is not part of the current ShowUp2Move phase.",
+    "back": "Back to ShowUp2Move"
+  }
+}

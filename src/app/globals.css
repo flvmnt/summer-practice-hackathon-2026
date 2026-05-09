@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --navy: #101828;
+  --lime: #b7f34a;
+  --court: #2563eb;
+  --coral: #ff6b4a;
+  --mint: #ddfce8;
+  --cloud: #f7f9fc;
+  --ink: #101828;
+  --muted: #667085;
+  --line: #d7dee8;
+  --surface: #ffffff;
+  --danger: #dc2626;
+  --page-max: 1120px;
+  --mobile-pad: 16px;
+  --desktop-pad: 32px;
+  --nav-height-mobile: 64px;
+  --radius-card: 8px;
+  --radius-control: 8px;
+  --tap-target: 44px;
+  --background: var(--cloud);
+  --foreground: var(--ink);
+  --panel: #eef8ff;
+  --panel-strong: var(--surface);
+  --accent: var(--lime);
+  --accent-strong: var(--navy);
+  --accent-soft: var(--mint);
+  --warn: var(--coral);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--background);
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--court);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--lime);
+  color: var(--navy);
+}

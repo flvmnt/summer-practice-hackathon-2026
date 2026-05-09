@@ -1,0 +1,53 @@
+{
+  "home": {
+    "languageSwitch": "EN",
+    "health": "Status",
+    "eyebrow": "Practica de vara Haufe 2026",
+    "title": "Intra in jocul care se formeaza deja aproape de tine.",
+    "subtitle": "O aplicatie web mobile-first pentru potrivire sportiva spontana: fotbal, tenis, baschet si alergare in Timisoara.",
+    "openToday": "Deschide azi",
+    "judgeMode": "Mod juriu",
+    "loopSteps": [
+      "Cont nou",
+      "Onboarding",
+      "ShowUpToday",
+      "Potrivire",
+      "Chat de grup",
+      "Plan de eveniment",
+      "Vot pe harta",
+      "Export calendar"
+    ],
+    "proofCards": [
+      {
+        "title": "Determinist mai intai",
+        "text": "Regulile de potrivire raman explicabile; AI-ul imbogateste sugestiile fara sa controleze eligibilitatea."
+      },
+      {
+        "title": "Chat pe eveniment",
+        "text": "Coordonarea grupului si discutiile evenimentului sunt dovezi separate, nu un singur flux de mesaje."
+      },
+      {
+        "title": "Locatie privata",
+        "text": "Sunt vizibile locatii de terenuri si centre aproximative de grup; coordonatele exacte de acasa raman private."
+      },
+      {
+        "title": "Mod juriu onest",
+        "text": "Fiecare rand din rubrica trebuie sa indice dovezi live, seeded sau fallback inainte sa fie revendicat."
+      }
+    ]
+  },
+  "today": {
+    "title": "ShowUpToday urmeaza.",
+    "body": "Faza 0 dovedeste doar scheletul deployabil. Autentificarea, onboarding-ul, prompturile, potrivirea si chatul vor fi livrate in ordinea documentata inainte ca pagina sa revendice puncte."
+  },
+  "demo": {
+    "title": "Placeholder pentru Mod juriu",
+    "enabledBody": "Dovada demo este activata prin variabila de mediu. Randurile de scor raman nerevendicate pana cand fazele urmatoare adauga dovezi live sau seeded.",
+    "disabledBody": "Dovada demo este dezactivata prin variabila de mediu. Randurile de scor raman nerevendicate pana cand fazele urmatoare adauga dovezi live sau seeded."
+  },
+  "notFound": {
+    "title": "Pagina nu a fost gasita",
+    "body": "Aceasta ruta nu face parte din faza curenta ShowUp2Move.",
+    "back": "Inapoi la ShowUp2Move"
+  }
+}
