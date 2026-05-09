@@ -2,6 +2,11 @@
 
 import { extractSportsFromPhoto } from "@/lib/ai/photo-extract";
 import { getCurrentUser } from "@/lib/auth-current-user";
+import {
+  AUTH_RATE_LIMIT_POLICIES,
+  aiPhotoUserBucket,
+  checkAuthRateLimit,
+} from "@/lib/auth-rate-limit";
 import type { SportSuggestion } from "@/lib/contracts/ai";
 import { MAX_BYTES, sniffMime } from "@/lib/uploads";
 
@@ -13,7 +18,9 @@ export type ExtractPhotoSportsActionResult =
         | "photo_required"
         | "too_large"
         | "unsupported_mime"
-        | "read_failed";
+        | "read_failed"
+        | "rate_limited";
+      retryAfterSeconds?: number;
     }
   | { ok: true; suggestions: SportSuggestion[]; source: "ai" | "fallback" };
 
@@ -23,6 +30,18 @@ export async function extractSportsFromPhotoAction(
   const user = await getCurrentUser();
   if (!user) {
     return { ok: false, error: "unauthorized" };
+  }
+
+  const limit = await checkAuthRateLimit({
+    bucket: aiPhotoUserBucket(user.id),
+    ...AUTH_RATE_LIMIT_POLICIES.aiPhotoUser,
+  });
+  if (limit.limited) {
+    return {
+      ok: false,
+      error: "rate_limited",
+      retryAfterSeconds: limit.retryAfterSeconds,
+    };
   }
 
   const raw = formData.get("photo");

@@ -6,6 +6,11 @@ import { getDb } from "@/db";
 import { events, groupMembers, groups, messages, users } from "@/db/schema";
 import { actionError, actionOk, type ActionResult } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth-current-user";
+import {
+  AUTH_RATE_LIMIT_POLICIES,
+  checkAuthRateLimit,
+  manualEventUserBucket,
+} from "@/lib/auth-rate-limit";
 import { getOrCreateActivePromptAction } from "@/lib/prompt";
 import { SPORT_KEYS, type SportKey } from "@/lib/sports";
 
@@ -71,6 +76,16 @@ export async function createManualEventAction(
   const user = await getCurrentUser();
   if (!user) {
     return actionError("unauthorized");
+  }
+
+  const limit = await checkAuthRateLimit({
+    bucket: manualEventUserBucket(user.id),
+    ...AUTH_RATE_LIMIT_POLICIES.manualEventUser,
+  });
+  if (limit.limited) {
+    return actionError("rate_limited", {
+      retryAfterSeconds: limit.retryAfterSeconds,
+    });
   }
 
   const whenAt = new Date(parsed.data.whenAt);

@@ -28,6 +28,10 @@ export const AUTH_RATE_LIMIT_POLICIES = {
   chatUserGroup: { limit: 20, windowSeconds: 60 },
   inviteUserEvent: { limit: 6, windowSeconds: 60 * 60 },
   invitePreviewIp: { limit: 60, windowSeconds: 60 },
+  uploadPhotoUser: { limit: 10, windowSeconds: 60 * 60 },
+  aiBioUser: { limit: 30, windowSeconds: 60 * 60 },
+  aiPhotoUser: { limit: 10, windowSeconds: 60 * 60 },
+  manualEventUser: { limit: 10, windowSeconds: 60 * 60 },
 } as const;
 
 function normalizePart(value: string) {
@@ -74,6 +78,22 @@ export function inviteUserEventBucket(userId: string, eventId: string) {
 
 export function invitePreviewIpBucket(ip: string) {
   return `invite:preview:ip:${hashRateLimitParts(ip)}`;
+}
+
+export function uploadPhotoUserBucket(userId: string) {
+  return `uploads:photo:user:${hashRateLimitParts(userId)}`;
+}
+
+export function aiBioUserBucket(userId: string) {
+  return `ai:bio:user:${hashRateLimitParts(userId)}`;
+}
+
+export function aiPhotoUserBucket(userId: string) {
+  return `ai:photo:user:${hashRateLimitParts(userId)}`;
+}
+
+export function manualEventUserBucket(userId: string) {
+  return `events:manual:user:${hashRateLimitParts(userId)}`;
 }
 
 export function evaluateAuthRateLimit(
