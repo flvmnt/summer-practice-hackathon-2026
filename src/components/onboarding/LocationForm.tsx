@@ -1,8 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { useActionState } from "react";
-import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { Button } from "@/components/ui/button";
+import { Glyph } from "@/components/ui/Glyph";
+import { Input } from "@/components/ui/Input";
+import { Slider } from "@/components/ui/Slider";
+import { WizardMobileHeader } from "@/components/onboarding/WizardMobileHeader";
+import { WizardStickyActionBar } from "@/components/onboarding/WizardStickyActionBar";
 import type { AppLocale } from "@/i18n/routing";
 import {
   onboardingLocationFormAction,
@@ -31,27 +36,31 @@ type LocationFormCopy = {
 
 const initialState: OnboardingLocationFormState = {};
 
+const SLIDER_MIN = 1;
+const SLIDER_MAX = 10;
+const SLIDER_STEP = 0.5;
+
+// Schema currently locks accepted distances to [1, 3, 5, 10]; the slider
+// presents a continuous 1–10 km feel and snaps on submit so the action accepts.
+function snapDistance(value: number): (typeof DISTANCE_OPTIONS_KM)[number] {
+  let best: (typeof DISTANCE_OPTIONS_KM)[number] = DISTANCE_OPTIONS_KM[0];
+  let bestDelta = Number.POSITIVE_INFINITY;
+  for (const opt of DISTANCE_OPTIONS_KM) {
+    const delta = Math.abs(opt - value);
+    if (delta < bestDelta) {
+      bestDelta = delta;
+      best = opt;
+    }
+  }
+  return best;
+}
+
 function errorText(code: string | undefined, copy: LocationFormCopy) {
-  if (code === "city_required") {
-    return copy.cityRequired;
-  }
-
-  if (code === "invalid_latitude") {
-    return copy.invalidLatitude;
-  }
-
-  if (code === "invalid_longitude") {
-    return copy.invalidLongitude;
-  }
-
-  if (code === "unauthorized") {
-    return copy.unauthorized;
-  }
-
-  if (code) {
-    return copy.genericError;
-  }
-
+  if (code === "city_required") return copy.cityRequired;
+  if (code === "invalid_latitude") return copy.invalidLatitude;
+  if (code === "invalid_longitude") return copy.invalidLongitude;
+  if (code === "unauthorized") return copy.unauthorized;
+  if (code) return copy.genericError;
   return undefined;
 }
 
@@ -70,127 +79,279 @@ export function LocationForm({
   defaultMaxDistanceKm: number;
   locale: AppLocale;
 }) {
-  const [state, formAction] = useActionState(onboardingLocationFormAction, initialState);
+  const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+  const [pending, startTransition] = useTransition();
+  const [state, setState] = useState<OnboardingLocationFormState>(initialState);
+
+  const [city, setCity] = useState(defaultCity);
+  const [homeLat, setHomeLat] = useState(defaultHomeLat);
+  const [homeLng, setHomeLng] = useState(defaultHomeLng);
+  const [distanceKm, setDistanceKm] = useState<number>(
+    Math.min(SLIDER_MAX, Math.max(SLIDER_MIN, defaultMaxDistanceKm || 5)),
+  );
+  const [geoStatus, setGeoStatus] = useState<"idle" | "loading" | "denied" | "error" | "ok">("idle");
+
+  useEffect(() => {
+    if (state.saved) {
+      router.push(`/${locale}/onboarding/photo`);
+    }
+  }, [state.saved, locale, router]);
+
+  function onUseLocation() {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setGeoStatus("error");
+      return;
+    }
+    setGeoStatus("loading");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setHomeLat(pos.coords.latitude.toFixed(6));
+        setHomeLng(pos.coords.longitude.toFixed(6));
+        setGeoStatus("ok");
+      },
+      (err) => {
+        if (err.code === err.PERMISSION_DENIED) {
+          setGeoStatus("denied");
+        } else {
+          setGeoStatus("error");
+        }
+      },
+      { timeout: 10_000, enableHighAccuracy: false, maximumAge: 60_000 },
+    );
+  }
+
+  function submit() {
+    const form = formRef.current;
+    if (!form) return;
+    const fd = new FormData(form);
+    // Force the snapped distance value onto the form before submit.
+    fd.set("maxDistanceKm", String(snapDistance(distanceKm)));
+    startTransition(async () => {
+      const result = await onboardingLocationFormAction(initialState, fd);
+      setState(result);
+    });
+  }
+
   const cityError = errorText(state.fieldErrors?.city, copy);
   const latError = errorText(state.fieldErrors?.homeLat, copy);
   const lngError = errorText(state.fieldErrors?.homeLng, copy);
   const formError = errorText(state.error, copy);
 
-  if (state.saved) {
-    return (
-      <div className="rounded-md border border-[var(--line)] bg-[var(--mint)] p-4">
-        <h2 className="text-lg font-bold">{copy.successTitle}</h2>
-        <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-          {copy.successBody}
-        </p>
-        <Link
-          className="mt-4 inline-flex min-h-12 items-center justify-center rounded-md bg-[var(--lime)] px-5 text-sm font-semibold text-[var(--navy)]"
-          href={`/${locale}/today`}
-        >
-          {copy.continue}
-        </Link>
-      </div>
-    );
-  }
+  const canContinue = city.trim().length >= 2 && !pending;
+  const distanceLabel = Number.isInteger(distanceKm)
+    ? distanceKm.toFixed(1)
+    : distanceKm.toFixed(1);
+  const cityForChip = city.trim() || "your city";
 
   return (
-    <form action={formAction} className="grid gap-4">
-      <label className="grid gap-2 text-sm font-semibold text-[var(--ink)]">
-        <span>{copy.city}</span>
+    <div className="flex w-full flex-col">
+      <WizardMobileHeader
+        step={3}
+        total={4}
+        title="Where can you play?"
+        subtitle="City and how far you'll travel"
+      />
+
+      <form ref={formRef} action={() => submit()} className="mt-5 flex flex-col gap-4">
+        {/* City + Use my location */}
+        <div className="flex flex-col gap-2">
+          <label
+            htmlFor="onboarding-city"
+            className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
+            style={{ color: "var(--ink-muted)" }}
+          >
+            City
+          </label>
+          <div className="flex flex-wrap items-stretch gap-2">
+            <Input
+              id="onboarding-city"
+              name="city"
+              autoComplete="address-level2"
+              placeholder={copy.cityPlaceholder || "Timișoara"}
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              maxLength={100}
+              required
+              aria-describedby={cityError ? "city-error" : undefined}
+              containerClassName="min-w-0 flex-1"
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onUseLocation}
+              disabled={geoStatus === "loading"}
+              className="gap-2 self-start"
+              style={{ minHeight: 48, color: "var(--accent-deep)" }}
+            >
+              <Glyph.pin size={16} />
+              {geoStatus === "loading" ? "Locating…" : "Use my location"}
+            </Button>
+          </div>
+          {cityError ? (
+            <span
+              id="city-error"
+              className="text-sm font-medium"
+              style={{ color: "var(--accent-deep)" }}
+            >
+              {cityError}
+            </span>
+          ) : null}
+          {geoStatus === "denied" ? (
+            <span
+              role="status"
+              className="text-sm"
+              style={{ color: "var(--ink-muted)" }}
+            >
+              Location denied — type your city manually.
+            </span>
+          ) : null}
+          {geoStatus === "error" ? (
+            <span
+              role="status"
+              className="text-sm"
+              style={{ color: "var(--ink-muted)" }}
+            >
+              Couldn&apos;t read your location — type your city manually.
+            </span>
+          ) : null}
+          {geoStatus === "ok" ? (
+            <span
+              role="status"
+              className="text-sm"
+              style={{ color: "var(--field)" }}
+            >
+              Got it. We&apos;ll use this for distance only.
+            </span>
+          ) : null}
+        </div>
+
+        {/* Hidden lat/lng — populated by geolocation or kept at defaults. */}
         <input
-          aria-describedby={cityError ? "city-error" : undefined}
-          aria-invalid={Boolean(cityError)}
-          autoComplete="address-level2"
-          className="min-h-12 rounded-md border border-[var(--line)] bg-white px-3 text-base font-normal outline-none transition-colors focus:border-[var(--court)]"
-          defaultValue={defaultCity}
-          maxLength={100}
-          name="city"
-          placeholder={copy.cityPlaceholder}
-          required
+          name="homeLat"
+          type="hidden"
+          value={homeLat}
+          onChange={() => {
+            /* noop */
+          }}
         />
-        {cityError ? (
-          <span className="text-sm font-medium text-[var(--danger)]" id="city-error">
-            {cityError}
+        <input
+          name="homeLng"
+          type="hidden"
+          value={homeLng}
+          onChange={() => {
+            /* noop */
+          }}
+        />
+        {latError ? (
+          <span className="text-sm font-medium" style={{ color: "var(--accent-deep)" }}>
+            {latError}
           </span>
         ) : null}
-      </label>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="grid gap-2 text-sm font-semibold text-[var(--ink)]">
-          <span>{copy.latitude}</span>
-          <input
-            aria-describedby={latError ? "homeLat-error" : undefined}
-            aria-invalid={Boolean(latError)}
-            className="min-h-12 rounded-md border border-[var(--line)] bg-white px-3 text-base font-normal outline-none transition-colors focus:border-[var(--court)]"
-            defaultValue={defaultHomeLat}
-            inputMode="decimal"
-            name="homeLat"
-            placeholder="45.7489"
-            required
-            step="0.000001"
-            type="number"
-          />
-          {latError ? (
+        {lngError ? (
+          <span className="text-sm font-medium" style={{ color: "var(--accent-deep)" }}>
+            {lngError}
+          </span>
+        ) : null}
+
+        {/* Distance section */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-end justify-between gap-3">
             <span
-              className="text-sm font-medium text-[var(--danger)]"
-              id="homeLat-error"
+              className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
+              style={{ color: "var(--ink-muted)" }}
             >
-              {latError}
+              How far will you travel?
             </span>
-          ) : null}
-        </label>
-        <label className="grid gap-2 text-sm font-semibold text-[var(--ink)]">
-          <span>{copy.longitude}</span>
-          <input
-            aria-describedby={lngError ? "homeLng-error" : undefined}
-            aria-invalid={Boolean(lngError)}
-            className="min-h-12 rounded-md border border-[var(--line)] bg-white px-3 text-base font-normal outline-none transition-colors focus:border-[var(--court)]"
-            defaultValue={defaultHomeLng}
-            inputMode="decimal"
-            name="homeLng"
-            placeholder="21.2087"
-            required
-            step="0.000001"
-            type="number"
-          />
-          {lngError ? (
             <span
-              className="text-sm font-medium text-[var(--danger)]"
-              id="homeLng-error"
+              className="mono"
+              style={{
+                fontFamily: "var(--f-mono)",
+                fontSize: 24,
+                fontWeight: 700,
+                color: "var(--ink)",
+                lineHeight: 1,
+              }}
             >
-              {lngError}
+              {distanceLabel}
+              <span
+                className="ml-1"
+                style={{ fontSize: 12, color: "var(--ink-muted)" }}
+              >
+                km
+              </span>
             </span>
-          ) : null}
-        </label>
-      </div>
-      <fieldset className="grid gap-2">
-        <legend className="text-sm font-semibold text-[var(--ink)]">
-          {copy.maxDistance}
-        </legend>
-        <div className="grid grid-cols-4 gap-2">
-          {DISTANCE_OPTIONS_KM.map((distance) => (
-            <label
-              className="flex min-h-11 items-center justify-center gap-2 rounded-md border border-[var(--line)] bg-white px-2 text-sm font-semibold"
-              key={distance}
-            >
-              <input
-                className="accent-[var(--navy)]"
-                defaultChecked={defaultMaxDistanceKm === distance}
-                name="maxDistanceKm"
-                type="radio"
-                value={distance}
-              />
-              {distance}
-              {copy.km}
-            </label>
-          ))}
+          </div>
+
+          <Slider
+            value={distanceKm}
+            onChange={setDistanceKm}
+            min={SLIDER_MIN}
+            max={SLIDER_MAX}
+            step={SLIDER_STEP}
+            ariaLabel="Maximum travel distance in kilometres"
+          />
+
+          <div
+            className="mono mt-1 flex justify-between"
+            style={{
+              fontFamily: "var(--f-mono)",
+              fontSize: 11,
+              color: "var(--ink-muted)",
+            }}
+          >
+            <span>1 km</span>
+            <span>5 km</span>
+            <span>10 km</span>
+          </div>
         </div>
-      </fieldset>
-      {formError ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-[var(--danger)]">
-          {formError}
-        </p>
-      ) : null}
-      <AuthSubmitButton label={copy.submit} pendingLabel={copy.pending} />
-    </form>
+
+        {/* Textual radius chip (mini map deferred to A10). */}
+        <div
+          style={{
+            alignSelf: "flex-start",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "8px 12px",
+            borderRadius: 999,
+            background: "var(--surface-2)",
+            border: "1px solid var(--line)",
+            color: "var(--ink-muted)",
+            fontSize: 12,
+          }}
+        >
+          <Glyph.pin size={14} />
+          <span>
+            Within <span style={{ fontFamily: "var(--f-mono)", color: "var(--ink)" }}>{distanceLabel} km</span> of {cityForChip}
+          </span>
+        </div>
+
+        {formError ? (
+          <p
+            role="alert"
+            className="rounded-md px-3 py-2 text-sm font-semibold"
+            style={{
+              background: "color-mix(in oklch, var(--accent) 10%, transparent)",
+              color: "var(--accent-deep)",
+              border: "1px solid color-mix(in oklch, var(--accent) 30%, transparent)",
+            }}
+          >
+            {formError}
+          </p>
+        ) : null}
+
+        <div className="h-24" aria-hidden="true" />
+      </form>
+
+      <WizardStickyActionBar
+        primaryLabel={pending ? copy.pending : "Next"}
+        primaryDisabled={!canContinue}
+        primaryLoading={pending}
+        onPrimary={submit}
+        secondaryLabel="Back"
+        secondaryHref={`/${locale}/onboarding/sports`}
+      />
+    </div>
   );
 }

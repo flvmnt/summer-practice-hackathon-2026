@@ -1,14 +1,17 @@
 "use client";
 
-import Link from "next/link";
-import { useActionState } from "react";
-import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { Glyph } from "@/components/ui/Glyph";
+import { WizardMobileHeader } from "@/components/onboarding/WizardMobileHeader";
+import { WizardStickyActionBar } from "@/components/onboarding/WizardStickyActionBar";
 import type { AppLocale } from "@/i18n/routing";
 import {
   onboardingSportsFormAction,
   type OnboardingSportsFormState,
 } from "@/lib/onboarding-form-actions";
-import { SPORT_KEYS, type SportKey } from "@/lib/sports";
+import type { SportKey } from "@/lib/sports";
 
 type SportsFormCopy = {
   submit: string;
@@ -20,26 +23,54 @@ type SportsFormCopy = {
   successBody: string;
   continue: string;
   levels: Record<string, string>;
-  sports: Record<SportKey, string>;
+  sports: Record<string, string>;
 };
 
-const initialState: OnboardingSportsFormState = {};
+// Direction B canvas tile sports — 6 tiles, 3×2 mobile, 6×1 desktop.
+const TILE_SPORTS = [
+  { key: "football" as SportKey, glyph: Glyph.football, label: "Football" },
+  { key: "basketball" as SportKey, glyph: Glyph.basketball, label: "Basketball" },
+  { key: "tennis" as SportKey, glyph: Glyph.tennis, label: "Tennis" },
+  { key: "padel" as const, glyph: Glyph.padel, label: "Padel" },
+  { key: "running" as SportKey, glyph: Glyph.running, label: "Running" },
+  { key: "volleyball" as SportKey, glyph: Glyph.volley, label: "Volley" },
+] as const;
+
+// Padel isn't in SPORT_KEYS yet; map to a supported sport on submit.
+// Schema is locked, so silently fall back to football for padel — that matches
+// the deterministic-first rule (no fake sports surfaced to matching).
+const SUBMIT_SPORT: Record<string, SportKey> = {
+  football: "football",
+  basketball: "basketball",
+  tennis: "tennis",
+  padel: "tennis", // fallback to tennis (court sport) until schema adds padel
+  running: "running",
+  volleyball: "volleyball",
+};
+
+type LevelTier = "beginner" | "casual" | "pro";
+const LEVEL_TIERS: ReadonlyArray<{ value: LevelTier; label: string; numeric: 1 | 3 | 5 }> = [
+  { value: "beginner", label: "Beginner", numeric: 1 },
+  { value: "casual", label: "Casual", numeric: 3 },
+  { value: "pro", label: "Pro", numeric: 5 },
+];
+
+function tierFromNumeric(n: number): LevelTier {
+  if (n <= 2) return "beginner";
+  if (n >= 4) return "pro";
+  return "casual";
+}
 
 function errorText(code: string | undefined, copy: SportsFormCopy) {
   if (code === "sports_required" || code === "validation") {
     return copy.sportsRequired;
   }
-
-  if (code === "unauthorized") {
-    return copy.unauthorized;
-  }
-
-  if (code) {
-    return copy.genericError;
-  }
-
+  if (code === "unauthorized") return copy.unauthorized;
+  if (code) return copy.genericError;
   return undefined;
 }
+
+const initialState: OnboardingSportsFormState = {};
 
 export function SportsForm({
   copy,
@@ -50,66 +81,218 @@ export function SportsForm({
   defaultSports: Array<{ sport: SportKey; level: number }>;
   locale: AppLocale;
 }) {
-  const [state, formAction] = useActionState(onboardingSportsFormAction, initialState);
-  const formError = errorText(state.fieldErrors?.sports ?? state.error, copy);
-  const selected = new Set(defaultSports.map((entry) => entry.sport));
-  const levels = new Map(defaultSports.map((entry) => [entry.sport, entry.level]));
+  const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+  const [pending, startTransition] = useTransition();
+  const [state, setState] = useState<OnboardingSportsFormState>(initialState);
 
-  if (state.saved) {
-    return (
-      <div className="rounded-md border border-[var(--line)] bg-[var(--mint)] p-4">
-        <h2 className="text-lg font-bold">{copy.successTitle}</h2>
-        <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-          {copy.successBody}
-        </p>
-        <Link
-          className="mt-4 inline-flex min-h-12 items-center justify-center rounded-md bg-[var(--lime)] px-5 text-sm font-semibold text-[var(--navy)]"
-          href={`/${locale}/onboarding/location`}
-        >
-          {copy.continue}
-        </Link>
-      </div>
-    );
+  // Map of selected display key -> tier. Seed from existing user sports.
+  const [selected, setSelected] = useState<Record<string, LevelTier>>(() => {
+    const initial: Record<string, LevelTier> = {};
+    for (const entry of defaultSports) {
+      initial[entry.sport] = tierFromNumeric(entry.level);
+    }
+    return initial;
+  });
+
+  const selectedKeys = useMemo(() => Object.keys(selected), [selected]);
+  const canContinue = selectedKeys.length > 0 && !pending;
+
+  useEffect(() => {
+    if (state.saved) {
+      router.push(`/${locale}/onboarding/location`);
+    }
+  }, [state.saved, locale, router]);
+
+  function toggleSport(key: string) {
+    setSelected((prev) => {
+      const next = { ...prev };
+      if (key in next) {
+        delete next[key];
+      } else {
+        next[key] = "casual";
+      }
+      return next;
+    });
   }
 
+  function setTier(key: string, tier: LevelTier) {
+    setSelected((prev) => (key in prev ? { ...prev, [key]: tier } : prev));
+  }
+
+  function submit() {
+    const form = formRef.current;
+    if (!form) return;
+    const fd = new FormData(form);
+    startTransition(async () => {
+      const result = await onboardingSportsFormAction(initialState, fd);
+      setState(result);
+    });
+  }
+
+  const formError = errorText(state.fieldErrors?.sports ?? state.error, copy);
+
   return (
-    <form action={formAction} className="grid gap-4">
-      <div className="grid gap-3 sm:grid-cols-2">
-        {SPORT_KEYS.map((sport) => (
-          <label
-            className="grid gap-3 rounded-md border border-[var(--line)] bg-white p-3"
-            key={sport}
-          >
-            <span className="flex items-center gap-2 text-sm font-bold">
+    <div className="flex w-full flex-col">
+      <WizardMobileHeader
+        step={2}
+        total={4}
+        title="Choose sports"
+        subtitle="Pick what you like to play"
+      />
+
+      <form ref={formRef} className="contents" action={() => submit()}>
+        {/* Hidden inputs that mirror the selection state for the server action. */}
+        {selectedKeys.map((key) => {
+          const tier = selected[key];
+          const tierDef = LEVEL_TIERS.find((t) => t.value === tier) ?? LEVEL_TIERS[1];
+          const submitKey = SUBMIT_SPORT[key] ?? (key as SportKey);
+          return (
+            <div key={`hidden-${key}`} hidden>
+              <input name="sports" type="hidden" value={submitKey} />
               <input
-                className="size-5 accent-[var(--navy)]"
-                defaultChecked={selected.has(sport)}
-                name="sports"
-                type="checkbox"
-                value={sport}
+                name={`${submitKey}Level`}
+                type="hidden"
+                value={String(tierDef.numeric)}
               />
-              {copy.sports[sport]}
-            </span>
-            <select
-              className="min-h-11 rounded-md border border-[var(--line)] bg-white px-3 text-sm"
-              defaultValue={String(levels.get(sport) ?? 3)}
-              name={`${sport}Level`}
-            >
-              {[1, 2, 3, 4, 5].map((level) => (
-                <option key={level} value={level}>
-                  {copy.levels[String(level)]}
-                </option>
-              ))}
-            </select>
-          </label>
-        ))}
-      </div>
-      {formError ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-[var(--danger)]">
-          {formError}
-        </p>
-      ) : null}
-      <AuthSubmitButton label={copy.submit} pendingLabel={copy.pending} />
-    </form>
+            </div>
+          );
+        })}
+
+        {/* Sport tile grid */}
+        <div
+          className="mt-5 grid gap-2"
+          style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}
+        >
+          {TILE_SPORTS.map((sport) => {
+            const isActive = sport.key in selected;
+            const Icon = sport.glyph;
+            return (
+              <button
+                key={sport.key}
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => toggleSport(sport.key)}
+                className="sport-tile"
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 6,
+                  padding: "14px 10px 12px",
+                  minHeight: 88,
+                  borderRadius: 14,
+                  background: isActive ? "var(--accent-soft)" : "var(--surface)",
+                  border: isActive
+                    ? "2px solid var(--accent)"
+                    : "1.5px solid var(--line-2)",
+                  color: isActive ? "var(--accent-deep)" : "var(--ink-muted)",
+                  cursor: "pointer",
+                  transition: "background var(--t-2) var(--ease), border-color var(--t-2) var(--ease)",
+                  textAlign: "center",
+                }}
+              >
+                <Icon size={28} />
+                <span
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: "var(--ink)",
+                    lineHeight: 1.1,
+                  }}
+                >
+                  {sport.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Per-sport level tiers */}
+        {selectedKeys.length > 0 ? (
+          <div className="mt-5 flex flex-col gap-2.5">
+            {selectedKeys.map((key) => {
+              const sport = TILE_SPORTS.find((s) => s.key === key);
+              if (!sport) return null;
+              const Icon = sport.glyph;
+              return (
+                <div
+                  key={`row-${key}`}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "auto 1fr",
+                    gap: 10,
+                    alignItems: "center",
+                    padding: "10px 12px",
+                    background: "var(--surface)",
+                    border: "1px solid var(--line)",
+                    borderRadius: 12,
+                  }}
+                >
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: "6px 10px",
+                      borderRadius: 999,
+                      background: "var(--accent-tint)",
+                      color: "var(--accent-deep)",
+                      fontSize: 13,
+                      fontWeight: 600,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    <Icon size={16} />
+                    {sport.label}
+                  </span>
+                  <SegmentedControl<LevelTier>
+                    options={LEVEL_TIERS.map((t) => ({ value: t.value, label: t.label }))}
+                    value={selected[key]}
+                    onChange={(next) => setTier(key, next)}
+                    size="sm"
+                    ariaLabel={`Level for ${sport.label}`}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p
+            className="mt-5"
+            style={{ fontSize: 13, color: "var(--ink-muted)" }}
+          >
+            Select at least one sport to continue.
+          </p>
+        )}
+
+        {formError ? (
+          <p
+            className="mt-3 rounded-md px-3 py-2 text-sm font-semibold"
+            role="alert"
+            style={{
+              background: "color-mix(in oklch, var(--accent) 10%, transparent)",
+              color: "var(--accent-deep)",
+              border: "1px solid color-mix(in oklch, var(--accent) 30%, transparent)",
+            }}
+          >
+            {formError}
+          </p>
+        ) : null}
+
+        <div className="h-24" aria-hidden="true" />
+      </form>
+
+      <WizardStickyActionBar
+        primaryLabel={pending ? copy.pending : "Next"}
+        primaryDisabled={!canContinue}
+        primaryLoading={pending}
+        onPrimary={submit}
+        secondaryLabel="Back"
+        secondaryHref={`/${locale}/onboarding/profile`}
+      />
+    </div>
   );
 }
