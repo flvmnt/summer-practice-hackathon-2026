@@ -1,7 +1,7 @@
 "use server";
 
 import { extractSportsFromPhoto } from "@/lib/ai/photo-extract";
-import { getCurrentUser } from "@/lib/auth-current-user";
+import { requireUserForAction } from "@/lib/auth-current-user";
 import {
   AUTH_RATE_LIMIT_POLICIES,
   aiPhotoUserBucket,
@@ -27,13 +27,13 @@ export type ExtractPhotoSportsActionResult =
 export async function extractSportsFromPhotoAction(
   formData: FormData,
 ): Promise<ExtractPhotoSportsActionResult> {
-  const user = await getCurrentUser();
-  if (!user) {
-    return { ok: false, error: "unauthorized" };
+  const auth = await requireUserForAction();
+  if (!auth.ok) {
+    return auth;
   }
 
   const limit = await checkAuthRateLimit({
-    bucket: aiPhotoUserBucket(user.id),
+    bucket: aiPhotoUserBucket(auth.user.id),
     ...AUTH_RATE_LIMIT_POLICIES.aiPhotoUser,
   });
   if (limit.limited) {
