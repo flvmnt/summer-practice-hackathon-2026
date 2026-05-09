@@ -712,14 +712,16 @@
     }
   },
   "notifications": {
-    "title": "Notificari",
+    "title": "Notificări",
     "eyebrow": "Mesagerie",
-    "markAllRead": "Marcheaza toate citite",
-    "markRead": "Marcheaza citit",
+    "markAllRead": "Marchează toate citite",
+    "markRead": "Marchează citit",
+    "open": "Deschide",
     "unreadCount": "{count} necitite",
-    "allCaughtUp": "Esti la zi",
-    "emptyTitle": "Esti la zi",
-    "emptyBody": "Aici vor aparea meciuri noi, voturi si actualizari de evenimente.",
+    "allCaughtUp": "Ești la zi",
+    "filterAria": "Filtrează notificările",
+    "emptyTitle": "Ești la zi",
+    "emptyBody": "Aici vor apărea meciuri noi, voturi și actualizări de evenimente.",
     "filters": {
       "all": "Toate",
       "unread": "Necitite",
@@ -735,10 +737,10 @@
       "chatMention": "Chat"
     },
     "bell": {
-      "label": "Notificari",
-      "labelUnread": "Notificari, {count} necitite"
+      "label": "Notificări",
+      "labelUnread": "Notificări, {count} necitite"
     },
-    "back": "Inapoi la Astazi"
+    "back": "Înapoi la Astăzi"
   },
   "groupsList": {
     "title": "Grupurile tale",

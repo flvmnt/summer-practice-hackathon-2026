@@ -1,97 +1,34 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { NotificationInboxActions } from "@/components/notifications/NotificationInboxActions";
-import type { NotificationItem } from "@/components/notifications/NotificationInbox";
+import type {
+  NotificationItem,
+  NotificationKind,
+} from "@/components/notifications/NotificationInbox";
 import { Glyph } from "@/components/ui/Glyph";
+import { Pill } from "@/components/ui/Pill";
 import type { AppLocale } from "@/i18n/routing";
+import { listNotifications, unreadCount } from "@/lib/notifications";
 import { getOnboardingUserState } from "@/lib/onboarding-state";
 
 export const dynamic = "force-dynamic";
 
-// TODO: replace with real notifications query (depends on a future
-// notifications schema migration). For now we render an in-memory list of
-// 8 demo-safe entries covering all 4 notification kinds — this lets the
-// inbox UI ship without blocking on backend persistence.
-async function getNotificationsAction(
-  locale: AppLocale,
-): Promise<{ ok: true; data: ReadonlyArray<NotificationItem> }> {
-  const items: ReadonlyArray<NotificationItem> = [
-    {
-      id: "n1",
-      kind: "match-ready",
-      title: "Football group formed near Herastrau",
-      body: "10 players said yes within 6 km. Captain reveal in 8 min.",
-      href: `/${locale}/groups/demo-football`,
-      read: false,
-      createdAt: new Date(Date.now() - 4 * 60 * 1000).toISOString(),
-    },
-    {
-      id: "n2",
-      kind: "vote-closing",
-      title: "Vote closing in 12 min",
-      body: "Baza Sportiva is leading 6-3 vs Stadionul Tineretului.",
-      href: `/${locale}/events/demo-event-1?tab=vote`,
-      read: false,
-      createdAt: new Date(Date.now() - 11 * 60 * 1000).toISOString(),
-    },
-    {
-      id: "n3",
-      kind: "event-confirmed",
-      title: "Event confirmed: Sat 18:00, Baza 2",
-      body: "Calendar export is ready. Bring water and clean shoes.",
-      href: `/${locale}/events/demo-event-1`,
-      read: false,
-      createdAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-    },
-    {
-      id: "n4",
-      kind: "chat-mention",
-      title: "Andrei mentioned you",
-      body: "\"@you can you bring the second ball?\"",
-      href: `/${locale}/groups/demo-football?tab=chat`,
-      read: false,
-      createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    },
-    {
-      id: "n5",
-      kind: "match-ready",
-      title: "Tennis singles match found",
-      body: "Maria, level 4, 3.2 km away. Reply within 10 min.",
-      href: `/${locale}/groups/demo-tennis`,
-      read: true,
-      createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-    },
-    {
-      id: "n6",
-      kind: "event-confirmed",
-      title: "Reminder: basketball pickup tomorrow",
-      body: "Sun 10:00, Sala Polivalenta court B.",
-      href: `/${locale}/events/demo-event-2`,
-      read: true,
-      createdAt: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString(),
-    },
-    {
-      id: "n7",
-      kind: "vote-closing",
-      title: "Vote closed",
-      body: "Tomorrow's running route: Herastrau loop won (8 votes).",
-      href: `/${locale}/events/demo-event-3?tab=vote`,
-      read: true,
-      createdAt: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString(),
-    },
-    {
-      id: "n8",
-      kind: "chat-mention",
-      title: "Captain replied to your question",
-      body: "\"Yes, parking is free until 20:00 on weekends.\"",
-      href: `/${locale}/groups/demo-football?tab=chat`,
-      read: true,
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    },
-  ];
-  return { ok: true, data: items };
+const KIND_BY_TYPE: Record<string, NotificationKind> = {
+  "match-ready": "match-ready",
+  "vote-closing": "vote-closing",
+  "event-confirmed": "event-confirmed",
+  "chat-mention": "chat-mention",
+  match: "match-ready",
+  vote: "vote-closing",
+  event: "event-confirmed",
+  chat: "chat-mention",
+  mention: "chat-mention",
+};
+
+function toKind(type: string): NotificationKind {
+  return KIND_BY_TYPE[type] ?? "match-ready";
 }
 
 export default async function NotificationsPage({
@@ -101,14 +38,57 @@ export default async function NotificationsPage({
 }>) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations("notifications");
 
   const user = await getOnboardingUserState();
   if (!user) {
     redirect(`/${locale}/login`);
   }
 
-  const result = await getNotificationsAction(locale);
-  const items = result.ok ? result.data : [];
+  const [rows, unread] = await Promise.all([
+    listNotifications(user.id, { limit: 50 }),
+    unreadCount(user.id),
+  ]);
+
+  const items: NotificationItem[] = rows.map((row) => ({
+    id: row.id,
+    kind: toKind(row.type),
+    title: row.title,
+    body: row.body ?? "",
+    href: row.href ?? `/${locale}/notifications`,
+    read: row.readAt !== null,
+    createdAt: row.createdAt.toISOString(),
+  }));
+
+  const inboxLabel = t("eyebrow");
+  const titleLabel = t("title");
+  const backLabel = t("back");
+  const countLabel =
+    unread > 0 ? t("unreadCount", { count: unread }) : t("allCaughtUp");
+  const emptyTitle = t("emptyTitle");
+  const emptyBody = t("emptyBody");
+  const inboxCopy = {
+    markAllRead: t("markAllRead"),
+    markRead: t("markRead"),
+    open: t("open"),
+    unreadCount: (count: number) => t("unreadCount", { count }),
+    allCaughtUp: t("allCaughtUp"),
+    filterAria: t("filterAria"),
+    filters: {
+      all: t("filters.all"),
+      unread: t("filters.unread"),
+      match: t("filters.match"),
+      vote: t("filters.vote"),
+      event: t("filters.event"),
+      chat: t("filters.chat"),
+    },
+    kinds: {
+      "match-ready": t("kinds.matchReady"),
+      "vote-closing": t("kinds.voteClosing"),
+      "event-confirmed": t("kinds.eventConfirmed"),
+      "chat-mention": t("kinds.chatMention"),
+    },
+  };
 
   return (
     <main
@@ -138,7 +118,7 @@ export default async function NotificationsPage({
         <div className="flex items-center gap-2">
           <Link
             href={`/${locale}/today`}
-            aria-label="Back to Today"
+            aria-label={backLabel}
             className="inline-flex items-center justify-center rounded-full"
             style={{
               width: 36,
@@ -160,16 +140,23 @@ export default async function NotificationsPage({
                 textTransform: "uppercase",
               }}
             >
-              Inbox
+              {inboxLabel}
             </div>
             <h1
               className="display"
               style={{ fontSize: 20, lineHeight: 1.1 }}
             >
-              Notifications
+              {titleLabel}
             </h1>
           </div>
         </div>
+        <Pill variant={unread > 0 ? "accent" : "default"}>
+          <span
+            style={{ color: unread > 0 ? "var(--accent)" : "var(--ink-muted)" }}
+          >
+            {countLabel}
+          </span>
+        </Pill>
       </header>
 
       <section
@@ -178,8 +165,9 @@ export default async function NotificationsPage({
       >
         <NotificationInboxActions
           initialItems={items}
-          emptyTitle="You're caught up"
-          emptyBody="New matches, votes, and event updates will appear here."
+          copy={inboxCopy}
+          emptyTitle={emptyTitle}
+          emptyBody={emptyBody}
         />
       </section>
 

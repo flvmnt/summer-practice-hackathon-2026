@@ -15,8 +15,9 @@ export type MapVenue = {
 };
 
 /**
- * Seed Timișoara venues used until a venues query exists.
- * TODO(A12): replace with venues query once /api or db query exists.
+ * @deprecated Public `/map` reads from `getNearbyVenuesAction` in `@/lib/venues`.
+ * Remaining importers (e.g. CreateEventForm) should migrate to the action and
+ * this fixture should be removed once they do.
  */
 export const SEED_VENUES: ReadonlyArray<MapVenue> = [
   {

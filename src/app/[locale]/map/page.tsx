@@ -1,8 +1,9 @@
 import { setRequestLocale } from "next-intl/server";
 import { MapPageClient } from "@/components/map/MapPageClient";
-import { SEED_VENUES } from "@/components/map/seed-venues";
+import type { MapVenue } from "@/components/map/seed-venues";
 import type { AppLocale } from "@/i18n/routing";
 import type { SportKey } from "@/lib/sports";
+import { getNearbyVenuesAction } from "@/lib/venues";
 
 export const dynamic = "force-dynamic";
 
@@ -103,8 +104,19 @@ export default async function MapPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // TODO(A12): replace with `getNearbyVenuesAction` once the venues query exists.
-  const venues = SEED_VENUES;
+  const result = await getNearbyVenuesAction({ radiusKm: 10 });
+  const venues: ReadonlyArray<MapVenue> = result.ok
+    ? result.data.venues.map((row) => ({
+        id: row.id,
+        name: row.name,
+        city: row.address ?? "",
+        sport: row.sport,
+        lat: row.lat,
+        lon: row.lng,
+        priceTier: 0,
+        eventAt: row.upcomingPublicEventCount > 0 ? new Date().toISOString() : null,
+      }))
+    : [];
   const labels = COPY[locale];
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import {
   NotificationInbox,
   type NotificationItem,
@@ -8,32 +8,46 @@ import {
 } from "@/components/notifications/NotificationInbox";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Glyph } from "@/components/ui/Glyph";
+import {
+  markAllNotificationsReadAction,
+  markNotificationReadAction,
+} from "@/lib/notification-actions";
 import { cn } from "@/lib/utils";
 
 type FilterId = "all" | "unread" | "match" | "vote" | "chat" | "event";
 
 type FilterDef = {
   id: FilterId;
-  label: string;
   /** Predicate against an item; "all" returns true. */
   match: (item: NotificationItem) => boolean;
 };
 
 const FILTERS: ReadonlyArray<FilterDef> = [
-  { id: "all", label: "All", match: () => true },
-  { id: "unread", label: "Unread", match: (i) => !i.read },
-  { id: "match", label: "Match", match: (i) => i.kind === "match-ready" },
-  { id: "vote", label: "Vote", match: (i) => i.kind === "vote-closing" },
+  { id: "all", match: () => true },
+  { id: "unread", match: (i) => !i.read },
+  { id: "match", match: (i) => i.kind === "match-ready" },
+  { id: "vote", match: (i) => i.kind === "vote-closing" },
   {
     id: "event",
-    label: "Event",
     match: (i) => i.kind === "event-confirmed",
   },
-  { id: "chat", label: "Chat", match: (i) => i.kind === "chat-mention" },
+  { id: "chat", match: (i) => i.kind === "chat-mention" },
 ];
+
+type NotificationInboxCopy = {
+  markAllRead: string;
+  markRead: string;
+  open: string;
+  unreadCount: (count: number) => string;
+  allCaughtUp: string;
+  filterAria: string;
+  filters: Record<FilterId, string>;
+  kinds: Record<NotificationKind, string>;
+};
 
 type Props = {
   initialItems: ReadonlyArray<NotificationItem>;
+  copy: NotificationInboxCopy;
   emptyTitle?: string;
   emptyBody?: string;
 };
@@ -42,11 +56,11 @@ type Props = {
  * Client wrapper that adds filter chips, mark-read, and mark-all-read on top
  * of the existing `NotificationInbox` primitive without modifying its API.
  *
- * State is local to this component for the demo. A future server action can
- * persist read state — see TODOs.
+ * Uses optimistic UI while persisting read state through server actions.
  */
 export function NotificationInboxActions({
   initialItems,
+  copy,
   emptyTitle,
   emptyBody,
 }: Props) {
@@ -54,6 +68,7 @@ export function NotificationInboxActions({
     initialItems.map((item) => ({ ...item })),
   );
   const [activeFilter, setActiveFilter] = useState<FilterId>("all");
+  const [pending, startTransition] = useTransition();
 
   const unreadCount = useMemo(
     () => items.filter((item) => !item.read).length,
@@ -85,15 +100,29 @@ export function NotificationInboxActions({
   }, [items, activeFilter]);
 
   function handleMarkRead(id: string) {
-    // TODO: persist read state via server action once notifications schema lands.
+    const previous = items;
     setItems((prev) =>
       prev.map((item) => (item.id === id ? { ...item, read: true } : item)),
     );
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.set("notificationId", id);
+      const result = await markNotificationReadAction(formData);
+      if (!result.ok) {
+        setItems(previous);
+      }
+    });
   }
 
   function handleMarkAllRead() {
-    // TODO: persist via server action once notifications schema lands.
+    const previous = items;
     setItems((prev) => prev.map((item) => ({ ...item, read: true })));
+    startTransition(async () => {
+      const result = await markAllNotificationsReadAction();
+      if (!result.ok) {
+        setItems(previous);
+      }
+    });
   }
 
   return (
@@ -109,30 +138,32 @@ export function NotificationInboxActions({
           }}
         >
           {unreadCount > 0
-            ? `${unreadCount} unread`
-            : "All caught up"}
+            ? copy.unreadCount(unreadCount)
+            : copy.allCaughtUp}
         </div>
         <button
           type="button"
           onClick={handleMarkAllRead}
-          disabled={unreadCount === 0}
+          disabled={unreadCount === 0 || pending}
           className="inline-flex items-center gap-1.5 rounded-md px-3 text-sm font-semibold transition-colors disabled:opacity-40"
           style={{
             minHeight: 36,
             background: "transparent",
             color: "var(--ink)",
             border: "1px solid var(--line)",
-            cursor: unreadCount === 0 ? "default" : "pointer",
+            cursor: unreadCount === 0 || pending ? "default" : "pointer",
           }}
         >
           <Glyph.check size={14} />
-          Mark all read
+          {copy.markAllRead}
         </button>
       </div>
 
       <FilterChips
         active={activeFilter}
         counts={counts}
+        labels={copy.filters}
+        ariaLabel={copy.filterAria}
         onChange={setActiveFilter}
       />
 
@@ -146,7 +177,13 @@ export function NotificationInboxActions({
           }
         />
       ) : (
-        <NotificationInbox items={filtered} onMarkRead={handleMarkRead} />
+        <NotificationInbox
+          items={filtered}
+          onMarkRead={handleMarkRead}
+          markReadLabel={copy.markRead}
+          openLabel={copy.open}
+          kindLabels={copy.kinds}
+        />
       )}
     </div>
   );
@@ -155,16 +192,20 @@ export function NotificationInboxActions({
 function FilterChips({
   active,
   counts,
+  labels,
+  ariaLabel,
   onChange,
 }: {
   active: FilterId;
   counts: Record<FilterId, number>;
+  labels: Record<FilterId, string>;
+  ariaLabel: string;
   onChange: (id: FilterId) => void;
 }) {
   return (
     <div
       role="tablist"
-      aria-label="Filter notifications"
+      aria-label={ariaLabel}
       className="flex gap-2 overflow-x-auto"
       style={{
         // Avoid horizontal page jiggle on iOS while letting chips wrap on wider viewports.
@@ -196,7 +237,7 @@ function FilterChips({
               cursor: "pointer",
             }}
           >
-            {filter.label}
+            {labels[filter.id]}
             <span
               className="mono"
               style={{

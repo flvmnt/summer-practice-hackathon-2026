@@ -2,54 +2,81 @@ import Link from "next/link";
 import { setRequestLocale } from "next-intl/server";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { Avatar } from "@/components/ui/Avatar";
-import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Glyph } from "@/components/ui/Glyph";
 import { Pill } from "@/components/ui/Pill";
 import type { AppLocale } from "@/i18n/routing";
+import { getLeaderboardAction, type LeaderboardRow } from "@/lib/leaderboard";
 
 export const dynamic = "force-dynamic";
-
-// TODO(real-data): Wire to live leaderboard query once Wave 3 ships
-// `/server/actions/leaderboard.ts`. For now we render seeded stubs so the
-// page is a real surface and not a 404.
-const PLAYERS = [
-  { rank: 1, name: "Andrei Marin", points: 1240, sport: "football" as const },
-  { rank: 2, name: "Vlad Ionescu", points: 1118, sport: "tennis" as const },
-  { rank: 3, name: "Diana Popa", points: 990, sport: "running" as const },
-  { rank: 4, name: "Maria Radu", points: 842, sport: "basketball" as const },
-  { rank: 5, name: "Eli Stoica", points: 760, sport: "padel" as const },
-];
-
-const GROUPS = [
-  { rank: 1, name: "Rozelor Football", members: 14, points: 5240 },
-  { rank: 2, name: "Tenis Iulius", members: 8, points: 3870 },
-  { rank: 3, name: "Sunrise Runners", members: 22, points: 3120 },
-];
-
-const ACHIEVEMENTS = [
-  {
-    title: "First Match",
-    body: "You showed up to your first ShowUp2Move event.",
-    glyph: "today" as const,
-  },
-  {
-    title: "Captain",
-    body: "You stepped up and ran an event from auto-create to kickoff.",
-    glyph: "crown" as const,
-  },
-  {
-    title: "Streak of 3",
-    body: "Three weeks of ShowUpToday yeses in a row.",
-    glyph: "pulse" as const,
-  },
-];
 
 function rankColor(rank: number) {
   if (rank === 1) return "var(--accent)";
   if (rank === 2) return "var(--field)";
   if (rank === 3) return "var(--warn-token)";
   return "var(--ink-muted)";
+}
+
+function Row({
+  row,
+  isLast,
+  highlight,
+  pointsLabel,
+  streakLabel,
+  attendedLabel,
+}: {
+  row: LeaderboardRow;
+  isLast: boolean;
+  highlight: boolean;
+  pointsLabel: string;
+  streakLabel: string;
+  attendedLabel: string;
+}) {
+  return (
+    <div
+      role="row"
+      className="grid items-center"
+      style={{
+        gridTemplateColumns: "60px 1fr 90px",
+        padding: "14px 18px",
+        borderBottom: isLast ? "0" : "1px solid var(--line)",
+        background: highlight ? "var(--accent-tint)" : "transparent",
+      }}
+    >
+      <span
+        className="mono"
+        style={{ fontSize: 18, fontWeight: 700, color: rankColor(row.rank) }}
+      >
+        {row.rank.toString().padStart(2, "0")}
+      </span>
+      <span className="flex items-center" style={{ gap: 12, minWidth: 0 }}>
+        <Avatar name={row.fullName || row.username} size={36} />
+        <span style={{ minWidth: 0 }}>
+          <span
+            className="block truncate"
+            style={{ fontWeight: 600, fontSize: 15 }}
+          >
+            {row.fullName || row.username}
+          </span>
+          <span
+            className="mono"
+            style={{ fontSize: 11, color: "var(--ink-muted)" }}
+          >
+            @{row.username} · {row.attendedCount} {attendedLabel} · {row.streak}{" "}
+            {streakLabel}
+          </span>
+        </span>
+      </span>
+      <span
+        className="mono"
+        style={{ textAlign: "right", fontSize: 15, fontWeight: 700 }}
+        aria-label={pointsLabel}
+      >
+        {row.points.toLocaleString()}
+      </span>
+    </div>
+  );
 }
 
 export default async function LeaderboardPage({
@@ -59,6 +86,40 @@ export default async function LeaderboardPage({
 }>) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  const result = await getLeaderboardAction({ scope: "all" });
+  const data = result.ok
+    ? result.data
+    : { rows: [], viewer: null };
+
+  const todayLabel = locale === "ro" ? "Astăzi" : "Today";
+  const liveLabel = locale === "ro" ? "Date live" : "Live data";
+  const eyebrow = locale === "ro" ? "Clasament" : "Leaderboard";
+  const heading =
+    locale === "ro" ? "Top jucători" : "Top players";
+  const intro =
+    locale === "ro"
+      ? "Punctele se acordă pentru prezență, căpitanat și menținerea seriei. Top 25 după total puncte."
+      : "Points are awarded for showing up, captaining, and keeping streaks alive. Top 25 by lifetime points.";
+  const headerRank = locale === "ro" ? "Loc" : "Rank";
+  const headerPlayer = locale === "ro" ? "Jucător" : "Player";
+  const headerPoints = locale === "ro" ? "Puncte" : "Points";
+  const attendedLabel =
+    locale === "ro" ? "evenimente" : "events";
+  const streakLabel =
+    locale === "ro" ? "săpt. serie" : "wk streak";
+  const youLabel = locale === "ro" ? "Tu" : "You";
+  const emptyTitle =
+    locale === "ro" ? "Clasamentul se formează" : "Leaderboard warming up";
+  const emptyBody =
+    locale === "ro"
+      ? "Niciun punct înregistrat încă. Răspunde ShowUpToday și arată-te la primul eveniment ca să apari aici."
+      : "No points logged yet. Answer ShowUpToday and show up to your first event to appear here.";
+  const ctaLabel = locale === "ro" ? "Vezi promptul de azi" : "See today's prompt";
+
+  const viewerOutOfList =
+    data.viewer &&
+    !data.rows.some((row) => row.userId === data.viewer?.userId);
 
   return (
     <main
@@ -88,9 +149,9 @@ export default async function LeaderboardPage({
             }}
           >
             <Glyph.back size={16} />
-            Today
+            {todayLabel}
           </Link>
-          <Pill variant="alt">Stub data · TODO</Pill>
+          <Pill variant="live">{liveLabel}</Pill>
         </header>
 
         <div style={{ marginTop: 24 }}>
@@ -103,7 +164,7 @@ export default async function LeaderboardPage({
               textTransform: "uppercase",
             }}
           >
-            Leaderboard
+            {eyebrow}
           </span>
           <h1
             className="display mt-2"
@@ -113,225 +174,112 @@ export default async function LeaderboardPage({
               lineHeight: 1.02,
             }}
           >
-            Players this week
+            {heading}
           </h1>
           <p
             className="mt-3 max-w-xl"
             style={{ fontSize: 15, color: "var(--ink-muted)", lineHeight: 1.5 }}
           >
-            Points are awarded for showing up, captaining, and keeping streaks
-            alive. Stub leaderboard — real ranking lands with the matching
-            telemetry.
+            {intro}
           </p>
         </div>
 
-        {/* Players */}
-        <Card variant="card" className="mt-6" style={{ padding: 0, overflow: "hidden" }}>
-          <div
-            role="row"
-            className="grid items-center"
-            style={{
-              gridTemplateColumns: "60px 1fr 90px",
-              padding: "12px 18px",
-              fontSize: 11,
-              color: "var(--ink-muted)",
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              borderBottom: "1px solid var(--line)",
-            }}
+        {data.rows.length === 0 ? (
+          <Card variant="card" className="mt-6" style={{ padding: 0 }}>
+            <EmptyState
+              title={emptyTitle}
+              body={emptyBody}
+              glyph={<Glyph.pulse size={28} />}
+              action={{ label: ctaLabel, href: `/${locale}/today` }}
+            />
+          </Card>
+        ) : (
+          <Card
+            variant="card"
+            className="mt-6"
+            style={{ padding: 0, overflow: "hidden" }}
           >
-            <span className="mono">Rank</span>
-            <span className="mono">Player</span>
-            <span className="mono" style={{ textAlign: "right" }}>
-              Points
-            </span>
-          </div>
-          {PLAYERS.map((p) => (
             <div
-              key={p.rank}
               role="row"
-              className="grid items-center"
+              className="grid items-center sticky"
               style={{
                 gridTemplateColumns: "60px 1fr 90px",
-                padding: "14px 18px",
-                borderBottom:
-                  p.rank === PLAYERS.length ? "0" : "1px solid var(--line)",
+                padding: "12px 18px",
+                fontSize: 11,
+                color: "var(--ink-muted)",
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                borderBottom: "1px solid var(--line)",
+                background: "var(--surface)",
+                top: 0,
+                zIndex: 1,
               }}
             >
-              <span
-                className="mono"
-                style={{
-                  fontSize: 18,
-                  fontWeight: 700,
-                  color: rankColor(p.rank),
-                }}
-              >
-                {p.rank.toString().padStart(2, "0")}
-              </span>
-              <span
-                className="flex items-center"
-                style={{ gap: 12, minWidth: 0 }}
-              >
-                <Avatar name={p.name} size={36} />
-                <span style={{ minWidth: 0 }}>
-                  <span
-                    className="block truncate"
-                    style={{ fontWeight: 600, fontSize: 15 }}
-                  >
-                    {p.name}
-                  </span>
-                  <span
-                    className="mono"
-                    style={{
-                      fontSize: 11,
-                      color: "var(--ink-muted)",
-                      textTransform: "capitalize",
-                    }}
-                  >
-                    {p.sport}
-                  </span>
-                </span>
-              </span>
-              <span
-                className="mono"
-                style={{
-                  textAlign: "right",
-                  fontSize: 15,
-                  fontWeight: 700,
-                }}
-              >
-                {p.points.toLocaleString()}
+              <span className="mono">{headerRank}</span>
+              <span className="mono">{headerPlayer}</span>
+              <span className="mono" style={{ textAlign: "right" }}>
+                {headerPoints}
               </span>
             </div>
-          ))}
-        </Card>
-
-        {/* Top groups */}
-        <h2
-          className="display"
-          style={{
-            fontSize: 26,
-            letterSpacing: "-0.02em",
-            lineHeight: 1.1,
-            marginTop: 36,
-            marginBottom: 12,
-          }}
-        >
-          Top groups
-        </h2>
-        <Card variant="card" style={{ padding: 0, overflow: "hidden" }}>
-          {GROUPS.map((g, i) => (
-            <div
-              key={g.rank}
-              className="grid items-center"
-              style={{
-                gridTemplateColumns: "60px 1fr 100px",
-                padding: "14px 18px",
-                borderBottom:
-                  i === GROUPS.length - 1 ? "0" : "1px solid var(--line)",
-              }}
-            >
-              <span
-                className="mono"
+            {data.rows.map((row, i) => (
+              <Row
+                key={row.userId}
+                row={row}
+                isLast={i === data.rows.length - 1 && !viewerOutOfList}
+                highlight={data.viewer?.userId === row.userId}
+                pointsLabel={headerPoints}
+                streakLabel={streakLabel}
+                attendedLabel={attendedLabel}
+              />
+            ))}
+            {viewerOutOfList && data.viewer ? (
+              <div
+                role="row"
+                className="grid items-center"
                 style={{
-                  fontSize: 16,
-                  fontWeight: 700,
-                  color: rankColor(g.rank),
+                  gridTemplateColumns: "60px 1fr 90px",
+                  padding: "14px 18px",
+                  borderTop: "1px dashed var(--line)",
+                  background: "var(--accent-tint)",
                 }}
               >
-                {g.rank.toString().padStart(2, "0")}
-              </span>
-              <span style={{ minWidth: 0 }}>
                 <span
-                  className="block truncate"
-                  style={{ fontWeight: 600, fontSize: 15 }}
+                  className="mono"
+                  style={{ fontSize: 13, fontWeight: 700, color: "var(--ink-muted)" }}
                 >
-                  {g.name}
+                  #{data.viewer.rank}
+                </span>
+                <span className="flex items-center" style={{ gap: 12, minWidth: 0 }}>
+                  <Avatar
+                    name={data.viewer.row.fullName || data.viewer.row.username}
+                    size={36}
+                  />
+                  <span style={{ minWidth: 0 }}>
+                    <span
+                      className="block truncate"
+                      style={{ fontWeight: 600, fontSize: 15 }}
+                    >
+                      {youLabel} · {data.viewer.row.fullName || data.viewer.row.username}
+                    </span>
+                    <span
+                      className="mono"
+                      style={{ fontSize: 11, color: "var(--ink-muted)" }}
+                    >
+                      @{data.viewer.row.username} · {data.viewer.row.attendedCount}{" "}
+                      {attendedLabel} · {data.viewer.row.streak} {streakLabel}
+                    </span>
+                  </span>
                 </span>
                 <span
                   className="mono"
-                  style={{ fontSize: 11, color: "var(--ink-muted)" }}
+                  style={{ textAlign: "right", fontSize: 15, fontWeight: 700 }}
                 >
-                  {g.members} members
+                  {data.viewer.row.points.toLocaleString()}
                 </span>
-              </span>
-              <span
-                className="mono"
-                style={{
-                  textAlign: "right",
-                  fontSize: 15,
-                  fontWeight: 700,
-                }}
-              >
-                {g.points.toLocaleString()}
-              </span>
-            </div>
-          ))}
-        </Card>
-
-        {/* Achievements */}
-        <h2
-          className="display"
-          style={{
-            fontSize: 26,
-            letterSpacing: "-0.02em",
-            lineHeight: 1.1,
-            marginTop: 36,
-            marginBottom: 12,
-          }}
-        >
-          Achievements unlocked
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-3">
-          {ACHIEVEMENTS.map((a) => {
-            const Icon = a.glyph === "today"
-              ? Glyph.today
-              : a.glyph === "crown"
-                ? Glyph.crown
-                : Glyph.pulse;
-            return (
-              <Card key={a.title} variant="card" style={{ padding: 20 }}>
-                <div className="flex items-center" style={{ gap: 12 }}>
-                  <span
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 999,
-                      background: "var(--accent-soft)",
-                      color: "var(--accent-deep)",
-                      display: "grid",
-                      placeItems: "center",
-                    }}
-                    aria-hidden="true"
-                  >
-                    <Icon size={20} />
-                  </span>
-                  <Badge variant="accent">Unlocked</Badge>
-                </div>
-                <h3
-                  className="display mt-3"
-                  style={{
-                    fontSize: 18,
-                    letterSpacing: "-0.015em",
-                    lineHeight: 1.15,
-                  }}
-                >
-                  {a.title}
-                </h3>
-                <p
-                  className="mt-2"
-                  style={{
-                    fontSize: 13,
-                    color: "var(--ink-muted)",
-                    lineHeight: 1.5,
-                  }}
-                >
-                  {a.body}
-                </p>
-              </Card>
-            );
-          })}
-        </div>
+              </div>
+            ) : null}
+          </Card>
+        )}
       </div>
 
       <MobileTabBar />

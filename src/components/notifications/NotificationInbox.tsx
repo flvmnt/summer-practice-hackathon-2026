@@ -25,6 +25,9 @@ export type NotificationItem = {
 type Props = {
   items: NotificationItem[];
   onMarkRead?: (id: string) => void;
+  markReadLabel?: string;
+  openLabel?: string;
+  kindLabels?: Record<NotificationKind, string>;
   className?: string;
   emptyTitle?: string;
   emptyBody?: string;
@@ -63,6 +66,9 @@ const kindMeta: Record<
 export function NotificationInbox({
   items,
   onMarkRead,
+  markReadLabel = "Mark read",
+  openLabel = "Open",
+  kindLabels,
   className,
   emptyTitle = "No notifications",
   emptyBody = "We'll ping you when a group forms, vote closes, or an event is confirmed.",
@@ -81,6 +87,7 @@ export function NotificationInbox({
     <ul className={cn("flex flex-col gap-2", className)} aria-label="Notifications">
       {items.map((item) => {
         const meta = kindMeta[item.kind];
+        const kindLabel = kindLabels?.[item.kind] ?? meta.label;
         return (
           <li key={item.id}>
             <article
@@ -126,7 +133,7 @@ export function NotificationInbox({
                     className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
                     style={{ color: meta.color }}
                   >
-                    {meta.label}
+                    {kindLabel}
                   </span>
                 </div>
                 <h3
@@ -147,7 +154,7 @@ export function NotificationInbox({
                     className="inline-flex items-center gap-1 text-[12px] font-semibold"
                     style={{ color: "var(--accent-deep)" }}
                   >
-                    Open
+                    {openLabel}
                     <Glyph.arrow size={14} />
                   </Link>
                   {!item.read && onMarkRead ? (
@@ -164,7 +171,7 @@ export function NotificationInbox({
                         cursor: "pointer",
                       }}
                     >
-                      Mark read
+                      {markReadLabel}
                     </button>
                   ) : null}
                 </div>
