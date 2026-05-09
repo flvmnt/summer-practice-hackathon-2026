@@ -26,6 +26,11 @@ type SportsFormCopy = {
   sports: Record<string, string>;
 };
 
+export type AiSuggestionsCopy = {
+  label: string;
+  hint: string;
+};
+
 // Direction B canvas tile sports — 6 tiles, 3×2 mobile, 6×1 desktop.
 const TILE_SPORTS = [
   { key: "football" as SportKey, glyph: Glyph.football, label: "Football" },
@@ -46,6 +51,18 @@ const SUBMIT_SPORT: Record<string, SportKey> = {
   padel: "tennis", // fallback to tennis (court sport) until schema adds padel
   running: "running",
   volleyball: "volleyball",
+};
+
+// Reverse: canonical SportKey → display tile key. Suggestions arrive as
+// canonical keys; we surface them via the existing tile grid only when a
+// matching tile exists. Sports without a tile (yoga, hiking, badminton,
+// cycling, table_tennis) are dropped from the suggestion strip.
+const TILE_FROM_SPORT: Partial<Record<SportKey, (typeof TILE_SPORTS)[number]["key"]>> = {
+  football: "football",
+  basketball: "basketball",
+  tennis: "tennis",
+  volleyball: "volleyball",
+  running: "running",
 };
 
 type LevelTier = "beginner" | "casual" | "pro";
@@ -76,10 +93,14 @@ export function SportsForm({
   copy,
   defaultSports,
   locale,
+  suggestedSports,
+  aiSuggestionsCopy,
 }: {
   copy: SportsFormCopy;
   defaultSports: Array<{ sport: SportKey; level: number }>;
   locale: AppLocale;
+  suggestedSports?: SportKey[];
+  aiSuggestionsCopy?: AiSuggestionsCopy;
 }) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
@@ -94,6 +115,24 @@ export function SportsForm({
     }
     return initial;
   });
+
+  // Resolve AI suggestions to renderable tile entries. Cap at 3 (already capped
+  // upstream, but defensive). De-duplicate against tile keys.
+  const aiSuggestionTiles = useMemo(() => {
+    if (!suggestedSports || suggestedSports.length === 0) return [];
+    const seenKeys = new Set<string>();
+    const tiles: Array<(typeof TILE_SPORTS)[number]> = [];
+    for (const sport of suggestedSports) {
+      const tileKey = TILE_FROM_SPORT[sport];
+      if (!tileKey || seenKeys.has(tileKey)) continue;
+      const tile = TILE_SPORTS.find((t) => t.key === tileKey);
+      if (!tile) continue;
+      seenKeys.add(tileKey);
+      tiles.push(tile);
+      if (tiles.length >= 3) break;
+    }
+    return tiles;
+  }, [suggestedSports]);
 
   const selectedKeys = useMemo(() => Object.keys(selected), [selected]);
   const canContinue = selectedKeys.length > 0 && !pending;
@@ -158,6 +197,62 @@ export function SportsForm({
             </div>
           );
         })}
+
+        {/* AI-suggested sports row — shown only when bio yielded matches */}
+        {aiSuggestionTiles.length > 0 ? (
+          <div className="mt-5 flex flex-col gap-2">
+            <div className="flex items-baseline justify-between">
+              <span
+                className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
+                style={{ color: "var(--accent-deep)" }}
+              >
+                {aiSuggestionsCopy?.label ?? "Suggested for you"}
+              </span>
+              {aiSuggestionsCopy?.hint ? (
+                <span
+                  className="text-[11px]"
+                  style={{ color: "var(--ink-muted)" }}
+                >
+                  {aiSuggestionsCopy.hint}
+                </span>
+              ) : null}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {aiSuggestionTiles.map((tile) => {
+                const Icon = tile.glyph;
+                const isActive = tile.key in selected;
+                return (
+                  <button
+                    key={`ai-${tile.key}`}
+                    type="button"
+                    aria-pressed={isActive}
+                    onClick={() => toggleSport(tile.key)}
+                    className="pill accent"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: "8px 12px",
+                      fontSize: 13,
+                      fontWeight: 600,
+                      background: isActive ? "var(--accent)" : "var(--surface)",
+                      color: isActive ? "var(--on-accent)" : "var(--accent-deep)",
+                      border: isActive
+                        ? "1.5px solid var(--accent)"
+                        : "1.5px solid var(--accent-soft)",
+                      borderRadius: 999,
+                      cursor: "pointer",
+                      transition: "background var(--t-1) var(--ease)",
+                    }}
+                  >
+                    <Icon size={16} />
+                    <span>{tile.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
 
         {/* Sport tile grid */}
         <div

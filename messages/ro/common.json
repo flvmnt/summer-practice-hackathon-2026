@@ -233,6 +233,8 @@
         "casual": "Recreativ",
         "pro": "Pro"
       },
+      "aiSuggestionsLabel": "Sugerate pentru tine",
+      "aiSuggestionsHint": "Din descrierea ta — apasă pentru a adăuga",
       "empty": "Alege cel puțin un sport pentru a continua.",
       "next": "Înainte"
     },
@@ -557,6 +559,18 @@
       "saved": "RSVP actualizat"
     },
     "mapPreviewLabel": "Previzualizare hartă",
+    "captainBrief": {
+      "header": "Brief căpitan",
+      "sourceAi": "AI · live",
+      "sourceFallback": "Auto · v1",
+      "reasonLabel": "De ce acest plan",
+      "decisionsLabel": "De urmărit",
+      "decisionLabels": {
+        "venue": "Locație",
+        "time": "Oră",
+        "team": "Echipă"
+      }
+    },
     "vote": {
       "title": "Vot: alegeți o locație",
       "closeVote": "Închide votul",

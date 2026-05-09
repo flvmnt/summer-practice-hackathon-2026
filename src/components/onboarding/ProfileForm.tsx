@@ -9,8 +9,9 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { WizardMobileHeader } from "@/components/onboarding/WizardMobileHeader";
 import { WizardStickyActionBar } from "@/components/onboarding/WizardStickyActionBar";
 import type { AppLocale } from "@/i18n/routing";
+import { extractSportsForCurrentUserAction } from "@/lib/ai-actions";
 import { updateOnboardingProfileAction } from "@/lib/onboarding";
-import { type SportKey } from "@/lib/sports";
+import { SPORT_KEYS, type SportKey } from "@/lib/sports";
 
 const BIO_MAX = 240;
 const NAME_MAX = 80;
@@ -202,13 +203,32 @@ export function ProfileForm({
         }
         return;
       }
-      // Persist the AI-picked sports as a hint for the next step. The sports
-      // page reads its own state from the DB; we hand off via a query param
-      // so A6 can preselect when present.
+      // Persist sport suggestions for the next step via a query param. We
+      // prefer client-picked sports (the user actively confirmed those by
+      // tapping); otherwise we fire the server-side AI extraction so the
+      // bio→sport signal still surfaces. Failures here must NOT block the
+      // hop to /onboarding/sports.
+      let suggested: SportKey[] = [...picked];
+      if (suggested.length === 0) {
+        try {
+          const ai = await extractSportsForCurrentUserAction();
+          if (ai.ok && ai.suggestions.length > 0) {
+            suggested = ai.suggestions
+              .slice()
+              .sort((a, b) => b.confidence - a.confidence)
+              .slice(0, 3)
+              .map((entry) => entry.sport)
+              .filter((sport): sport is SportKey =>
+                SPORT_KEYS.includes(sport),
+              );
+          }
+        } catch {
+          // Swallow — proceed without suggestions.
+        }
+      }
+
       const query =
-        picked.size > 0
-          ? `?suggested=${[...picked].join(",")}`
-          : "";
+        suggested.length > 0 ? `?suggested=${suggested.join(",")}` : "";
       router.push(`/${locale}/onboarding/sports${query}`);
     });
   }

@@ -1,5 +1,6 @@
 "use server";
 
+import { extractSportsForCurrentUserAction } from "@/lib/ai-actions";
 import {
   setUserSportsAction,
   updateOnboardingLocationAction,
@@ -11,6 +12,12 @@ export type OnboardingProfileFormState = {
   error?: string;
   fieldErrors?: Record<string, string>;
   saved?: boolean;
+  /**
+   * AI-extracted sport suggestions derived from the saved bio. Top entries by
+   * confidence; consumed by the next onboarding step. Empty when AI fails or
+   * the bio yields no signal — never blocks form submission.
+   */
+  suggestedSports?: SportKey[];
 };
 
 export type OnboardingSportsFormState = OnboardingProfileFormState;
@@ -37,7 +44,25 @@ export async function onboardingProfileFormAction(
     };
   }
 
-  return { saved: true };
+  // Fire bio→sports extraction. Failures must NOT block onboarding — the
+  // deterministic keyword fallback inside `extractSportsFromBio` already
+  // handles a missing GROQ key, but we still wrap defensively in case the
+  // DB read or downstream call throws.
+  let suggestedSports: SportKey[] | undefined;
+  try {
+    const ai = await extractSportsForCurrentUserAction();
+    if (ai.ok && ai.suggestions.length > 0) {
+      suggestedSports = ai.suggestions
+        .slice()
+        .sort((a, b) => b.confidence - a.confidence)
+        .slice(0, 3)
+        .map((entry) => entry.sport);
+    }
+  } catch {
+    // Swallow — onboarding flow proceeds without suggestions.
+  }
+
+  return { saved: true, suggestedSports };
 }
 
 function skillLevel(value: string) {

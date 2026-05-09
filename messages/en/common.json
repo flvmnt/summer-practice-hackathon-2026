@@ -233,6 +233,8 @@
         "casual": "Casual",
         "pro": "Pro"
       },
+      "aiSuggestionsLabel": "Suggested for you",
+      "aiSuggestionsHint": "From your bio — tap to add",
       "empty": "Select at least one sport to continue.",
       "next": "Next"
     },
@@ -557,6 +559,18 @@
       "saved": "RSVP updated"
     },
     "mapPreviewLabel": "Map preview",
+    "captainBrief": {
+      "header": "Captain brief",
+      "sourceAi": "AI · live",
+      "sourceFallback": "Auto · v1",
+      "reasonLabel": "Why this plan",
+      "decisionsLabel": "Heads up",
+      "decisionLabels": {
+        "venue": "Venue",
+        "time": "Time",
+        "team": "Team"
+      }
+    },
     "vote": {
       "title": "Vote: choose a venue",
       "closeVote": "Close vote",
