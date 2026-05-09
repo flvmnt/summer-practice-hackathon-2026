@@ -1,4 +1,3 @@
-import { and, desc, eq, inArray } from "drizzle-orm";
 import { setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -6,15 +5,11 @@ import { EventListItem, type RsvpStatusLite } from "@/components/events/EventLis
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Glyph } from "@/components/ui/Glyph";
-import { getDb } from "@/db";
-import { eventAttendees, events } from "@/db/schema";
 import type { AppLocale } from "@/i18n/routing";
 import { getCurrentUser } from "@/lib/auth-current-user";
-import type { SportKey } from "@/lib/sports";
+import { getUserEventsList, type UserEventsFilter } from "@/lib/events";
 
 export const dynamic = "force-dynamic";
-
-type Filter = "upcoming" | "past" | "all";
 
 const COPY = {
   en: {
@@ -43,82 +38,10 @@ const COPY = {
   },
 };
 
-function readFilter(value: string | string[] | undefined): Filter {
+function readFilter(value: string | string[] | undefined): UserEventsFilter {
   const raw = Array.isArray(value) ? value[0] : value;
   if (raw === "past" || raw === "all") return raw;
   return "upcoming";
-}
-
-/**
- * Lists events the current user is attending. Reads directly from Drizzle
- * — see TODO below for moving into a `getUserEventsList` action once a
- * dedicated lib helper exists.
- *
- * TODO(backend): introduce `getUserEventsList(filter)` in `src/lib/events.ts`
- * with proper ownership and demoRunId scoping, then swap the inline query.
- */
-async function getUserEventsList(userId: string) {
-  const db = getDb();
-  const now = Date.now();
-
-  const myAttendance = await db
-    .select({
-      eventId: eventAttendees.eventId,
-      myStatus: eventAttendees.status,
-    })
-    .from(eventAttendees)
-    .where(
-      and(
-        eq(eventAttendees.userId, userId),
-        inArray(eventAttendees.status, ["going", "maybe", "declined"]),
-      ),
-    );
-
-  if (myAttendance.length === 0) {
-    return {
-      items: [] as Array<{
-        id: string;
-        title: string;
-        sport: SportKey;
-        whenAt: Date;
-        venueLabel: string | null;
-        status: string;
-        myStatus: RsvpStatusLite;
-      }>,
-      now,
-    };
-  }
-
-  const eventIds = myAttendance.map((a) => a.eventId);
-  const statusByEvent = new Map(
-    myAttendance.map((a) => [a.eventId, a.myStatus as RsvpStatusLite]),
-  );
-
-  const eventRows = await db
-    .select({
-      id: events.id,
-      title: events.title,
-      sport: events.sport,
-      whenAt: events.whenAt,
-      customLocationText: events.customLocationText,
-      status: events.status,
-    })
-    .from(events)
-    .where(inArray(events.id, eventIds))
-    .orderBy(desc(events.whenAt));
-
-  return {
-    items: eventRows.map((event) => ({
-      id: event.id,
-      title: event.title,
-      sport: event.sport as SportKey,
-      whenAt: event.whenAt,
-      venueLabel: event.customLocationText,
-      status: event.status,
-      myStatus: statusByEvent.get(event.id) ?? ("unknown" as RsvpStatusLite),
-    })),
-    now,
-  };
 }
 
 export default async function EventsPage({
@@ -139,9 +62,14 @@ export default async function EventsPage({
 
   const copy = COPY[locale];
   const filter = readFilter(sp.filter);
-  const { items: all, now } = await getUserEventsList(user.id);
-  const upcoming = all.filter((e) => e.whenAt.getTime() >= now);
-  const past = all.filter((e) => e.whenAt.getTime() < now);
+  const all = await getUserEventsList(user.id, "all");
+  const upcoming = all.filter((event) => !event.isPast);
+  const past = all
+    .filter((event) => event.isPast)
+    .sort(
+      (a, b) =>
+        new Date(b.whenAt).getTime() - new Date(a.whenAt).getTime(),
+    );
   const visible =
     filter === "upcoming" ? upcoming : filter === "past" ? past : all;
 
@@ -151,7 +79,7 @@ export default async function EventsPage({
     timeZone: "Europe/Bucharest",
   });
 
-  const filterChips: Array<{ id: Filter; label: string; count: number }> = [
+  const filterChips: Array<{ id: UserEventsFilter; label: string; count: number }> = [
     { id: "upcoming", label: copy.upcoming, count: upcoming.length },
     { id: "past", label: copy.past, count: past.length },
     { id: "all", label: copy.all, count: all.length },
@@ -291,11 +219,11 @@ export default async function EventsPage({
                   href={`/${locale}/events/${event.id}`}
                   title={event.title}
                   sport={event.sport}
-                  whenLabel={dateFmt.format(event.whenAt)}
+                  whenLabel={dateFmt.format(new Date(event.whenAt))}
                   venueLabel={event.venueLabel}
-                  rsvp={event.myStatus}
+                  rsvp={event.rsvp as RsvpStatusLite}
                   rsvpLabels={copy.rsvp}
-                  past={event.whenAt.getTime() < now}
+                  past={event.isPast}
                 />
               </li>
             ))}

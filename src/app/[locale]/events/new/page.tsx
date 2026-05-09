@@ -1,12 +1,16 @@
 import { setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CreateEventForm } from "@/components/events/CreateEventForm";
+import { CreateGroupEventForm } from "@/components/group/CreateGroupEventForm";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
+import { Card } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Glyph } from "@/components/ui/Glyph";
+import { Pill } from "@/components/ui/Pill";
 import type { AppLocale } from "@/i18n/routing";
 import { getCurrentUser } from "@/lib/auth-current-user";
-import { SPORT_KEYS, type SportKey } from "@/lib/sports";
+import { getCaptainGroups } from "@/lib/events";
+import type { SportKey } from "@/lib/sports";
 
 export const dynamic = "force-dynamic";
 
@@ -14,18 +18,23 @@ const COPY = {
   en: {
     eyebrow: "Create",
     title: "Create event",
-    subtitle: "Set up a public pickup before today's match.",
-    sportLabel: "Sport",
-    timeLabel: "When",
-    venueLabel: "Venue",
-    venueSearch: "Search venues",
-    suggestedVenues: "Suggested nearby",
-    selectedVenue: "Selected venue",
-    submit: "Create event",
-    comingSoon:
-      "Manual event creation is coming soon. Captains can create group-linked events from the group plan.",
-    note: "Pre-matching, this route only allows creating manual public events with limited features.",
+    subtitle:
+      "Pick a group you captain. We'll spin up an event with venue candidates and open a vote.",
+    pickGroup: "Choose a group",
+    captainOf: "Captain",
+    sizeTarget: "target",
+    note:
+      "Manual public events are stretch. Today, captains create group-linked events here.",
     back: "Back",
+    create: "Create event",
+    creating: "Creating…",
+    created: "Event created.",
+    openEvent: "Open event",
+    genericError: "Something went wrong. Try again.",
+    emptyTitle: "You don't captain any groups yet",
+    emptyBody:
+      "Join a match on Today and you may be promoted to captain, or create a group from the Groups screen.",
+    emptyAction: "Open Groups",
     sportLabels: {
       football: "Football",
       basketball: "Basketball",
@@ -42,18 +51,23 @@ const COPY = {
   ro: {
     eyebrow: "Creează",
     title: "Creează eveniment",
-    subtitle: "Pregătește un meci public înainte de matchul de azi.",
-    sportLabel: "Sport",
-    timeLabel: "Când",
-    venueLabel: "Locație",
-    venueSearch: "Caută locații",
-    suggestedVenues: "Sugerate în apropiere",
-    selectedVenue: "Locație selectată",
-    submit: "Creează eveniment",
-    comingSoon:
-      "Crearea manuală de evenimente vine în curând. Căpitanii pot crea evenimente din planul grupului.",
-    note: "Înainte de match, această rută permite doar evenimente publice manuale cu funcții limitate.",
+    subtitle:
+      "Alege un grup în care ești căpitan. Pregătim evenimentul cu candidați și deschidem votul.",
+    pickGroup: "Alege un grup",
+    captainOf: "Căpitan",
+    sizeTarget: "țintă",
+    note:
+      "Evenimentele publice manuale sunt opționale. Acum, căpitanii creează evenimente legate de grup aici.",
     back: "Înapoi",
+    create: "Creează eveniment",
+    creating: "Se creează…",
+    created: "Eveniment creat.",
+    openEvent: "Deschide evenimentul",
+    genericError: "Ceva nu a funcționat. Încearcă din nou.",
+    emptyTitle: "Nu ești căpitan în niciun grup",
+    emptyBody:
+      "Alătură-te unui match de pe Astăzi și poți fi promovat căpitan, sau creează un grup din ecranul Grupuri.",
+    emptyAction: "Deschide Grupuri",
     sportLabels: {
       football: "Fotbal",
       basketball: "Baschet",
@@ -83,15 +97,7 @@ export default async function CreateEventPage({
   }
 
   const copy = COPY[locale];
-  // Ensure all SPORT_KEYS have labels (defensive — keeps form happy if a new
-  // sport is added later).
-  const sportLabels = SPORT_KEYS.reduce<Record<SportKey, string>>(
-    (acc, key) => {
-      acc[key] = copy.sportLabels[key] ?? key;
-      return acc;
-    },
-    {} as Record<SportKey, string>,
-  );
+  const captainGroups = await getCaptainGroups(user.id);
 
   return (
     <main
@@ -102,10 +108,7 @@ export default async function CreateEventPage({
         paddingBottom: "calc(78px + env(safe-area-inset-bottom))",
       }}
     >
-      <header
-        className="flex items-center gap-3 px-5 pt-6 md:hidden"
-        style={{}}
-      >
+      <header className="flex items-center gap-3 px-5 pt-6 md:hidden">
         <Link
           href={`/${locale}/events`}
           aria-label={copy.back}
@@ -179,29 +182,98 @@ export default async function CreateEventPage({
           {copy.note}
         </p>
 
-        <div
-          className="p-5"
-          style={{
-            background: "var(--surface)",
-            borderRadius: "var(--r-card)",
-            border: "1px solid var(--line)",
-            boxShadow: "var(--shadow-1)",
-          }}
-        >
-          <CreateEventForm
-            copy={{
-              sportLabel: copy.sportLabel,
-              timeLabel: copy.timeLabel,
-              venueLabel: copy.venueLabel,
-              venueSearch: copy.venueSearch,
-              suggestedVenues: copy.suggestedVenues,
-              selectedVenue: copy.selectedVenue,
-              submit: copy.submit,
-              comingSoon: copy.comingSoon,
-              sportLabels,
-            }}
-          />
-        </div>
+        {captainGroups.length === 0 ? (
+          <Card variant="card" style={{ padding: 0 }}>
+            <EmptyState
+              glyph={<Glyph.groups size={28} />}
+              title={copy.emptyTitle}
+              body={copy.emptyBody}
+              action={{
+                label: copy.emptyAction,
+                href: `/${locale}/groups`,
+              }}
+            />
+          </Card>
+        ) : (
+          <div className="flex flex-col gap-3">
+            <div
+              className="mono"
+              style={{
+                fontSize: 11,
+                color: "var(--ink-muted)",
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+              }}
+            >
+              {copy.pickGroup}
+            </div>
+            {captainGroups.map((group) => (
+              <Card
+                key={group.id}
+                variant="card"
+                style={{ padding: 18 }}
+              >
+                <div
+                  className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                  style={{ gap: 16 }}
+                >
+                  <div className="min-w-0">
+                    <div
+                      className="flex items-center"
+                      style={{ gap: 8, marginBottom: 6 }}
+                    >
+                      <Pill variant="accent">{copy.captainOf}</Pill>
+                      <span
+                        className="mono"
+                        style={{
+                          fontSize: 11,
+                          color: "var(--ink-muted)",
+                          letterSpacing: "0.06em",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        {copy.sportLabels[group.sport] ?? group.sport}
+                      </span>
+                    </div>
+                    <h3
+                      className="display truncate"
+                      style={{
+                        fontSize: 17,
+                        letterSpacing: "-0.015em",
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {group.city ??
+                        (locale === "ro" ? "Grupul tău" : "Your group")}
+                    </h3>
+                    <div
+                      className="mt-1 flex items-center gap-3 text-[12px]"
+                      style={{ color: "var(--ink-muted)" }}
+                    >
+                      <span className="inline-flex items-center" style={{ gap: 4 }}>
+                        <Glyph.groups size={12} />
+                        {group.sizeTarget} {copy.sizeTarget}
+                      </span>
+                    </div>
+                  </div>
+                  <div style={{ minWidth: 180 }}>
+                    <CreateGroupEventForm
+                      copy={{
+                        create: copy.create,
+                        creating: copy.creating,
+                        created: copy.created,
+                        openEvent: copy.openEvent,
+                        genericError: copy.genericError,
+                      }}
+                      groupId={group.id}
+                      locale={locale}
+                    />
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
 
       <MobileTabBar />

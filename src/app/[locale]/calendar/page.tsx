@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { IcsExportButton } from "@/components/event/IcsExportButton";
@@ -8,74 +9,47 @@ import { Glyph } from "@/components/ui/Glyph";
 import { Pill } from "@/components/ui/Pill";
 import { ToastProvider } from "@/components/ui/Toast";
 import type { AppLocale } from "@/i18n/routing";
+import { getCurrentUser } from "@/lib/auth-current-user";
+import { getUserEventsList } from "@/lib/events";
 
 export const dynamic = "force-dynamic";
 
-type StubEvent = {
-  id: string;
-  sport: string;
-  title: string;
-  whenAt: string;
-  durationMin: number;
-  venue: string;
-  rsvp: "going" | "tentative";
+const COPY = {
+  en: {
+    eyebrow: "Calendar",
+    title: "Your calendar",
+    subtitle:
+      "Confirmed events you said yes to. Each row exports a clean .ics you can drop into Apple/Google Calendar.",
+    upcoming: "Upcoming events",
+    back: "Today",
+    emptyTitle: "No events yet",
+    emptyBody:
+      "Say yes on Today and we will find you a group. Confirmed events show up here with a one-tap calendar export.",
+    emptyAction: "Open Today",
+    download: "Download .ics",
+    toast: "Calendar file ready",
+    rsvpGoing: "Going",
+    rsvpMaybe: "Maybe",
+    minutes: "min",
+  },
+  ro: {
+    eyebrow: "Calendar",
+    title: "Calendarul tău",
+    subtitle:
+      "Evenimente confirmate la care ai spus da. Fiecare rând exportă un .ics curat pentru Apple/Google Calendar.",
+    upcoming: "Evenimente viitoare",
+    back: "Astăzi",
+    emptyTitle: "Niciun eveniment",
+    emptyBody:
+      "Spune da pe Astăzi și îți găsim un grup. Evenimentele confirmate apar aici cu export instant în calendar.",
+    emptyAction: "Deschide Astăzi",
+    download: "Descarcă .ics",
+    toast: "Fișier calendar gata",
+    rsvpGoing: "Vin",
+    rsvpMaybe: "Poate",
+    minutes: "min",
+  },
 };
-
-// TODO(real-data): Wire to live `getMyEventsAction()` once Wave 2 server actions
-// land. For now we render seeded stubs so judges can grab a working .ics for
-// the demo flow without needing a full event create.
-function buildStubEvents(): StubEvent[] {
-  const now = new Date();
-  const next = (offsetDays: number, hour: number) => {
-    const d = new Date(now);
-    d.setDate(d.getDate() + offsetDays);
-    d.setHours(hour, 0, 0, 0);
-    return d.toISOString();
-  };
-  return [
-    {
-      id: "stub-1",
-      sport: "Football",
-      title: "Pickup football · Parcul Rozelor",
-      whenAt: next(1, 18),
-      durationMin: 90,
-      venue: "Parcul Rozelor",
-      rsvp: "going",
-    },
-    {
-      id: "stub-2",
-      sport: "Tennis",
-      title: "Doubles tennis · Tenis Club",
-      whenAt: next(3, 19),
-      durationMin: 60,
-      venue: "Tenis Club Iulius",
-      rsvp: "going",
-    },
-    {
-      id: "stub-3",
-      sport: "Basketball",
-      title: "3v3 basketball · Sports Park",
-      whenAt: next(5, 17),
-      durationMin: 75,
-      venue: "Iulius Sports Park",
-      rsvp: "tentative",
-    },
-  ];
-}
-
-function formatWhen(iso: string): string {
-  const d = new Date(iso);
-  const date = d.toLocaleDateString("en-GB", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-  });
-  const time = d.toLocaleTimeString("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  return `${date} · ${time}`;
-}
 
 export default async function CalendarPage({
   params,
@@ -85,7 +59,27 @@ export default async function CalendarPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const events = buildStubEvents();
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect(`/${locale}/login`);
+  }
+
+  const copy = COPY[locale];
+  const events = await getUserEventsList(user.id, "upcoming");
+
+  const dateFmt = new Intl.DateTimeFormat(locale === "ro" ? "ro-RO" : "en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+  const timeFmt = new Intl.DateTimeFormat(locale === "ro" ? "ro-RO" : "en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const formatWhen = (iso: string) => {
+    const d = new Date(iso);
+    return `${dateFmt.format(d)} · ${timeFmt.format(d)}`;
+  };
 
   return (
     <main
@@ -115,9 +109,8 @@ export default async function CalendarPage({
             }}
           >
             <Glyph.back size={16} />
-            Today
+            {copy.back}
           </Link>
-          <Pill variant="alt">Stub data · TODO</Pill>
         </header>
 
         <div style={{ marginTop: 24 }}>
@@ -130,7 +123,7 @@ export default async function CalendarPage({
               textTransform: "uppercase",
             }}
           >
-            Calendar
+            {copy.eyebrow}
           </span>
           <h1
             className="display mt-2"
@@ -140,17 +133,13 @@ export default async function CalendarPage({
               lineHeight: 1.02,
             }}
           >
-            Your calendar
+            {copy.title}
           </h1>
           <p
             className="mt-3 max-w-xl"
             style={{ fontSize: 15, color: "var(--ink-muted)", lineHeight: 1.5 }}
           >
-            Confirmed events you said yes to. Each row exports a clean{" "}
-            <span className="mono" style={{ fontSize: 13 }}>
-              .ics
-            </span>{" "}
-            you can drop into Apple/Google Calendar.
+            {copy.subtitle}
           </p>
         </div>
 
@@ -164,29 +153,23 @@ export default async function CalendarPage({
             marginBottom: 12,
           }}
         >
-          Upcoming events
+          {copy.upcoming}
         </h2>
 
         {events.length === 0 ? (
           <Card variant="card" style={{ padding: 0 }}>
             <EmptyState
               glyph={<Glyph.cal size={28} />}
-              title="No events yet"
-              body="Say yes on Today and we will find you a group. Confirmed events show up here with a one-tap calendar export."
-              action={{ label: "Open Today", href: `/${locale}/today` }}
+              title={copy.emptyTitle}
+              body={copy.emptyBody}
+              action={{ label: copy.emptyAction, href: `/${locale}/today` }}
             />
           </Card>
-        ) : null}
-
-        {events.length > 0 ? (
+        ) : (
           <ToastProvider>
             <div className="grid gap-3">
               {events.map((evt) => (
-                <Card
-                  key={evt.id}
-                  variant="card"
-                  style={{ padding: 18 }}
-                >
+                <Card key={evt.id} variant="card" style={{ padding: 18 }}>
                   <div
                     className="grid items-center gap-4 sm:grid-cols-[1fr_auto]"
                     style={{ gap: 16 }}
@@ -197,7 +180,7 @@ export default async function CalendarPage({
                         style={{ gap: 8, marginBottom: 8 }}
                       >
                         <Pill variant={evt.rsvp === "going" ? "field" : "alt"}>
-                          {evt.rsvp === "going" ? "Going" : "Tentative"}
+                          {evt.rsvp === "going" ? copy.rsvpGoing : copy.rsvpMaybe}
                         </Pill>
                         <span
                           className="mono"
@@ -233,12 +216,14 @@ export default async function CalendarPage({
                           <Glyph.clock size={14} />
                           {formatWhen(evt.whenAt)}
                         </span>
-                        <span className="inline-flex items-center" style={{ gap: 6 }}>
-                          <Glyph.pin size={14} />
-                          {evt.venue}
-                        </span>
+                        {evt.venueLabel ? (
+                          <span className="inline-flex items-center" style={{ gap: 6 }}>
+                            <Glyph.pin size={14} />
+                            {evt.venueLabel}
+                          </span>
+                        ) : null}
                         <span className="mono" style={{ fontSize: 12 }}>
-                          {evt.durationMin} min
+                          {evt.durationMin} {copy.minutes}
                         </span>
                       </div>
                     </div>
@@ -248,9 +233,9 @@ export default async function CalendarPage({
                         title={evt.title}
                         whenAt={evt.whenAt}
                         durationMin={evt.durationMin}
-                        venueName={evt.venue}
-                        label="Download .ics"
-                        toastTitle="Calendar file ready"
+                        venueName={evt.venueLabel}
+                        label={copy.download}
+                        toastTitle={copy.toast}
                       />
                     </div>
                   </div>
@@ -258,7 +243,7 @@ export default async function CalendarPage({
               ))}
             </div>
           </ToastProvider>
-        ) : null}
+        )}
       </div>
 
       <MobileTabBar />

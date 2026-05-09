@@ -1,6 +1,7 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, asc, desc, eq, gte, inArray, lt } from "drizzle-orm";
+import { z } from "zod";
 import { getDb } from "@/db";
 import {
   eventAttendees,
@@ -10,6 +11,7 @@ import {
   groups,
   messages,
   venues,
+  voteChoices,
   votes,
 } from "@/db/schema";
 import { actionError, actionOk, type ActionResult } from "@/lib/action-result";
@@ -25,6 +27,32 @@ export type CreatedGroupEvent = {
   title: string;
   whenAt: string;
 };
+
+export type UserEventsFilter = "upcoming" | "past" | "all";
+
+export type UserEventsListItem = {
+  id: string;
+  title: string;
+  sport: SportKey;
+  whenAt: string;
+  durationMin: number;
+  venueLabel: string | null;
+  rsvp: "going" | "maybe" | "declined" | "unknown";
+  groupId: string;
+  isPast: boolean;
+};
+
+export type CaptainGroup = {
+  id: string;
+  sport: SportKey;
+  city: string | null;
+  sizeTarget: number;
+  status: string;
+};
+
+const userEventsFilterSchema = z.enum(["upcoming", "past", "all"]);
+const userIdSchema = z.string().uuid();
+const LISTABLE_EVENT_STATUSES = ["proposed", "confirmed"] as const;
 
 function defaultEventTime() {
   const date = new Date();
@@ -337,4 +365,213 @@ export async function createGroupEventAction(
       whenAt: createdEvent.whenAt.toISOString(),
     },
   });
+}
+
+export async function getUserEventsList(
+  userId: string,
+  filter: UserEventsFilter,
+): Promise<UserEventsListItem[]> {
+  const parsedUserId = userIdSchema.safeParse(userId);
+  const parsedFilter = userEventsFilterSchema.safeParse(filter);
+  if (!parsedUserId.success || !parsedFilter.success) {
+    return [];
+  }
+
+  const db = getDb();
+  const now = new Date();
+
+  const myAttendance = await db
+    .select({
+      eventId: eventAttendees.eventId,
+      myStatus: eventAttendees.status,
+    })
+    .from(eventAttendees)
+    .where(
+      and(
+        eq(eventAttendees.userId, parsedUserId.data),
+        inArray(eventAttendees.status, ["going", "maybe", "declined"]),
+      ),
+    );
+
+  if (myAttendance.length === 0) {
+    return [];
+  }
+
+  const eventIds = myAttendance.map((row) => row.eventId);
+  const statusByEvent = new Map(
+    myAttendance.map((row) => [row.eventId, row.myStatus]),
+  );
+
+  const baseEventPredicate = and(
+    inArray(events.id, eventIds),
+    inArray(events.status, LISTABLE_EVENT_STATUSES),
+  );
+
+  const wherePredicate =
+    parsedFilter.data === "upcoming"
+      ? and(baseEventPredicate, gte(events.whenAt, now))
+      : parsedFilter.data === "past"
+        ? and(baseEventPredicate, lt(events.whenAt, now))
+        : baseEventPredicate;
+
+  const orderByExpr =
+    parsedFilter.data === "past" ? desc(events.whenAt) : asc(events.whenAt);
+
+  const eventRows = await db
+    .select({
+      id: events.id,
+      title: events.title,
+      sport: events.sport,
+      whenAt: events.whenAt,
+      durationMin: events.durationMin,
+      customLocationText: events.customLocationText,
+      groupId: events.groupId,
+    })
+    .from(events)
+    .where(wherePredicate)
+    .orderBy(orderByExpr);
+
+  if (eventRows.length === 0) {
+    return [];
+  }
+
+  const visibleEventIds = eventRows.map((row) => row.id);
+
+  const candidateRows = await db
+    .select({
+      eventId: eventVenueCandidates.eventId,
+      rank: eventVenueCandidates.rank,
+      venueName: venues.name,
+    })
+    .from(eventVenueCandidates)
+    .innerJoin(venues, eq(venues.id, eventVenueCandidates.venueId))
+    .where(inArray(eventVenueCandidates.eventId, visibleEventIds))
+    .orderBy(asc(eventVenueCandidates.rank));
+
+  const voteRows = await db
+    .select({
+      voteId: votes.id,
+      eventId: votes.eventId,
+      status: votes.status,
+    })
+    .from(votes)
+    .where(
+      and(
+        inArray(votes.eventId, visibleEventIds),
+        eq(votes.topic, "venue"),
+      ),
+    );
+
+  const voteIdsByEvent = new Map<string, string>();
+  for (const row of voteRows) {
+    if (row.eventId) {
+      voteIdsByEvent.set(row.eventId, row.voteId);
+    }
+  }
+
+  const voteIds = voteRows.map((row) => row.voteId);
+  const choiceRows =
+    voteIds.length > 0
+      ? await db
+          .select({
+            voteId: voteChoices.voteId,
+            optionIdx: voteChoices.optionIdx,
+          })
+          .from(voteChoices)
+          .where(inArray(voteChoices.voteId, voteIds))
+      : [];
+
+  const candidatesByEvent = new Map<
+    string,
+    Array<{ rank: number; name: string }>
+  >();
+  for (const row of candidateRows) {
+    const list = candidatesByEvent.get(row.eventId) ?? [];
+    list.push({ rank: row.rank, name: row.venueName });
+    candidatesByEvent.set(row.eventId, list);
+  }
+
+  const voteCountsByVote = new Map<string, Map<number, number>>();
+  for (const row of choiceRows) {
+    const counts = voteCountsByVote.get(row.voteId) ?? new Map<number, number>();
+    counts.set(row.optionIdx, (counts.get(row.optionIdx) ?? 0) + 1);
+    voteCountsByVote.set(row.voteId, counts);
+  }
+
+  function venueLabelFor(eventId: string, fallback: string | null): string | null {
+    const candidates = candidatesByEvent.get(eventId);
+    if (!candidates || candidates.length === 0) {
+      return fallback;
+    }
+    const ordered = [...candidates].sort((a, b) => a.rank - b.rank);
+    const voteId = voteIdsByEvent.get(eventId);
+    if (voteId) {
+      const counts = voteCountsByVote.get(voteId);
+      if (counts && counts.size > 0) {
+        const ranked = ordered.map((candidate, idx) => ({
+          name: candidate.name,
+          rank: candidate.rank,
+          votes: counts.get(idx) ?? 0,
+        }));
+        ranked.sort(
+          (a, b) => b.votes - a.votes || a.rank - b.rank,
+        );
+        if (ranked[0] && ranked[0].votes > 0) {
+          return ranked[0].name;
+        }
+      }
+    }
+    return ordered[0]?.name ?? fallback;
+  }
+
+  return eventRows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    sport: row.sport as SportKey,
+    whenAt: row.whenAt.toISOString(),
+    durationMin: row.durationMin,
+    venueLabel: venueLabelFor(row.id, row.customLocationText),
+    rsvp: (statusByEvent.get(row.id) ?? "unknown") as
+      | "going"
+      | "maybe"
+      | "declined"
+      | "unknown",
+    groupId: row.groupId,
+    isPast: row.whenAt < now,
+  }));
+}
+
+export async function getCaptainGroups(userId: string): Promise<CaptainGroup[]> {
+  const parsedUserId = userIdSchema.safeParse(userId);
+  if (!parsedUserId.success) {
+    return [];
+  }
+
+  const rows = await getDb()
+    .select({
+      id: groups.id,
+      sport: groups.sport,
+      city: groups.city,
+      sizeTarget: groups.sizeTarget,
+      status: groups.status,
+    })
+    .from(groups)
+    .innerJoin(groupMembers, eq(groupMembers.groupId, groups.id))
+    .where(
+      and(
+        eq(groupMembers.userId, parsedUserId.data),
+        eq(groupMembers.role, "captain"),
+        eq(groupMembers.status, "confirmed"),
+        eq(groups.status, "active"),
+      ),
+    )
+    .orderBy(desc(groups.createdAt));
+
+  return rows.map((row) => ({
+    id: row.id,
+    sport: row.sport as SportKey,
+    city: row.city,
+    sizeTarget: row.sizeTarget,
+    status: row.status,
+  }));
 }
