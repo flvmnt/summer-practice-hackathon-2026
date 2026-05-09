@@ -247,11 +247,61 @@
     "system": "System",
     "captainBadge": "Captain",
     "playerBadge": "Player",
+    "planTitle": "Event plan",
+    "eventListTitle": "{sport} plan",
+    "noEvent": "The captain has not created an event plan yet.",
+    "eventForm": {
+      "create": "Create event plan",
+      "creating": "Creating plan",
+      "created": "Event plan created.",
+      "openEvent": "Open event",
+      "genericError": "The event plan could not be created. Check your session and captain role."
+    },
     "form": {
       "messagePlaceholder": "Message the group",
       "send": "Send message",
       "sending": "Sending",
       "genericError": "The message could not be sent. Check your session and try again."
+    },
+    "sports": {
+      "football": "Football",
+      "basketball": "Basketball",
+      "tennis": "Tennis",
+      "volleyball": "Volleyball",
+      "badminton": "Badminton",
+      "running": "Running",
+      "cycling": "Cycling",
+      "yoga": "Yoga",
+      "hiking": "Hiking",
+      "table_tennis": "Table tennis"
+    }
+  },
+  "event": {
+    "back": "Back to group",
+    "title": "{sport} plan",
+    "when": "When: {when}",
+    "duration": "Duration: {minutes} min",
+    "venuePending": "Venue to be confirmed",
+    "status": "Status: {status}",
+    "chatTitle": "Event chat",
+    "attendeesTitle": "Attendees",
+    "emptyChat": "No event-specific messages yet.",
+    "system": "System",
+    "form": {
+      "messagePlaceholder": "Message this event",
+      "send": "Send event message",
+      "sending": "Sending",
+      "genericError": "The event message could not be sent. Check your session and try again."
+    },
+    "statuses": {
+      "proposed": "Proposed",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled"
+    },
+    "attendeeStatuses": {
+      "going": "Going",
+      "maybe": "Maybe",
+      "declined": "Declined"
     },
     "sports": {
       "football": "Football",

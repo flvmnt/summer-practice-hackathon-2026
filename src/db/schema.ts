@@ -218,6 +218,52 @@ export const groupMembers = pgTable(
   ],
 );
 
+export const events = pgTable(
+  "events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    demoRunId: uuid("demo_run_id").references(() => demoRuns.id, {
+      onDelete: "cascade",
+    }),
+    groupId: uuid("group_id")
+      .notNull()
+      .references(() => groups.id, { onDelete: "cascade" }),
+    title: varchar("title", { length: 120 }).notNull(),
+    sport: varchar("sport", { length: 40 }).notNull(),
+    whenAt: timestamp("when_at", { withTimezone: true }).notNull(),
+    durationMin: smallint("duration_min").notNull().default(90),
+    customLocationText: text("custom_location_text"),
+    status: varchar("status", { length: 20 }).notNull().default("proposed"),
+    createdByUserId: uuid("created_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("events_group_when_idx").on(table.groupId, table.whenAt),
+    index("events_demo_run_idx").on(table.demoRunId),
+  ],
+);
+
+export const eventAttendees = pgTable(
+  "event_attendees",
+  {
+    eventId: uuid("event_id")
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    status: varchar("status", { length: 20 }).notNull().default("going"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.eventId, table.userId] }),
+    index("event_attendees_user_idx").on(table.userId),
+  ],
+);
+
 export const messages = pgTable(
   "messages",
   {
@@ -229,7 +275,9 @@ export const messages = pgTable(
     groupId: uuid("group_id").references(() => groups.id, {
       onDelete: "cascade",
     }),
-    eventId: uuid("event_id"),
+    eventId: uuid("event_id").references(() => events.id, {
+      onDelete: "cascade",
+    }),
     userId: uuid("user_id").references(() => users.id, {
       onDelete: "set null",
     }),

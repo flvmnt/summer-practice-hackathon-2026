@@ -247,11 +247,61 @@
     "system": "Sistem",
     "captainBadge": "Căpitan",
     "playerBadge": "Jucător",
+    "planTitle": "Plan de eveniment",
+    "eventListTitle": "Plan de {sport}",
+    "noEvent": "Căpitanul nu a creat încă un plan de eveniment.",
+    "eventForm": {
+      "create": "Creează planul",
+      "creating": "Se creează planul",
+      "created": "Planul de eveniment a fost creat.",
+      "openEvent": "Deschide evenimentul",
+      "genericError": "Planul nu a putut fi creat. Verifică sesiunea și rolul de căpitan."
+    },
     "form": {
       "messagePlaceholder": "Trimite un mesaj grupului",
       "send": "Trimite mesaj",
       "sending": "Se trimite",
       "genericError": "Mesajul nu a putut fi trimis. Verifică sesiunea și încearcă din nou."
+    },
+    "sports": {
+      "football": "Fotbal",
+      "basketball": "Baschet",
+      "tennis": "Tenis",
+      "volleyball": "Volei",
+      "badminton": "Badminton",
+      "running": "Alergare",
+      "cycling": "Ciclism",
+      "yoga": "Yoga",
+      "hiking": "Drumeție",
+      "table_tennis": "Tenis de masă"
+    }
+  },
+  "event": {
+    "back": "Înapoi la grup",
+    "title": "Plan de {sport}",
+    "when": "Când: {when}",
+    "duration": "Durată: {minutes} min",
+    "venuePending": "Locația urmează să fie confirmată",
+    "status": "Status: {status}",
+    "chatTitle": "Chat de eveniment",
+    "attendeesTitle": "Participanți",
+    "emptyChat": "Nu există încă mesaje specifice evenimentului.",
+    "system": "Sistem",
+    "form": {
+      "messagePlaceholder": "Trimite un mesaj pentru eveniment",
+      "send": "Trimite mesaj",
+      "sending": "Se trimite",
+      "genericError": "Mesajul de eveniment nu a putut fi trimis. Verifică sesiunea și încearcă din nou."
+    },
+    "statuses": {
+      "proposed": "Propus",
+      "confirmed": "Confirmat",
+      "cancelled": "Anulat"
+    },
+    "attendeeStatuses": {
+      "going": "Participă",
+      "maybe": "Poate",
+      "declined": "Refuzat"
     },
     "sports": {
       "football": "Fotbal",

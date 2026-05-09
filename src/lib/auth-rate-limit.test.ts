@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   AUTH_RATE_LIMIT_POLICIES,
+  chatUserEventBucket,
+  chatUserGroupBucket,
   evaluateAuthRateLimit,
   hashRateLimitParts,
   loginIpUserBucket,
@@ -25,6 +27,12 @@ describe("auth rate limit helpers", () => {
     expect(signupIpBucket("192.0.2.10")).toMatch(/^auth:signup:ip:[a-f0-9]{32}$/);
     expect(recoveryIpUserBucket("192.0.2.10", "Andrei")).toMatch(
       /^auth:recovery:ip_user:[a-f0-9]{32}$/,
+    );
+    expect(chatUserGroupBucket("user-1", "group-1")).toMatch(
+      /^chat:send:user_group:[a-f0-9]{32}$/,
+    );
+    expect(chatUserEventBucket("user-1", "event-1")).toMatch(
+      /^chat:send:user_event:[a-f0-9]{32}$/,
     );
   });
 

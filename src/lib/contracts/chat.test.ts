@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { postGroupMessageInputSchema } from "@/lib/contracts/chat";
+import {
+  postEventMessageInputSchema,
+  postGroupMessageInputSchema,
+} from "@/lib/contracts/chat";
 
 describe("chat contracts", () => {
   it("trims and validates group messages", () => {
@@ -24,5 +27,19 @@ describe("chat contracts", () => {
         clientId: "client-1",
       }),
     ).toThrow();
+  });
+
+  it("trims and validates event messages separately from group messages", () => {
+    expect(
+      postEventMessageInputSchema.parse({
+        eventId: "22222222-2222-4222-8222-222222222222",
+        body: "  Meet by the entrance  ",
+        clientId: "client-2",
+      }),
+    ).toEqual({
+      eventId: "22222222-2222-4222-8222-222222222222",
+      body: "Meet by the entrance",
+      clientId: "client-2",
+    });
   });
 });

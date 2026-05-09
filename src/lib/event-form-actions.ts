@@ -1,0 +1,60 @@
+"use server";
+
+import { randomUUID } from "node:crypto";
+import { postEventMessageAction } from "@/lib/chat";
+import { createGroupEventAction } from "@/lib/events";
+
+export type CreateGroupEventFormState = {
+  error?: string;
+  event?: {
+    id: string;
+    title: string;
+  };
+};
+
+export type EventChatFormState = {
+  error?: string;
+  sent?: boolean;
+};
+
+function stringField(formData: FormData, name: string) {
+  const value = formData.get(name);
+  return typeof value === "string" ? value : "";
+}
+
+export async function createGroupEventFormAction(
+  _previousState: CreateGroupEventFormState,
+  formData: FormData,
+): Promise<CreateGroupEventFormState> {
+  const result = await createGroupEventAction({
+    groupId: stringField(formData, "groupId"),
+  });
+
+  if (!result.ok) {
+    return { error: result.error };
+  }
+
+  return {
+    event: {
+      id: result.data.event.id,
+      title: result.data.event.title,
+    },
+  };
+}
+
+export async function postEventMessageFormAction(
+  _previousState: EventChatFormState,
+  formData: FormData,
+): Promise<EventChatFormState> {
+  const result = await postEventMessageAction({
+    eventId: stringField(formData, "eventId"),
+    body: stringField(formData, "body"),
+    clientId: stringField(formData, "clientId") || randomUUID(),
+  });
+
+  if (!result.ok) {
+    return { error: result.error };
+  }
+
+  return { sent: true };
+}

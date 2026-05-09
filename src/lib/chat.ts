@@ -2,17 +2,20 @@
 
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { getDb } from "@/db";
-import { groupMembers, groups, messages, users } from "@/db/schema";
+import { eventAttendees, events, groupMembers, groups, messages, users } from "@/db/schema";
 import { actionError, actionOk, type ActionResult } from "@/lib/action-result";
 import {
   AUTH_RATE_LIMIT_POLICIES,
+  chatUserEventBucket,
   chatUserGroupBucket,
   recordAuthFailure,
 } from "@/lib/auth-rate-limit";
 import { getCurrentUser } from "@/lib/auth-current-user";
 import {
   loadGroupMessagesInputSchema,
+  postEventMessageInputSchema,
   postGroupMessageInputSchema,
+  type PostEventMessageInput,
   type PostGroupMessageInput,
 } from "@/lib/contracts/chat";
 import type { SportKey } from "@/lib/sports";
@@ -30,6 +33,7 @@ export type GroupMessage = {
 };
 
 export type GroupDetails = {
+  currentUserId: string;
   group: {
     id: string;
     sport: SportKey;
@@ -40,6 +44,33 @@ export type GroupDetails = {
   members: Array<{
     userId: string;
     role: string;
+    status: string;
+    username: string;
+    fullName: string;
+  }>;
+  messages: GroupMessage[];
+  events: Array<{
+    id: string;
+    title: string;
+    sport: SportKey;
+    status: string;
+    whenAt: string;
+  }>;
+};
+
+export type EventDetails = {
+  event: {
+    id: string;
+    groupId: string;
+    title: string;
+    sport: SportKey;
+    status: string;
+    whenAt: string;
+    durationMin: number;
+    customLocationText: string | null;
+  };
+  attendees: Array<{
+    userId: string;
     status: string;
     username: string;
     fullName: string;
@@ -73,7 +104,35 @@ async function requireGroupMember(groupId: string) {
   return membership ? { user, membership } : null;
 }
 
-async function loadGroupMessages(groupId: string, limit: number): Promise<GroupMessage[]> {
+async function requireEventAttendee(eventId: string) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return null;
+  }
+
+  const [attendee] = await getDb()
+    .select({
+      eventId: eventAttendees.eventId,
+      status: eventAttendees.status,
+    })
+    .from(eventAttendees)
+    .where(
+      and(
+        eq(eventAttendees.eventId, eventId),
+        eq(eventAttendees.userId, user.id),
+      ),
+    )
+    .limit(1);
+
+  return attendee ? { user, attendee } : null;
+}
+
+async function loadScopedMessages(input: {
+  scopeType: "group" | "event";
+  groupId?: string;
+  eventId?: string;
+  limit: number;
+}): Promise<GroupMessage[]> {
   const rows = await getDb()
     .select({
       id: messages.id,
@@ -88,13 +147,15 @@ async function loadGroupMessages(groupId: string, limit: number): Promise<GroupM
     .leftJoin(users, eq(users.id, messages.userId))
     .where(
       and(
-        eq(messages.scopeType, "group"),
-        eq(messages.groupId, groupId),
+        eq(messages.scopeType, input.scopeType),
+        input.scopeType === "group"
+          ? eq(messages.groupId, input.groupId!)
+          : eq(messages.eventId, input.eventId!),
         isNull(messages.deletedAt),
       ),
     )
     .orderBy(desc(messages.createdAt))
-    .limit(limit);
+    .limit(input.limit);
 
   return rows.reverse().map((row) => ({
     id: row.id,
@@ -109,6 +170,14 @@ async function loadGroupMessages(groupId: string, limit: number): Promise<GroupM
         }
       : null,
   }));
+}
+
+async function loadGroupMessages(groupId: string, limit: number): Promise<GroupMessage[]> {
+  return loadScopedMessages({ scopeType: "group", groupId, limit });
+}
+
+async function loadEventMessages(eventId: string, limit: number): Promise<GroupMessage[]> {
+  return loadScopedMessages({ scopeType: "event", eventId, limit });
 }
 
 export async function getGroupAction(input: {
@@ -155,7 +224,21 @@ export async function getGroupAction(input: {
     .innerJoin(users, eq(users.id, groupMembers.userId))
     .where(eq(groupMembers.groupId, parsed.data.groupId));
 
+  const groupEvents = await getDb()
+    .select({
+      id: events.id,
+      title: events.title,
+      sport: events.sport,
+      status: events.status,
+      whenAt: events.whenAt,
+    })
+    .from(events)
+    .where(eq(events.groupId, parsed.data.groupId))
+    .orderBy(desc(events.whenAt))
+    .limit(3);
+
   return actionOk({
+    currentUserId: auth.user.id,
     group: {
       id: group.id,
       sport: group.sport as SportKey,
@@ -165,6 +248,72 @@ export async function getGroupAction(input: {
     },
     members,
     messages: await loadGroupMessages(parsed.data.groupId, parsed.data.limit),
+    events: groupEvents.map((event) => ({
+      id: event.id,
+      title: event.title,
+      sport: event.sport as SportKey,
+      status: event.status,
+      whenAt: event.whenAt.toISOString(),
+    })),
+  });
+}
+
+export async function getEventAction(input: {
+  eventId: string;
+}): Promise<ActionResult<EventDetails>> {
+  const parsed = postEventMessageInputSchema.pick({ eventId: true }).safeParse(input);
+  if (!parsed.success) {
+    return actionError("validation");
+  }
+
+  const auth = await requireEventAttendee(parsed.data.eventId);
+  if (!auth) {
+    return actionError("unauthorized");
+  }
+
+  const [event] = await getDb()
+    .select({
+      id: events.id,
+      groupId: events.groupId,
+      title: events.title,
+      sport: events.sport,
+      status: events.status,
+      whenAt: events.whenAt,
+      durationMin: events.durationMin,
+      customLocationText: events.customLocationText,
+    })
+    .from(events)
+    .where(eq(events.id, parsed.data.eventId))
+    .limit(1);
+
+  if (!event) {
+    return actionError("not_found");
+  }
+
+  const attendees = await getDb()
+    .select({
+      userId: eventAttendees.userId,
+      status: eventAttendees.status,
+      username: users.username,
+      fullName: users.fullName,
+    })
+    .from(eventAttendees)
+    .innerJoin(users, eq(users.id, eventAttendees.userId))
+    .where(eq(eventAttendees.eventId, parsed.data.eventId));
+
+  return actionOk({
+    event: {
+      id: event.id,
+      groupId: event.groupId,
+      title: event.title,
+      sport: event.sport as SportKey,
+      status: event.status,
+      whenAt: event.whenAt.toISOString(),
+      durationMin: event.durationMin,
+      customLocationText: event.customLocationText,
+    },
+    attendees,
+    messages: await loadEventMessages(parsed.data.eventId, 30),
   });
 }
 
@@ -260,4 +409,65 @@ export async function postMessageAction(
       },
     },
   });
+}
+
+export async function postEventMessageAction(
+  input: PostEventMessageInput,
+): Promise<ActionResult<{ message: GroupMessage }>> {
+  const parsed = postEventMessageInputSchema.safeParse(input);
+  if (!parsed.success) {
+    return actionError("validation");
+  }
+
+  const auth = await requireEventAttendee(parsed.data.eventId);
+  if (!auth) {
+    return actionError("unauthorized");
+  }
+
+  const limit = await recordAuthFailure({
+    bucket: chatUserEventBucket(auth.user.id, parsed.data.eventId),
+    ...AUTH_RATE_LIMIT_POLICIES.chatUserGroup,
+  });
+  if (limit.limited) {
+    return actionError("rate_limited", { retryAfterSeconds: limit.retryAfterSeconds });
+  }
+
+  const inserted = await getDb()
+    .insert(messages)
+    .values({
+      scopeType: "event",
+      eventId: parsed.data.eventId,
+      userId: auth.user.id,
+      clientId: parsed.data.clientId,
+      kind: "text",
+      body: parsed.data.body,
+    })
+    .onConflictDoNothing({
+      target: [messages.userId, messages.clientId],
+    })
+    .returning({
+      id: messages.id,
+      body: messages.body,
+      kind: messages.kind,
+      createdAt: messages.createdAt,
+    });
+
+  const message = inserted[0];
+  if (message) {
+    return actionOk({
+      message: {
+        id: message.id,
+        body: message.body,
+        kind: message.kind,
+        createdAt: message.createdAt.toISOString(),
+        user: {
+          id: auth.user.id,
+          username: auth.user.username,
+          fullName: auth.user.fullName,
+        },
+      },
+    });
+  }
+
+  return actionError("internal");
 }

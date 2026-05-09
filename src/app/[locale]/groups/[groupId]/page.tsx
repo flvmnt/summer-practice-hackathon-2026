@@ -1,7 +1,8 @@
-import { MessageSquareText, Trophy, UsersRound } from "lucide-react";
+import { CalendarDays, MessageSquareText, Trophy, UsersRound } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { CreateGroupEventForm } from "@/components/group/CreateGroupEventForm";
 import { GroupChatForm } from "@/components/group/GroupChatForm";
 import type { AppLocale } from "@/i18n/routing";
 import { getGroupAction } from "@/lib/chat";
@@ -53,6 +54,36 @@ export default async function GroupPage({
             {t("captain", { name: captain.fullName })}
           </p>
         ) : null}
+        <div className="mt-6 rounded-md border border-[var(--line)] bg-white p-3">
+          <div className="mb-3 flex items-center gap-2">
+            <CalendarDays aria-hidden="true" size={18} />
+            <h2 className="text-sm font-bold">{t("planTitle")}</h2>
+          </div>
+          {groupResult.data.events.length > 0 ? (
+            <ul className="grid gap-2">
+              {groupResult.data.events.map((event) => (
+                <li key={event.id}>
+                  <Link
+                    className="block rounded-md bg-[var(--cloud)] px-3 py-2 text-sm font-semibold"
+                    href={`/${locale}/events/${event.id}`}
+                  >
+                    {t("eventListTitle", {
+                      sport: t(`sports.${event.sport as SportKey}`),
+                    })}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : groupResult.data.currentUserId === group.captainUserId ? (
+            <CreateGroupEventForm
+              copy={t.raw("eventForm")}
+              groupId={group.id}
+              locale={locale}
+            />
+          ) : (
+            <p className="text-sm leading-6 text-[var(--muted)]">{t("noEvent")}</p>
+          )}
+        </div>
       </section>
 
       <section className="rounded-lg border border-[var(--line)] bg-[var(--panel-strong)] p-5 shadow-sm">

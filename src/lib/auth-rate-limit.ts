@@ -62,6 +62,10 @@ export function chatUserGroupBucket(userId: string, groupId: string) {
   return `chat:send:user_group:${hashRateLimitParts(userId, groupId)}`;
 }
 
+export function chatUserEventBucket(userId: string, eventId: string) {
+  return `chat:send:user_event:${hashRateLimitParts(userId, eventId)}`;
+}
+
 export function evaluateAuthRateLimit(
   row: AuthRateLimitRow | undefined,
   limit: number,
