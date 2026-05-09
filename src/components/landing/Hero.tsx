@@ -202,7 +202,7 @@ export async function Hero({ locale, demoEnabled }: Props) {
                   textTransform: "uppercase",
                 }}
               >
-                Today · 18:00
+                {locale === "ro" ? "Astăzi · 18:00" : "Today · 18:00"}
               </div>
               <div
                 className="display mt-3"
@@ -212,9 +212,10 @@ export async function Hero({ locale, demoEnabled }: Props) {
                   letterSpacing: "-0.02em",
                 }}
               >
-                Football match
+                {locale === "ro" ? "Meci de fotbal" : "Football match"}
                 <br />
-                <span style={{ color: "var(--accent)" }}>12/14</span> nearby
+                <span style={{ color: "var(--accent)" }}>12/14</span>{" "}
+                {locale === "ro" ? "în apropiere" : "nearby"}
               </div>
               <div className="mt-4 flex items-center" style={{ gap: 8 }}>
                 {[0, 1, 2, 3].map((i) => (
@@ -261,7 +262,7 @@ export async function Hero({ locale, demoEnabled }: Props) {
                 }}
               >
                 <Glyph.crown size={16} />
-                Captain · Andrei
+                {locale === "ro" ? "Căpitan · Andrei" : "Captain · Andrei"}
               </div>
             </div>
           </div>

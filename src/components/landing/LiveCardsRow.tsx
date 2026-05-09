@@ -1,17 +1,20 @@
 import { Card } from "@/components/ui/Card";
 import { Glyph } from "@/components/ui/Glyph";
 import { Pill } from "@/components/ui/Pill";
+import type { AppLocale } from "@/i18n/routing";
 
 /**
  * Live demo cards - three CSS mockups showing the product mechanics.
  * NOT real screenshots; just compact layouts to anchor "this is real".
  */
 
-function FootballCard() {
+type LocaleProp = { locale: AppLocale };
+
+function FootballCard({ locale }: LocaleProp) {
   return (
     <Card variant="card" style={{ padding: 20, boxShadow: "var(--shadow-2)" }}>
       <div className="flex items-center justify-between">
-        <Pill variant="live">Live · today</Pill>
+        <Pill variant="live">{locale === "ro" ? "Live · azi" : "Live · today"}</Pill>
         <span
           className="mono"
           style={{ fontSize: 11, color: "var(--ink-muted)" }}
@@ -23,14 +26,14 @@ function FootballCard() {
         className="display mt-3"
         style={{ fontSize: 22, lineHeight: 1.1, letterSpacing: "-0.02em" }}
       >
-        Football today
+        {locale === "ro" ? "Fotbal astăzi" : "Football today"}
       </div>
       <div
         className="mono mt-1"
         style={{ fontSize: 13, color: "var(--ink-muted)" }}
       >
         <span style={{ color: "var(--accent)", fontWeight: 700 }}>12/14</span>{" "}
-        nearby · 1.4 km
+        {locale === "ro" ? "în apropiere · 1.4 km" : "nearby · 1.4 km"}
       </div>
       <div className="mt-4 flex items-center" style={{ gap: 6 }}>
         {[0, 1, 2, 3, 4].map((i) => (
@@ -82,11 +85,11 @@ function FootballCard() {
   );
 }
 
-function TennisCard() {
+function TennisCard({ locale }: LocaleProp) {
   return (
     <Card variant="card" style={{ padding: 20, boxShadow: "var(--shadow-2)" }}>
       <div className="flex items-center justify-between">
-        <Pill variant="accent">Tennis</Pill>
+        <Pill variant="accent">{locale === "ro" ? "Tenis" : "Tennis"}</Pill>
         <span
           className="mono"
           style={{ fontSize: 11, color: "var(--ink-muted)" }}
@@ -98,13 +101,13 @@ function TennisCard() {
         className="display mt-3"
         style={{ fontSize: 22, lineHeight: 1.1, letterSpacing: "-0.02em" }}
       >
-        Pick a venue
+        {locale === "ro" ? "Alege un loc" : "Pick a venue"}
       </div>
       <div
         className="mono mt-1"
         style={{ fontSize: 12, color: "var(--ink-muted)" }}
       >
-        Group voting · 4 votes in
+        {locale === "ro" ? "Vot grup · 4 voturi" : "Group voting · 4 votes in"}
       </div>
       <div className="mt-4 flex flex-col" style={{ gap: 10 }}>
         {[
@@ -149,7 +152,7 @@ function TennisCard() {
   );
 }
 
-function MapCard() {
+function MapCard({ locale }: LocaleProp) {
   return (
     <Card variant="card" style={{ padding: 0, overflow: "hidden", boxShadow: "var(--shadow-2)" }}>
       <div
@@ -208,32 +211,34 @@ function MapCard() {
       </div>
       <div style={{ padding: 20 }}>
         <div className="flex items-center justify-between">
-          <Pill variant="field">Map</Pill>
+          <Pill variant="field">{locale === "ro" ? "Hartă" : "Map"}</Pill>
           <span
             className="mono"
             style={{ fontSize: 11, color: "var(--ink-muted)" }}
           >
-            8 venues
+            {locale === "ro" ? "8 locuri" : "8 venues"}
           </span>
         </div>
         <div
           className="display mt-3"
           style={{ fontSize: 22, lineHeight: 1.1, letterSpacing: "-0.02em" }}
         >
-          Public venues
+          {locale === "ro" ? "Locuri publice" : "Public venues"}
         </div>
         <div
           className="mono mt-1"
           style={{ fontSize: 12, color: "var(--ink-muted)" }}
         >
-          Sorted by distance · weather · price
+          {locale === "ro"
+            ? "Sortate după distanță · vreme · preț"
+            : "Sorted by distance · weather · price"}
         </div>
       </div>
     </Card>
   );
 }
 
-export function LiveCardsRow() {
+export function LiveCardsRow({ locale }: LocaleProp) {
   return (
     <section
       className="w-full"
@@ -258,7 +263,7 @@ export function LiveCardsRow() {
                 textTransform: "uppercase",
               }}
             >
-              What you&apos;ll see
+              {locale === "ro" ? "Ce vei vedea" : "What you'll see"}
             </span>
             <h2
               className="display mt-2"
@@ -268,7 +273,9 @@ export function LiveCardsRow() {
                 lineHeight: 1.05,
               }}
             >
-              Real product. Real venues.
+              {locale === "ro"
+                ? "Produs real. Locuri reale."
+                : "Real product. Real venues."}
             </h2>
           </div>
         </div>
@@ -289,19 +296,19 @@ export function LiveCardsRow() {
               className="min-w-[260px] max-w-[320px] shrink-0 sm:max-w-none sm:min-w-0"
               style={{ scrollSnapAlign: "start", flex: "0 0 82%" }}
             >
-              <FootballCard />
+              <FootballCard locale={locale} />
             </div>
             <div
               className="min-w-[260px] max-w-[320px] shrink-0 sm:max-w-none sm:min-w-0"
               style={{ scrollSnapAlign: "start", flex: "0 0 82%" }}
             >
-              <TennisCard />
+              <TennisCard locale={locale} />
             </div>
             <div
               className="min-w-[260px] max-w-[320px] shrink-0 sm:max-w-none sm:min-w-0"
               style={{ scrollSnapAlign: "start", flex: "0 0 82%" }}
             >
-              <MapCard />
+              <MapCard locale={locale} />
             </div>
           </div>
         </div>

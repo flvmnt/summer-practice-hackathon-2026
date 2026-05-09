@@ -49,7 +49,7 @@ export default async function HomePage({
       style={{ background: "var(--bg)", color: "var(--ink)" }}
     >
       <Hero locale={locale} demoEnabled={demoEnabled} />
-      <LiveCardsRow />
+      <LiveCardsRow locale={locale} />
       <HowItWorks />
 
       {/* Why ShowUp2Move */}
