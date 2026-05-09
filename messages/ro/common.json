@@ -99,7 +99,7 @@
         "username": "Nume utilizator",
         "usernamePlaceholder": "alex_runner",
         "recoveryCode": "Cod de recuperare",
-        "recoveryCodePlaceholder": "SM2M-ABCD-1234",
+        "recoveryCodePlaceholder": "XXXX-XXXX-XXXX",
         "newPassword": "Parolă nouă",
         "newPasswordPlaceholder": "Minimum 8 caractere",
         "submit": "Resetează parola",

@@ -99,7 +99,7 @@
         "username": "Username",
         "usernamePlaceholder": "alex_runner",
         "recoveryCode": "Recovery code",
-        "recoveryCodePlaceholder": "SM2M-ABCD-1234",
+        "recoveryCodePlaceholder": "XXXX-XXXX-XXXX",
         "newPassword": "New password",
         "newPasswordPlaceholder": "At least 8 characters",
         "submit": "Reset password",
