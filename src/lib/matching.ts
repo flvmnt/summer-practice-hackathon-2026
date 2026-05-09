@@ -53,7 +53,12 @@ async function existingGroupsForPrompt(
       userId: groupMembers.userId,
     })
     .from(groupMembers)
-    .where(inArray(groupMembers.groupId, groupRows.map((group) => group.id)));
+    .where(
+      and(
+        inArray(groupMembers.groupId, groupRows.map((group) => group.id)),
+        inArray(groupMembers.status, ["invited", "confirmed"]),
+      ),
+    );
 
   return groupRows.map((group) => ({
     id: group.id,
@@ -72,7 +77,12 @@ async function existingMemberIdsForPrompt(
   const rows = await db
     .select({ userId: groupMembers.userId })
     .from(groupMembers)
-    .where(eq(groupMembers.promptId, promptId));
+    .where(
+      and(
+        eq(groupMembers.promptId, promptId),
+        inArray(groupMembers.status, ["invited", "confirmed"]),
+      ),
+    );
 
   return new Set(rows.map((row) => row.userId));
 }

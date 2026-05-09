@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db";
 import { availabilityResponses, groupMembers, groups, prompts, users } from "@/db/schema";
 import { actionError, actionOk, type ActionResult } from "@/lib/action-result";
@@ -200,13 +200,28 @@ export async function respondToPromptAction(
     updatedAt: new Date(),
   };
 
-  await getDb()
-    .insert(availabilityResponses)
-    .values(responseValues)
-    .onConflictDoUpdate({
-      target: [availabilityResponses.promptId, availabilityResponses.userId],
-      set: responseValues,
-    });
+  await getDb().transaction(async (tx) => {
+    await tx
+      .insert(availabilityResponses)
+      .values(responseValues)
+      .onConflictDoUpdate({
+        target: [availabilityResponses.promptId, availabilityResponses.userId],
+        set: responseValues,
+      });
+
+    if (parsed.data.answer === "no") {
+      await tx
+        .update(groupMembers)
+        .set({ status: "declined" })
+        .where(
+          and(
+            eq(groupMembers.promptId, parsed.data.promptId),
+            eq(groupMembers.userId, userId),
+            inArray(groupMembers.status, ["invited", "confirmed"]),
+          ),
+        );
+    }
+  });
 
   if (parsed.data.answer === "no") {
     return actionOk({ state: "unavailable" });
@@ -285,6 +300,7 @@ export async function getMyTodayStateAction(): Promise<
       and(
         eq(groupMembers.promptId, promptResult.data.id),
         eq(groupMembers.userId, userId),
+        eq(groupMembers.status, "confirmed"),
       ),
     )
     .limit(1);
