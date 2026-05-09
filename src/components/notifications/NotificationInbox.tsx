@@ -282,7 +282,6 @@ function NotificationRow({
                 }}
               />
             ) : null}
-            <Glyph.arrow size={16} className="opacity-40" />
           </div>
         </Link>
         {isUnread && onMarkRead ? (

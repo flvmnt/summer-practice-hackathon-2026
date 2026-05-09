@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { Hero } from "@/components/landing/Hero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
@@ -13,27 +13,16 @@ import { getOnboardingUserState } from "@/lib/onboarding-state";
 export const dynamic = "force-dynamic";
 
 type WhyRow = {
-  title: string;
-  body: string;
+  key: "ai" | "venues" | "show";
+  titleKey: "ai.title" | "venues.title" | "show.title";
+  bodyKey: "ai.body" | "venues.body" | "show.body";
   mark: "ai" | "pin" | "shield";
 };
 
 const WHY_ROWS: ReadonlyArray<WhyRow> = [
-  {
-    mark: "ai",
-    title: "AI matchmaking",
-    body: "Find groups by sport, skill, and proximity in seconds.",
-  },
-  {
-    mark: "pin",
-    title: "Real venues",
-    body: "Suggested venues with weather, price tier, and directions.",
-  },
-  {
-    mark: "shield",
-    title: "Just show up",
-    body: "Captain auto-creates the event. You confirm. Game on.",
-  },
+  { key: "ai", titleKey: "ai.title", bodyKey: "ai.body", mark: "ai" },
+  { key: "venues", titleKey: "venues.title", bodyKey: "venues.body", mark: "pin" },
+  { key: "show", titleKey: "show.title", bodyKey: "show.body", mark: "shield" },
 ];
 
 export default async function HomePage({
@@ -52,6 +41,7 @@ export default async function HomePage({
 
   const demoEnabled = isDemoModeEnabled();
   const githubUrl = process.env.NEXT_PUBLIC_GITHUB_URL;
+  const t = await getTranslations("landing.why");
 
   return (
     <main
@@ -81,7 +71,7 @@ export default async function HomePage({
                 textTransform: "uppercase",
               }}
             >
-              Why ShowUp2Move
+              {t("kicker")}
             </span>
             <h2
               className="display mt-2"
@@ -91,13 +81,13 @@ export default async function HomePage({
                 lineHeight: 1.05,
               }}
             >
-              Built for Saturday-morning energy.
+              {t("title")}
             </h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
             {WHY_ROWS.map((row) => (
               <div
-                key={row.title}
+                key={row.key}
                 style={{
                   background: "var(--surface)",
                   border: "1px solid var(--line)",
@@ -135,7 +125,7 @@ export default async function HomePage({
                     lineHeight: 1.1,
                   }}
                 >
-                  {row.title}
+                  {t(row.titleKey)}
                 </h3>
                 <p
                   className="mt-2"
@@ -145,7 +135,7 @@ export default async function HomePage({
                     lineHeight: 1.5,
                   }}
                 >
-                  {row.body}
+                  {t(row.bodyKey)}
                 </p>
               </div>
             ))}

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 import { AuthField } from "@/components/auth/AuthField";
 import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
-import { Glyph } from "@/components/ui/Glyph";
 import type { AppLocale } from "@/i18n/routing";
 import { recoverFormAction, type AuthFormState } from "@/lib/auth-form-actions";
 

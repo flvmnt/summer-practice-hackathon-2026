@@ -1,40 +1,22 @@
+import { getTranslations } from "next-intl/server";
 import { Glyph, type GlyphName } from "@/components/ui/Glyph";
 
 type Step = {
   num: string;
   glyph: GlyphName;
-  title: string;
-  body: string;
+  titleKey: "step1.title" | "step2.title" | "step3.title" | "step4.title";
+  bodyKey: "step1.body" | "step2.body" | "step3.body" | "step4.body";
 };
 
 const STEPS: ReadonlyArray<Step> = [
-  {
-    num: "01",
-    glyph: "profile",
-    title: "Sign up",
-    body: "Username + password. A recovery code, never an email blast.",
-  },
-  {
-    num: "02",
-    glyph: "pin",
-    title: "Set sports + location",
-    body: "Pick what you play. Drop a fuzzy home pin. We never store the exact one.",
-  },
-  {
-    num: "03",
-    glyph: "today",
-    title: "ShowUpToday?",
-    body: "One tap each morning. Yes - we look for nearby players right now.",
-  },
-  {
-    num: "04",
-    glyph: "groups",
-    title: "Match + meet",
-    body: "Captain auto-creates the event. Vote on the venue. Show up. Game on.",
-  },
+  { num: "01", glyph: "profile", titleKey: "step1.title", bodyKey: "step1.body" },
+  { num: "02", glyph: "pin", titleKey: "step2.title", bodyKey: "step2.body" },
+  { num: "03", glyph: "today", titleKey: "step3.title", bodyKey: "step3.body" },
+  { num: "04", glyph: "groups", titleKey: "step4.title", bodyKey: "step4.body" },
 ];
 
-export function HowItWorks() {
+export async function HowItWorks() {
+  const t = await getTranslations("landing.how");
   return (
     <section
       className="w-full"
@@ -58,7 +40,7 @@ export function HowItWorks() {
               textTransform: "uppercase",
             }}
           >
-            How it works
+            {t("kicker")}
           </span>
           <h2
             className="display mt-2"
@@ -68,7 +50,7 @@ export function HowItWorks() {
               lineHeight: 1.05,
             }}
           >
-            Four taps from idea to kickoff.
+            {t("title")}
           </h2>
         </div>
         <ol
@@ -126,7 +108,7 @@ export function HowItWorks() {
                     lineHeight: 1.1,
                   }}
                 >
-                  {step.title}
+                  {t(step.titleKey)}
                 </h3>
                 <p
                   className="mt-2"
@@ -136,7 +118,7 @@ export function HowItWorks() {
                     lineHeight: 1.5,
                   }}
                 >
-                  {step.body}
+                  {t(step.bodyKey)}
                 </p>
               </li>
             );

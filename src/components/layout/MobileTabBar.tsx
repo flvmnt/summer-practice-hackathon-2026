@@ -42,6 +42,11 @@ function isActive(pathname: string, tab: MobileTab): boolean {
   return prefixes.some((p) => stripped.startsWith(p) && p !== "/");
 }
 
+function hrefFor(pathname: string, href: string) {
+  const match = pathname.match(/^\/(en|ro)(?=\/|$)/);
+  return match ? `/${match[1]}${href}` : href;
+}
+
 export function MobileTabBar({ tabs = DEFAULT_TABS, className }: Props) {
   const pathname = usePathname() ?? "/";
   return (
@@ -69,7 +74,7 @@ export function MobileTabBar({ tabs = DEFAULT_TABS, className }: Props) {
         return (
           <Link
             key={tab.id}
-            href={tab.href}
+            href={hrefFor(pathname, tab.href)}
             aria-current={active ? "page" : undefined}
             aria-label={tab.label}
             className={cn(

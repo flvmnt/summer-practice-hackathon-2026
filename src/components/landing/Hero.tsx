@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Glyph } from "@/components/ui/Glyph";
 import type { AppLocale } from "@/i18n/routing";
@@ -33,7 +34,8 @@ function Wordmark({ size = 28 }: { size?: number }) {
   );
 }
 
-export function Hero({ locale, demoEnabled }: Props) {
+export async function Hero({ locale, demoEnabled }: Props) {
+  const t = await getTranslations("landing");
   const demoHref = demoEnabled ? `/${locale}/demo` : `/${locale}/today`;
 
   return (
@@ -67,7 +69,7 @@ export function Hero({ locale, demoEnabled }: Props) {
                 fontSize: 14,
               }}
             >
-              Log in
+              {t("nav.login")}
             </Link>
             <Link
               href={`/${locale}/signup`}
@@ -78,7 +80,7 @@ export function Hero({ locale, demoEnabled }: Props) {
                 fontSize: 14,
               }}
             >
-              Sign up
+              {t("nav.signup")}
             </Link>
           </div>
         </nav>
@@ -100,7 +102,7 @@ export function Hero({ locale, demoEnabled }: Props) {
                 marginBottom: 18,
               }}
             >
-              Sports matching · Timișoara
+              {t("eyebrow")}
             </span>
             <h1
               className="display"
@@ -111,9 +113,7 @@ export function Hero({ locale, demoEnabled }: Props) {
                 margin: 0,
               }}
             >
-              Show up.
-              <br />
-              <span style={{ color: "var(--accent)" }}>Move.</span> Today.
+              {t("headline")}
             </h1>
             <p
               className="mt-6 max-w-xl"
@@ -123,9 +123,7 @@ export function Hero({ locale, demoEnabled }: Props) {
                 color: "var(--ink-muted)",
               }}
             >
-              ShowUp2Move matches you with nearby players for football,
-              basketball, tennis and more. AI does the matching. You just show
-              up.
+              {t("subhead")}
             </p>
             <div
               className="mt-8 flex flex-wrap items-center"
@@ -140,7 +138,7 @@ export function Hero({ locale, demoEnabled }: Props) {
                   fontSize: 17,
                 }}
               >
-                Start playing
+                {t("cta.primary")}
               </Link>
               <Link
                 href={demoHref}
@@ -151,7 +149,7 @@ export function Hero({ locale, demoEnabled }: Props) {
                   fontSize: 17,
                 }}
               >
-                View demo
+                {t("cta.secondary")}
               </Link>
             </div>
             <div
@@ -159,14 +157,13 @@ export function Hero({ locale, demoEnabled }: Props) {
               style={{ gap: 18, color: "var(--ink-faint)", fontSize: 13 }}
             >
               <span className="inline-flex items-center" style={{ gap: 6 }}>
-                <Glyph.shield size={14} /> Private location
+                <Glyph.shield size={14} /> {t("proof.private")}
               </span>
               <span className="inline-flex items-center" style={{ gap: 6 }}>
-                <Glyph.pulse size={14} /> Real venues
+                <Glyph.pulse size={14} /> {t("proof.venues")}
               </span>
               <span className="inline-flex items-center" style={{ gap: 6 }}>
-                <span className="ai-mark" style={{ color: "var(--accent)" }} />
-                AI matchmaking
+                {t("proof.ai")}
               </span>
             </div>
           </div>
