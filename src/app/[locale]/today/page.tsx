@@ -1,15 +1,22 @@
-import { CalendarClock } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { MobileTabBar } from "@/components/layout/MobileTabBar";
+import { SetupBanner } from "@/components/onboarding/SetupBanner";
 import { TodayPromptCard } from "@/components/today/TodayPromptCard";
+import { Glyph } from "@/components/ui/Glyph";
 import type { AppLocale } from "@/i18n/routing";
 import { getOnboardingUserState } from "@/lib/onboarding-state";
 import { getMyTodayStateAction } from "@/lib/prompt";
 
 export const dynamic = "force-dynamic";
 
-export default async function TodayPlaceholderPage({
+function firstName(fullName: string | null | undefined): string {
+  if (!fullName) return "Player";
+  return fullName.trim().split(/\s+/)[0] ?? "Player";
+}
+
+export default async function TodayPage({
   params,
 }: Readonly<{
   params: Promise<{ locale: AppLocale }>;
@@ -40,32 +47,154 @@ export default async function TodayPlaceholderPage({
     redirect(`/${locale}/login`);
   }
 
+  // Required onboarding is complete; surface optional photo step as a setup
+  // banner per spec (AGENTS.md UX rules).
+  const requiredComplete = 3;
+  const totalSteps = 4;
+  // We don't have a photoUrl on the onboarding state — the optional step is
+  // always surfaced until the user closes it / wires up presence detection.
+  const showSetup = true;
+
   return (
-    <main className="mx-auto grid min-h-screen w-full max-w-5xl items-center gap-8 px-5 py-8 lg:grid-cols-[0.82fr_1.18fr]">
-      <section>
-        <Link
-          className="inline-flex min-h-11 items-center rounded-md border border-[var(--line)] bg-[var(--panel-strong)] px-3 text-sm font-semibold"
-          href={`/${locale}`}
-        >
-          {t("back")}
-        </Link>
-        <div className="mt-8 flex size-12 items-center justify-center rounded-full bg-[var(--mint)] text-[var(--navy)]">
-          <CalendarClock aria-hidden="true" size={24} />
+    <main
+      className="relative min-h-screen w-full"
+      style={{
+        background: "var(--bg)",
+        color: "var(--ink)",
+        paddingBottom: "calc(78px + env(safe-area-inset-bottom))",
+      }}
+    >
+      {/* Mobile header */}
+      <header
+        className="flex items-center justify-between px-5 pt-5 md:hidden"
+        style={{ gap: 12 }}
+      >
+        <div className="min-w-0">
+          <div
+            className="mono"
+            style={{
+              fontSize: 11,
+              color: "var(--ink-muted)",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+            }}
+          >
+            Today
+          </div>
+          <div
+            className="display truncate"
+            style={{ fontSize: 22, marginTop: 2 }}
+          >
+            {firstName(user.fullName)}
+          </div>
         </div>
-        <h2 className="mt-5 text-4xl font-bold leading-tight sm:text-5xl">
-          {t("title")}
-        </h2>
-        <p className="mt-4 max-w-xl leading-7 text-[var(--muted)]">{t("body")}</p>
-      </section>
-      <TodayPromptCard
-        copy={t.raw("card")}
-        group={todayState.data.group}
-        locale={locale}
-        maxDistanceKm={user.maxDistanceKm}
-        prompt={todayState.data.prompt}
-        response={todayState.data.response}
-        sports={user.sports}
-      />
+        <div className="flex items-center gap-2">
+          <span
+            className="pill"
+            style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
+          >
+            <Glyph.sun size={14} /> 21° clear
+          </span>
+          <Link
+            href={`/${locale}/notifications`}
+            aria-label="Notifications"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full"
+            style={{
+              background: "var(--surface)",
+              boxShadow: "inset 0 0 0 1px var(--line)",
+              color: "var(--ink)",
+            }}
+          >
+            <Glyph.bell size={18} />
+          </Link>
+        </div>
+      </header>
+
+      <div
+        className="mx-auto w-full px-5 pt-6 md:pt-10"
+        style={{ maxWidth: 1080 }}
+      >
+        <div className="grid items-start gap-8 lg:grid-cols-[0.82fr_1.18fr]">
+          {/* Info column — desktop only */}
+          <section className="hidden lg:block">
+            <Link
+              href={`/${locale}`}
+              className="inline-flex min-h-11 items-center gap-2 rounded-md border px-3 text-sm font-semibold"
+              style={{
+                borderColor: "var(--line)",
+                background: "var(--surface)",
+                color: "var(--ink)",
+              }}
+            >
+              <Glyph.back size={16} />
+              {t("back")}
+            </Link>
+            <div
+              className="mt-8 grid place-items-center"
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: 999,
+                background: "var(--accent-soft)",
+                color: "var(--accent-deep)",
+              }}
+            >
+              <Glyph.today size={26} />
+            </div>
+            <h2
+              className="display mt-5"
+              style={{
+                fontSize: 44,
+                lineHeight: 1.05,
+                letterSpacing: "-0.03em",
+              }}
+            >
+              {t("title")}
+            </h2>
+            <p
+              className="mt-4 max-w-md leading-relaxed"
+              style={{ color: "var(--ink-muted)", fontSize: 15 }}
+            >
+              {t("body")}
+            </p>
+            {showSetup ? (
+              <div className="mt-8">
+                <SetupBanner
+                  complete={requiredComplete}
+                  total={totalSteps}
+                  nextLabel="Add a photo"
+                  nextHref={`/${locale}/onboarding/photo`}
+                />
+              </div>
+            ) : null}
+          </section>
+
+          {/* Hero column */}
+          <section className="flex flex-col gap-4">
+            {showSetup ? (
+              <div className="lg:hidden">
+                <SetupBanner
+                  complete={requiredComplete}
+                  total={totalSteps}
+                  nextLabel="Add a photo"
+                  nextHref={`/${locale}/onboarding/photo`}
+                />
+              </div>
+            ) : null}
+            <TodayPromptCard
+              copy={t.raw("card")}
+              group={todayState.data.group}
+              locale={locale}
+              maxDistanceKm={user.maxDistanceKm}
+              prompt={todayState.data.prompt}
+              response={todayState.data.response}
+              sports={user.sports}
+            />
+          </section>
+        </div>
+      </div>
+
+      <MobileTabBar />
     </main>
   );
 }
