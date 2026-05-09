@@ -5,6 +5,11 @@ import { getDb } from "@/db";
 import { profilePhotos, users } from "@/db/schema";
 import { actionError, actionOk, type ActionResult } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth-current-user";
+import {
+  AUTH_RATE_LIMIT_POLICIES,
+  checkAuthRateLimit,
+  uploadPhotoUserBucket,
+} from "@/lib/auth-rate-limit";
 import { deleteFromR2 } from "@/lib/r2";
 import { saveUserSession } from "@/lib/session";
 import { MAX_BYTES, uploadProfilePhoto } from "@/lib/uploads";
@@ -25,6 +30,16 @@ export async function uploadProfilePhotoAction(
   const user = await getCurrentUser();
   if (!user) {
     return actionError("unauthorized");
+  }
+
+  const limit = await checkAuthRateLimit({
+    bucket: uploadPhotoUserBucket(user.id),
+    ...AUTH_RATE_LIMIT_POLICIES.uploadPhotoUser,
+  });
+  if (limit.limited) {
+    return actionError("rate_limited", {
+      retryAfterSeconds: limit.retryAfterSeconds,
+    });
   }
 
   const raw = formData.get("photo");
