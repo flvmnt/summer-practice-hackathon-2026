@@ -1,5 +1,6 @@
 "use client";
 
+import type { StyleSpecification } from "maplibre-gl";
 import { useEffect, useRef, useState } from "react";
 import { MapBg } from "./MapBg";
 import { MapPin } from "./MapPin";
@@ -28,13 +29,29 @@ const SPORT_LABEL: Record<SportKey, string> = {
 };
 
 /**
- * Inner map renderer - tries MapLibre when a public tile key is configured,
- * otherwise falls back to the abstract `MapBg` SVG with venue pins translated
- * from lat/lon to viewport coordinates. Always client-only.
- *
- * The MapLibre real-tile path is wired but gated by env to keep CSP and
- * network-free demo builds working out of the box.
+ * Inner map renderer - mounts MapLibre with real tiles. Uses MapTiler vector
+ * style when NEXT_PUBLIC_MAPTILER_KEY is set, otherwise falls back to keyless
+ * OpenStreetMap raster tiles. The `MapBg` SVG only kicks in if MapLibre itself
+ * fails to initialise (network-free or CSP-blocked environments).
  */
+const OSM_RASTER_STYLE = {
+  version: 8 as const,
+  sources: {
+    osm: {
+      type: "raster" as const,
+      tiles: [
+        "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "https://c.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      ],
+      tileSize: 256,
+      attribution: "&copy; OpenStreetMap contributors",
+      maxzoom: 19,
+    },
+  },
+  layers: [{ id: "osm", type: "raster" as const, source: "osm" }],
+};
+
 export function MapInner({
   venues,
   selectedVenueId,
@@ -46,10 +63,9 @@ export function MapInner({
   const [mapLibreFailed, setMapLibreFailed] = useState(false);
 
   const tileKey = process.env.NEXT_PUBLIC_MAPTILER_KEY;
-  const wantsRealMap = Boolean(tileKey);
 
   useEffect(() => {
-    if (!wantsRealMap || !containerRef.current) return;
+    if (!containerRef.current) return;
     let map: { remove: () => void } | null = null;
     let cancelled = false;
 
@@ -62,9 +78,12 @@ export function MapInner({
         if (cancelled || !containerRef.current) return;
 
         const center = userLocation ?? DEFAULT_CENTER;
+        const style: string | StyleSpecification = tileKey
+          ? `https://api.maptiler.com/maps/dataviz/style.json?key=${tileKey}`
+          : (OSM_RASTER_STYLE as unknown as StyleSpecification);
         const instance = new maplibre.Map({
           container: containerRef.current,
-          style: `https://api.maptiler.com/maps/dataviz/style.json?key=${tileKey}`,
+          style,
           center: [center.lon, center.lat],
           zoom: 13,
           attributionControl: { compact: true },
@@ -109,7 +128,7 @@ export function MapInner({
       cancelled = true;
       map?.remove();
     };
-  }, [wantsRealMap, tileKey, venues, onSelectVenue, userLocation]);
+  }, [tileKey, venues, onSelectVenue, userLocation]);
 
   // Recenter when selected venue changes (real-map path only).
   useEffect(() => {
@@ -117,7 +136,7 @@ export function MapInner({
     void selectedVenueId;
   }, [selectedVenueId]);
 
-  if (wantsRealMap && !mapLibreFailed) {
+  if (!mapLibreFailed) {
     return (
       <div className="relative h-full w-full" style={{ background: "var(--bg-alt)" }}>
         <div ref={containerRef} className="absolute inset-0" />

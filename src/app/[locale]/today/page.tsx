@@ -7,6 +7,7 @@ import { SetupBanner } from "@/components/onboarding/SetupBanner";
 import { TodayPromptCard } from "@/components/today/TodayPromptCard";
 import { Glyph } from "@/components/ui/Glyph";
 import type { AppLocale } from "@/i18n/routing";
+import { unreadCount } from "@/lib/notifications";
 import { getOnboardingUserState } from "@/lib/onboarding-state";
 import { getMyTodayStateAction } from "@/lib/prompt";
 
@@ -47,6 +48,7 @@ export default async function TodayPage({
   if (!todayState.ok) {
     redirect(`/${locale}/login`);
   }
+  const unread = await unreadCount(user.id);
 
   // Required onboarding is complete; surface optional photo step as a setup
   // banner per spec (AGENTS.md UX rules).
@@ -70,23 +72,39 @@ export default async function TodayPage({
         className="flex items-center justify-between px-5 pt-5 md:hidden"
         style={{ gap: 12 }}
       >
-        <div className="min-w-0">
+        <div className="flex min-w-0 items-center gap-3">
           <div
-            className="mono"
+            aria-hidden
+            className="grid place-items-center"
             style={{
-              fontSize: 11,
-              color: "var(--ink-muted)",
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
+              width: 36,
+              height: 36,
+              flex: "none",
+              borderRadius: 999,
+              background: "var(--accent-soft)",
+              color: "var(--accent-deep)",
             }}
           >
-            Today
+            <Glyph.today size={18} />
           </div>
-          <div
-            className="display truncate"
-            style={{ fontSize: 22, marginTop: 2 }}
-          >
-            {firstName(user.fullName)}
+          <div className="min-w-0">
+            <div
+              className="mono"
+              style={{
+                fontSize: 11,
+                color: "var(--ink-muted)",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+              }}
+            >
+              Hello,
+            </div>
+            <div
+              className="display truncate"
+              style={{ fontSize: 22, marginTop: 2 }}
+            >
+              {firstName(user.fullName)}
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -96,7 +114,7 @@ export default async function TodayPage({
           >
             <Glyph.sun size={14} /> 21° clear
           </span>
-          <HeaderBell unreadCount={0} locale={locale} />
+          <HeaderBell unreadCount={unread} locale={locale} />
         </div>
       </header>
 
