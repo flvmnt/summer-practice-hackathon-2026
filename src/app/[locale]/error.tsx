@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Glyph } from "@/components/ui/Glyph";
 
 export default function LocaleError({
   reset,
@@ -19,19 +18,7 @@ export default function LocaleError({
       style={{ background: "var(--bg)", color: "var(--ink)" }}
     >
       <section className="w-full max-w-md text-center">
-        <div
-          className="mx-auto grid place-items-center"
-          style={{
-            width: 56,
-            height: 56,
-            borderRadius: 999,
-            background: "var(--alert-soft)",
-            color: "var(--alert)",
-          }}
-        >
-          <Glyph.spark size={24} />
-        </div>
-        <h1 className="display mt-5" style={{ fontSize: 32, lineHeight: 1.05 }}>
+        <h1 className="display" style={{ fontSize: 32, lineHeight: 1.05 }}>
           Something slipped.
         </h1>
         <p className="mt-2 text-sm" style={{ color: "var(--ink-muted)" }}>

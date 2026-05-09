@@ -3,8 +3,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { EventListItem, type RsvpStatusLite } from "@/components/events/EventListItem";
 import { HeaderBell } from "@/components/layout/HeaderBell";
-import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
-import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Glyph } from "@/components/ui/Glyph";
 import type { AppLocale } from "@/i18n/routing";
@@ -211,10 +209,6 @@ export default async function EventsPage({
             ))}
           </ul>
         )}
-      </div>
-
-      <DesktopSidebar unreadCount={unread} />
-      <MobileTabBar />
-    </main>
+      </div>    </main>
   );
 }

@@ -1,9 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
 import { HeaderBell } from "@/components/layout/HeaderBell";
-import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { SetupBanner } from "@/components/onboarding/SetupBanner";
 import { TodayPromptCard } from "@/components/today/TodayPromptCard";
 import { Glyph } from "@/components/ui/Glyph";
@@ -76,9 +74,7 @@ export default async function TodayPage({
         color: "var(--ink)",
         paddingBottom: "calc(78px + env(safe-area-inset-bottom) + 16px)",
       }}
-    >
-      <DesktopSidebar unreadCount={unread} />
-      {/* Mobile header */}
+    >      {/* Mobile header */}
       <header
         className="flex items-center justify-between px-5 pt-5 md:hidden"
         style={{ gap: 12 }}
@@ -219,9 +215,6 @@ export default async function TodayPage({
             />
           </section>
         </div>
-      </div>
-
-      <MobileTabBar />
-    </main>
+      </div>    </main>
   );
 }

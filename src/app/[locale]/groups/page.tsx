@@ -3,8 +3,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { GroupListItem } from "@/components/groups/GroupListItem";
 import { HeaderBell } from "@/components/layout/HeaderBell";
-import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
-import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Glyph } from "@/components/ui/Glyph";
 import { Pill } from "@/components/ui/Pill";
@@ -153,10 +151,6 @@ export default async function GroupsPage({
             {t("back")}
           </Link>
         </div>
-      </div>
-
-      <DesktopSidebar unreadCount={unread} />
-      <MobileTabBar />
-    </main>
+      </div>    </main>
   );
 }

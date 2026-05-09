@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { setRequestLocale } from "next-intl/server";
 import { HeaderBell } from "@/components/layout/HeaderBell";
-import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
-import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { Avatar } from "@/components/ui/Avatar";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -287,10 +285,6 @@ export default async function LeaderboardPage({
             ) : null}
           </Card>
         )}
-      </div>
-
-      <DesktopSidebar unreadCount={unread} />
-      <MobileTabBar />
-    </main>
+      </div>    </main>
   );
 }

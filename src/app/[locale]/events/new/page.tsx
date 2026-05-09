@@ -3,13 +3,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CreateEventForm } from "@/components/events/CreateEventForm";
 import { CreateGroupEventForm } from "@/components/group/CreateGroupEventForm";
-import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { Card } from "@/components/ui/Card";
 import { Glyph } from "@/components/ui/Glyph";
 import { Pill } from "@/components/ui/Pill";
 import type { AppLocale } from "@/i18n/routing";
 import { getCurrentUser } from "@/lib/auth-current-user";
 import { getCaptainGroups } from "@/lib/events";
+import { unreadCount } from "@/lib/notifications";
 import type { SportKey } from "@/lib/sports";
 
 export const dynamic = "force-dynamic";
@@ -111,11 +111,14 @@ export default async function CreateEventPage({
   }
 
   const copy = COPY[locale];
-  const captainGroups = await getCaptainGroups(user.id);
+  const [captainGroups, unread] = await Promise.all([
+    getCaptainGroups(user.id),
+    unreadCount(user.id),
+  ]);
 
   return (
     <main
-      className="relative min-h-screen w-full"
+      className="relative min-h-screen w-full md:pl-[240px]"
       style={{
         background: "var(--surface-2)",
         color: "var(--ink)",
@@ -308,9 +311,6 @@ export default async function CreateEventPage({
             ))}
           </div>
         )}
-      </div>
-
-      <MobileTabBar />
-    </main>
+      </div>    </main>
   );
 }

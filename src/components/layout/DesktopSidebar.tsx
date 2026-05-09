@@ -79,35 +79,31 @@ export function DesktopSidebar({ unreadCount = 0, className }: Props) {
         gap: 18,
       }}
     >
-      {/* Brand block */}
+      {/* Brand wordmark - matches the landing-page mark (s + accent 2 + m) */}
       <Link
         href={hrefFor(pathname, "/today")}
-        className="inline-flex items-center gap-2"
+        className="inline-flex items-center"
+        aria-label="ShowUp2Move"
         style={{ color: "var(--ink)", textDecoration: "none", padding: "0 6px" }}
       >
         <span
-          aria-hidden
-          className="grid place-items-center"
-          style={{
-            width: 32,
-            height: 32,
-            borderRadius: "var(--r-chip)",
-            background: "var(--accent-soft)",
-            color: "var(--accent-deep)",
-            flex: "none",
-          }}
-        >
-          <Glyph.spark size={18} />
-        </span>
-        <span
           className="display"
           style={{
-            fontSize: 17,
-            letterSpacing: "-0.01em",
-            lineHeight: 1.1,
+            fontSize: 32,
+            lineHeight: 1,
+            letterSpacing: "-0.05em",
+            display: "inline-flex",
+            alignItems: "baseline",
           }}
         >
-          ShowUp2Move
+          s
+          <span
+            style={{ color: "var(--accent)", fontWeight: 400 }}
+            aria-hidden="true"
+          >
+            2
+          </span>
+          m
         </span>
       </Link>
 

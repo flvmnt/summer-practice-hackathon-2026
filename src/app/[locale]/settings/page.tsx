@@ -3,8 +3,7 @@ import { setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { HeaderBell } from "@/components/layout/HeaderBell";
-import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
-import { MobileTabBar } from "@/components/layout/MobileTabBar";
+import { LocaleFlagToggle } from "@/components/layout/LocaleFlagToggle";
 import { InlineEditPanels } from "@/components/settings/InlineEditPanels";
 import { SettingsSection } from "@/components/settings/SettingsSection";
 import {
@@ -264,9 +263,7 @@ export default async function SettingsPage({
         color: "var(--ink)",
         paddingBottom: "calc(78px + env(safe-area-inset-bottom) + 16px)",
       }}
-    >
-      <DesktopSidebar unreadCount={unread} />
-      <header className="flex items-center gap-3 px-5 pt-6 md:hidden">
+    >      <header className="flex items-center gap-3 px-5 pt-6 md:hidden">
         <Link
           href={`/${locale}/today`}
           aria-label={copy.back}
@@ -301,6 +298,7 @@ export default async function SettingsPage({
             {copy.title}
           </h1>
         </div>
+        <LocaleFlagToggle locale={locale} pathWithinLocale="/settings" />
         <HeaderBell unreadCount={unread} locale={locale} />
       </header>
 
@@ -309,12 +307,19 @@ export default async function SettingsPage({
       <div className="mx-auto w-full max-w-5xl px-5 pt-4 md:grid md:grid-cols-[220px_1fr] md:gap-8 md:pt-10">
         <aside className="hidden md:block">
           <header className="px-2 pb-3">
-            <h1
-              className="display"
-              style={{ fontSize: 24, lineHeight: 1.05, color: "var(--ink)" }}
-            >
-              {copy.title}
-            </h1>
+            <div className="flex items-start justify-between gap-3">
+              <h1
+                className="display"
+                style={{ fontSize: 24, lineHeight: 1.05, color: "var(--ink)" }}
+              >
+                {copy.title}
+              </h1>
+              <LocaleFlagToggle
+                locale={locale}
+                pathWithinLocale="/settings"
+                size={32}
+              />
+            </div>
             <p
               className="mt-1 text-[12px]"
               style={{ color: "var(--ink-muted)", lineHeight: 1.5 }}
@@ -417,9 +422,6 @@ export default async function SettingsPage({
             </Link>
           </div>
         </div>
-      </div>
-
-      <MobileTabBar />
-    </main>
+      </div>    </main>
   );
 }

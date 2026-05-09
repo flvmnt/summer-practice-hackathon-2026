@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
-import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { NotificationInboxActions } from "@/components/notifications/NotificationInboxActions";
 import type {
   NotificationItem,
@@ -103,9 +101,7 @@ export default async function NotificationsPage({
         color: "var(--ink)",
         paddingBottom: "calc(96px + env(safe-area-inset-bottom) + 16px)",
       }}
-    >
-      <DesktopSidebar unreadCount={unread} />
-      <header
+    >      <header
         style={{
           position: "sticky",
           top: 0,
@@ -179,9 +175,6 @@ export default async function NotificationsPage({
           emptyFilteredTitle={emptyFilteredTitle}
           emptyFilteredBody={emptyFilteredBody}
         />
-      </section>
-
-      <MobileTabBar />
-    </main>
+      </section>    </main>
   );
 }

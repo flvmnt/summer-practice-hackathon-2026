@@ -1,8 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { HeaderBell } from "@/components/layout/HeaderBell";
-import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
-import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import {
   MatchPercentPanel,
   type MatchBreakdownRow,
@@ -104,9 +102,7 @@ export default async function PublicProfilePage({
           color: "var(--ink)",
           paddingBottom: "calc(78px + env(safe-area-inset-bottom) + 16px)",
         }}
-      >
-        <DesktopSidebar />
-        <div className="mx-auto w-full max-w-xl px-5 pt-10">
+      >        <div className="mx-auto w-full max-w-xl px-5 pt-10">
           <EmptyState
             glyph={<Glyph.profile size={28} />}
             title={copy.notFoundTitle}
@@ -116,9 +112,7 @@ export default async function PublicProfilePage({
               href: `/${locale}/today`,
             }}
           />
-        </div>
-        <MobileTabBar />
-      </main>
+        </div>      </main>
     );
   }
 
@@ -187,9 +181,7 @@ export default async function PublicProfilePage({
         color: "var(--ink)",
         paddingBottom: "calc(78px + env(safe-area-inset-bottom) + 16px)",
       }}
-    >
-      {viewer ? <DesktopSidebar unreadCount={unread} /> : null}
-      <header className="flex items-center gap-3 px-5 pt-6 md:hidden">
+    >      <header className="flex items-center gap-3 px-5 pt-6 md:hidden">
         <Link
           href={viewer ? `/${locale}/today` : `/${locale}`}
           aria-label={copy.back}
@@ -258,9 +250,6 @@ export default async function PublicProfilePage({
             breakdown={breakdownRows}
           />
         ) : null}
-      </div>
-
-      <MobileTabBar />
-    </main>
+      </div>    </main>
   );
 }

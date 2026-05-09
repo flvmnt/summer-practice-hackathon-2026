@@ -3,7 +3,6 @@
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect } from "react";
-import { Glyph } from "@/components/ui/Glyph";
 
 export default function EventsError({
   error,
@@ -32,20 +31,7 @@ export default function EventsError({
       }}
     >
       <section className="w-full max-w-md text-center">
-        <div
-          aria-hidden
-          className="mx-auto grid place-items-center"
-          style={{
-            width: 56,
-            height: 56,
-            borderRadius: 999,
-            background: "var(--alert-soft)",
-            color: "var(--alert)",
-          }}
-        >
-          <Glyph.spark size={24} />
-        </div>
-        <h1 className="display mt-5" style={{ fontSize: 28, lineHeight: 1.05 }}>
+        <h1 className="display" style={{ fontSize: 28, lineHeight: 1.05 }}>
           {t("errorTitle")}
         </h1>
         <p

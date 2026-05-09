@@ -2,8 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { HeaderBell } from "@/components/layout/HeaderBell";
-import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
-import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { IcsExportButton } from "@/components/event/IcsExportButton";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -251,10 +249,6 @@ export default async function CalendarPage({
             </div>
           </ToastProvider>
         )}
-      </div>
-
-      <DesktopSidebar unreadCount={unread} />
-      <MobileTabBar />
-    </main>
+      </div>    </main>
   );
 }
