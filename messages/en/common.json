@@ -285,6 +285,11 @@
     "status": "Status: {status}",
     "chatTitle": "Event chat",
     "attendeesTitle": "Attendees",
+    "venuesTitle": "Venue vote",
+    "venuesBody": "Seeded venue candidates are ranked deterministically. The map proof starts with a privacy-safe list fallback and directions links.",
+    "venueMeta": "{distance} km away · {price} · {confidence}",
+    "directions": "Open directions",
+    "votes": "{count, plural, one {# vote} other {# votes}}",
     "emptyChat": "No event-specific messages yet.",
     "system": "System",
     "form": {
@@ -292,6 +297,21 @@
       "send": "Send event message",
       "sending": "Sending",
       "genericError": "The event message could not be sent. Check your session and try again."
+    },
+    "voteForm": {
+      "vote": "Vote venue",
+      "voting": "Voting",
+      "voted": "Selected",
+      "genericError": "The vote could not be saved. Check your session and try again."
+    },
+    "priceTiers": {
+      "free": "free",
+      "low": "low cost",
+      "medium": "medium cost"
+    },
+    "priceConfidence": {
+      "verified": "verified price",
+      "estimated": "estimated price"
     },
     "statuses": {
       "proposed": "Proposed",

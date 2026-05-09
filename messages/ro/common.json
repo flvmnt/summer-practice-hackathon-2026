@@ -285,6 +285,11 @@
     "status": "Status: {status}",
     "chatTitle": "Chat de eveniment",
     "attendeesTitle": "Participanți",
+    "venuesTitle": "Vot pentru locație",
+    "venuesBody": "Candidații de locație sunt seeded și sortați determinist. Dovada de hartă pornește cu listă sigură pentru confidențialitate și linkuri de direcții.",
+    "venueMeta": "{distance} km distanță · {price} · {confidence}",
+    "directions": "Deschide direcțiile",
+    "votes": "{count, plural, one {# vot} few {# voturi} other {# voturi}}",
     "emptyChat": "Nu există încă mesaje specifice evenimentului.",
     "system": "Sistem",
     "form": {
@@ -292,6 +297,21 @@
       "send": "Trimite mesaj",
       "sending": "Se trimite",
       "genericError": "Mesajul de eveniment nu a putut fi trimis. Verifică sesiunea și încearcă din nou."
+    },
+    "voteForm": {
+      "vote": "Votează locația",
+      "voting": "Se votează",
+      "voted": "Selectată",
+      "genericError": "Votul nu a putut fi salvat. Verifică sesiunea și încearcă din nou."
+    },
+    "priceTiers": {
+      "free": "gratuit",
+      "low": "cost mic",
+      "medium": "cost mediu"
+    },
+    "priceConfidence": {
+      "verified": "preț verificat",
+      "estimated": "preț estimat"
     },
     "statuses": {
       "proposed": "Propus",

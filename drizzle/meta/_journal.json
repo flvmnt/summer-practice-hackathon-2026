@@ -43,6 +43,13 @@
       "when": 1778320765519,
       "tag": "0005_harsh_punisher",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1778321258378,
+      "tag": "0006_fat_steve_rogers",
+      "breakpoints": true
     }
   ]
 }

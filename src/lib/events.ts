@@ -2,7 +2,16 @@
 
 import { and, eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { eventAttendees, events, groupMembers, groups, messages } from "@/db/schema";
+import {
+  eventAttendees,
+  eventVenueCandidates,
+  events,
+  groupMembers,
+  groups,
+  messages,
+  venues,
+  votes,
+} from "@/db/schema";
 import { actionError, actionOk, type ActionResult } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth-current-user";
 import {
@@ -51,6 +60,68 @@ const SPORT_LABELS: Record<"en" | "ro", Record<SportKey, string>> = {
   },
 };
 
+const SEEDED_VENUES: Array<{
+  externalId: string;
+  name: string;
+  address: string;
+  lat: string;
+  lng: string;
+  sports: SportKey[];
+  priceTier: "free" | "low" | "medium";
+  priceConfidence: "verified" | "estimated";
+}> = [
+  {
+    externalId: "timisoara-roses-park",
+    name: "Parcul Rozelor",
+    address: "Parcul Rozelor, Timișoara",
+    lat: "45.753700",
+    lng: "21.230900",
+    sports: ["running", "yoga"],
+    priceTier: "free",
+    priceConfidence: "verified",
+  },
+  {
+    externalId: "timisoara-bega-track",
+    name: "Malul Begăi",
+    address: "Bega river path, Timișoara",
+    lat: "45.748900",
+    lng: "21.208700",
+    sports: ["running", "cycling"],
+    priceTier: "free",
+    priceConfidence: "verified",
+  },
+  {
+    externalId: "timisoara-sport-center",
+    name: "Baza Sportivă 2",
+    address: "Zona Circumvalațiunii, Timișoara",
+    lat: "45.764500",
+    lng: "21.216100",
+    sports: ["football", "basketball", "tennis", "volleyball", "badminton", "table_tennis"],
+    priceTier: "medium",
+    priceConfidence: "estimated",
+  },
+  {
+    externalId: "timisoara-central-courts",
+    name: "Terenuri Centrale",
+    address: "Centru, Timișoara",
+    lat: "45.756000",
+    lng: "21.229000",
+    sports: ["tennis", "badminton", "table_tennis"],
+    priceTier: "low",
+    priceConfidence: "estimated",
+  },
+  {
+    externalId: "timisoara-forest-trail",
+    name: "Pădurea Verde",
+    address: "Pădurea Verde, Timișoara",
+    lat: "45.781400",
+    lng: "21.267800",
+    sports: ["running", "cycling", "hiking"],
+    priceTier: "free",
+    priceConfidence: "verified",
+  },
+];
+
 function eventCopy(locale: "ro" | "en", sport: string) {
   const sportLabel =
     SPORT_LABELS[locale][sport as SportKey] ?? SPORT_LABELS[locale].running;
@@ -68,6 +139,18 @@ function eventCopy(locale: "ro" | "en", sport: string) {
     groupMessage: `Event plan created: ${sportLabel}`,
     eventMessage: "Event-specific chat opened for this plan.",
   };
+}
+
+function venueReason(locale: "ro" | "en", rank: number) {
+  if (locale === "ro") {
+    return rank === 1
+      ? "Cel mai bun candidat determinist pentru sport și proximitate."
+      : "Alternativă apropiată pentru votul grupului.";
+  }
+
+  return rank === 1
+    ? "Best deterministic candidate for sport and proximity."
+    : "Nearby fallback for the group vote.";
 }
 
 export async function createGroupEventAction(
@@ -159,6 +242,62 @@ export async function createGroupEventAction(
           status: "going",
         })),
       );
+    }
+
+    const matchingVenues = SEEDED_VENUES.filter((venue) =>
+      venue.sports.includes(group.sport as SportKey),
+    ).slice(0, 3);
+
+    const candidateVenueIds: string[] = [];
+    for (const [index, venue] of matchingVenues.entries()) {
+      const [venueRow] = await tx
+        .insert(venues)
+        .values({
+          demoRunId: membership.demoRunId,
+          name: venue.name,
+          address: venue.address,
+          lat: venue.lat,
+          lng: venue.lng,
+          sport: group.sport,
+          priceTier: venue.priceTier,
+          priceConfidence: venue.priceConfidence,
+          source: "seeded",
+          externalId: venue.externalId,
+        })
+        .onConflictDoUpdate({
+          target: [venues.source, venues.externalId],
+          set: {
+            name: venue.name,
+            address: venue.address,
+            lat: venue.lat,
+            lng: venue.lng,
+            sport: group.sport,
+            priceTier: venue.priceTier,
+            priceConfidence: venue.priceConfidence,
+          },
+        })
+        .returning({ id: venues.id });
+
+      if (venueRow) {
+        candidateVenueIds.push(venueRow.id);
+        await tx.insert(eventVenueCandidates).values({
+          eventId: event.id,
+          venueId: venueRow.id,
+          rank: index + 1,
+          distanceKm: (index + 1).toFixed(2),
+          reason: venueReason(user.locale, index + 1),
+        });
+      }
+    }
+
+    if (candidateVenueIds.length > 0) {
+      await tx.insert(votes).values({
+        demoRunId: membership.demoRunId,
+        groupId: group.id,
+        eventId: event.id,
+        topic: "venue",
+        createdByUserId: user.id,
+      });
     }
 
     await tx.insert(messages).values({

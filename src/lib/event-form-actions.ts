@@ -3,6 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { postEventMessageAction } from "@/lib/chat";
 import { createGroupEventAction } from "@/lib/events";
+import { castVenueVoteAction } from "@/lib/votes";
 
 export type CreateGroupEventFormState = {
   error?: string;
@@ -15,6 +16,11 @@ export type CreateGroupEventFormState = {
 export type EventChatFormState = {
   error?: string;
   sent?: boolean;
+};
+
+export type VenueVoteFormState = {
+  error?: string;
+  voted?: boolean;
 };
 
 function stringField(formData: FormData, name: string) {
@@ -57,4 +63,20 @@ export async function postEventMessageFormAction(
   }
 
   return { sent: true };
+}
+
+export async function castVenueVoteFormAction(
+  _previousState: VenueVoteFormState,
+  formData: FormData,
+): Promise<VenueVoteFormState> {
+  const result = await castVenueVoteAction({
+    eventId: stringField(formData, "eventId"),
+    optionIdx: Number(stringField(formData, "optionIdx")),
+  });
+
+  if (!result.ok) {
+    return { error: result.error };
+  }
+
+  return { voted: true };
 }

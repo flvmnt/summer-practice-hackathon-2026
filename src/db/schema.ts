@@ -264,6 +264,93 @@ export const eventAttendees = pgTable(
   ],
 );
 
+export const venues = pgTable(
+  "venues",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    demoRunId: uuid("demo_run_id").references(() => demoRuns.id, {
+      onDelete: "cascade",
+    }),
+    name: varchar("name", { length: 120 }).notNull(),
+    address: text("address"),
+    lat: decimal("lat", { precision: 9, scale: 6 }).notNull(),
+    lng: decimal("lng", { precision: 9, scale: 6 }).notNull(),
+    sport: varchar("sport", { length: 40 }).notNull(),
+    priceTier: varchar("price_tier", { length: 20 }).notNull().default("free"),
+    priceConfidence: varchar("price_confidence", { length: 20 }).notNull().default("estimated"),
+    source: varchar("source", { length: 40 }).notNull().default("seeded"),
+    externalId: varchar("external_id", { length: 120 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("venues_lat_lng_idx").on(table.lat, table.lng),
+    index("venues_sport_idx").on(table.sport),
+    index("venues_demo_run_idx").on(table.demoRunId),
+    uniqueIndex("venues_source_external_unique").on(table.source, table.externalId),
+  ],
+);
+
+export const eventVenueCandidates = pgTable(
+  "event_venue_candidates",
+  {
+    eventId: uuid("event_id")
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+    venueId: uuid("venue_id")
+      .notNull()
+      .references(() => venues.id, { onDelete: "cascade" }),
+    rank: smallint("rank").notNull(),
+    distanceKm: decimal("distance_km", { precision: 6, scale: 2 }),
+    reason: text(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.eventId, table.venueId] }),
+    index("event_venue_candidates_event_rank_idx").on(table.eventId, table.rank),
+  ],
+);
+
+export const votes = pgTable(
+  "votes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    demoRunId: uuid("demo_run_id").references(() => demoRuns.id, {
+      onDelete: "cascade",
+    }),
+    groupId: uuid("group_id").references(() => groups.id, { onDelete: "cascade" }),
+    eventId: uuid("event_id").references(() => events.id, { onDelete: "cascade" }),
+    topic: varchar("topic", { length: 40 }).notNull(),
+    status: varchar("status", { length: 20 }).notNull().default("open"),
+    createdByUserId: uuid("created_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("votes_event_topic_idx").on(table.eventId, table.topic),
+    index("votes_group_idx").on(table.groupId),
+    index("votes_demo_run_idx").on(table.demoRunId),
+  ],
+);
+
+export const voteChoices = pgTable(
+  "vote_choices",
+  {
+    voteId: uuid("vote_id")
+      .notNull()
+      .references(() => votes.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    optionIdx: smallint("option_idx").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.voteId, table.userId] }),
+    index("vote_choices_user_idx").on(table.userId),
+  ],
+);
+
 export const messages = pgTable(
   "messages",
   {

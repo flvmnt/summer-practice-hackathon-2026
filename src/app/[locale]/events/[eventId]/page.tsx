@@ -1,8 +1,9 @@
-import { CalendarDays, MessageSquareText, UsersRound } from "lucide-react";
+import { CalendarDays, MapPinned, MessageSquareText, UsersRound } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { EventChatForm } from "@/components/event/EventChatForm";
+import { VenueVoteForm } from "@/components/event/VenueVoteForm";
 import type { AppLocale } from "@/i18n/routing";
 import { getEventAction } from "@/lib/chat";
 import type { SportKey } from "@/lib/sports";
@@ -103,6 +104,62 @@ export default async function EventPage({
             </li>
           ))}
         </ul>
+        <div className="mt-6 rounded-md border border-[var(--line)] bg-white p-3">
+          <div className="mb-3 flex items-center gap-2">
+            <MapPinned aria-hidden="true" size={18} />
+            <h2 className="text-sm font-bold">{t("venuesTitle")}</h2>
+          </div>
+          <p className="mb-3 text-sm leading-6 text-[var(--muted)]">
+            {t("venuesBody")}
+          </p>
+          <ul className="grid gap-3">
+            {result.data.venueCandidates.map((candidate) => (
+              <li
+                className="grid gap-3 rounded-md border border-[var(--line)] bg-[var(--cloud)] p-3"
+                key={candidate.venueId}
+              >
+                <div>
+                  <p className="font-bold">{candidate.name}</p>
+                  <p className="text-sm leading-6 text-[var(--muted)]">
+                    {candidate.address}
+                  </p>
+                  <p className="mt-1 text-xs font-semibold text-[var(--muted)]">
+                    {t("venueMeta", {
+                      distance: candidate.distanceKm ?? "?",
+                      price: t(`priceTiers.${candidate.priceTier}`),
+                      confidence: t(`priceConfidence.${candidate.priceConfidence}`),
+                    })}
+                  </p>
+                </div>
+                <p className="text-sm leading-6 text-[var(--muted)]">
+                  {candidate.reason}
+                </p>
+                <div className="grid gap-2">
+                  <Link
+                    className="inline-flex min-h-11 items-center justify-center rounded-md border border-[var(--line)] bg-white px-3 text-sm font-semibold"
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${candidate.lat},${candidate.lng}`}
+                    target="_blank"
+                  >
+                    {t("directions")}
+                  </Link>
+                  {result.data.venueVote ? (
+                    <VenueVoteForm
+                      copy={t.raw("voteForm")}
+                      eventId={event.id}
+                      optionIdx={candidate.optionIdx}
+                      selected={
+                        result.data.venueVote.selectedOptionIdx === candidate.optionIdx
+                      }
+                    />
+                  ) : null}
+                  <p className="text-xs font-semibold text-[var(--muted)]">
+                    {t("votes", { count: candidate.votes })}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
     </main>
   );

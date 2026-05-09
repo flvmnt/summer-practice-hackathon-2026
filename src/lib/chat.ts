@@ -1,8 +1,19 @@
 "use server";
 
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, asc, desc, eq, isNull } from "drizzle-orm";
 import { getDb } from "@/db";
-import { eventAttendees, events, groupMembers, groups, messages, users } from "@/db/schema";
+import {
+  eventAttendees,
+  eventVenueCandidates,
+  events,
+  groupMembers,
+  groups,
+  messages,
+  users,
+  venues,
+  voteChoices,
+  votes,
+} from "@/db/schema";
 import { actionError, actionOk, type ActionResult } from "@/lib/action-result";
 import {
   AUTH_RATE_LIMIT_POLICIES,
@@ -59,6 +70,7 @@ export type GroupDetails = {
 };
 
 export type EventDetails = {
+  currentUserId: string;
   event: {
     id: string;
     groupId: string;
@@ -76,6 +88,24 @@ export type EventDetails = {
     fullName: string;
   }>;
   messages: GroupMessage[];
+  venueCandidates: Array<{
+    optionIdx: number;
+    venueId: string;
+    name: string;
+    address: string | null;
+    lat: string;
+    lng: string;
+    distanceKm: string | null;
+    priceTier: string;
+    priceConfidence: string;
+    reason: string | null;
+    votes: number;
+  }>;
+  venueVote: {
+    id: string;
+    status: string;
+    selectedOptionIdx: number | null;
+  } | null;
 };
 
 async function requireGroupMember(groupId: string) {
@@ -301,7 +331,50 @@ export async function getEventAction(input: {
     .innerJoin(users, eq(users.id, eventAttendees.userId))
     .where(eq(eventAttendees.eventId, parsed.data.eventId));
 
+  const candidates = await getDb()
+    .select({
+      venueId: venues.id,
+      name: venues.name,
+      address: venues.address,
+      lat: venues.lat,
+      lng: venues.lng,
+      distanceKm: eventVenueCandidates.distanceKm,
+      priceTier: venues.priceTier,
+      priceConfidence: venues.priceConfidence,
+      reason: eventVenueCandidates.reason,
+      rank: eventVenueCandidates.rank,
+    })
+    .from(eventVenueCandidates)
+    .innerJoin(venues, eq(venues.id, eventVenueCandidates.venueId))
+    .where(eq(eventVenueCandidates.eventId, parsed.data.eventId))
+    .orderBy(asc(eventVenueCandidates.rank));
+
+  const [venueVote] = await getDb()
+    .select({
+      id: votes.id,
+      status: votes.status,
+    })
+    .from(votes)
+    .where(and(eq(votes.eventId, parsed.data.eventId), eq(votes.topic, "venue")))
+    .limit(1);
+
+  const choices = venueVote
+    ? await getDb()
+        .select({
+          userId: voteChoices.userId,
+          optionIdx: voteChoices.optionIdx,
+        })
+        .from(voteChoices)
+        .where(eq(voteChoices.voteId, venueVote.id))
+    : [];
+
+  const voteCounts = new Map<number, number>();
+  for (const choice of choices) {
+    voteCounts.set(choice.optionIdx, (voteCounts.get(choice.optionIdx) ?? 0) + 1);
+  }
+
   return actionOk({
+    currentUserId: auth.user.id,
     event: {
       id: event.id,
       groupId: event.groupId,
@@ -314,6 +387,27 @@ export async function getEventAction(input: {
     },
     attendees,
     messages: await loadEventMessages(parsed.data.eventId, 30),
+    venueCandidates: candidates.map((candidate, index) => ({
+      optionIdx: index,
+      venueId: candidate.venueId,
+      name: candidate.name,
+      address: candidate.address,
+      lat: candidate.lat,
+      lng: candidate.lng,
+      distanceKm: candidate.distanceKm,
+      priceTier: candidate.priceTier,
+      priceConfidence: candidate.priceConfidence,
+      reason: candidate.reason,
+      votes: voteCounts.get(index) ?? 0,
+    })),
+    venueVote: venueVote
+      ? {
+          id: venueVote.id,
+          status: venueVote.status,
+          selectedOptionIdx:
+            choices.find((choice) => choice.userId === auth.user.id)?.optionIdx ?? null,
+        }
+      : null,
   });
 }
 
