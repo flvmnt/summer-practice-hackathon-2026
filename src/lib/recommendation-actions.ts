@@ -4,7 +4,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db";
 import { groupMembers, groups, messages, users } from "@/db/schema";
 import { actionError, actionOk, type ActionResult } from "@/lib/action-result";
-import { getCurrentUser } from "@/lib/auth-current-user";
+import { requireUserForAction } from "@/lib/auth-current-user";
 import {
   getRecommendationsForGroupInputSchema,
   inviteRecommendedInputSchema,
@@ -56,12 +56,12 @@ export async function getRecommendationsForGroupAction(
     return actionError("validation");
   }
 
-  const user = await getCurrentUser();
-  if (!user) {
-    return actionError("unauthorized");
+  const auth = await requireUserForAction();
+  if (!auth.ok) {
+    return actionError(auth.error);
   }
 
-  const group = await loadCaptainGroup(parsed.data.groupId, user.id);
+  const group = await loadCaptainGroup(parsed.data.groupId, auth.user.id);
   if (!group) {
     return actionError("unauthorized");
   }
@@ -82,17 +82,17 @@ export async function inviteRecommendedAction(
     return actionError("validation");
   }
 
-  const user = await getCurrentUser();
-  if (!user) {
-    return actionError("unauthorized");
+  const auth = await requireUserForAction();
+  if (!auth.ok) {
+    return actionError(auth.error);
   }
 
-  const group = await loadCaptainGroup(parsed.data.groupId, user.id);
+  const group = await loadCaptainGroup(parsed.data.groupId, auth.user.id);
   if (!group) {
     return actionError("unauthorized");
   }
 
-  if (parsed.data.userId === user.id) {
+  if (parsed.data.userId === auth.user.id) {
     return actionError("validation");
   }
 
@@ -178,7 +178,7 @@ export async function inviteRecommendedAction(
         demoRunId: group.demoRunId ?? candidate.demoRunId,
         scopeType: "group",
         groupId: group.id,
-        userId: user.id,
+        userId: auth.user.id,
         kind: "rec_invite",
         body: "captain_invited_recommended_teammate",
       });
