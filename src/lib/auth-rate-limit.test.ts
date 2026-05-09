@@ -46,13 +46,17 @@ describe("auth rate limit helpers", () => {
 
   it("keeps auth policies aligned with the spec", () => {
     expect(AUTH_RATE_LIMIT_POLICIES).toEqual({
+      aiBioUser: { limit: 30, windowSeconds: 3600 },
+      aiPhotoUser: { limit: 10, windowSeconds: 3600 },
       chatUserGroup: { limit: 20, windowSeconds: 60 },
       invitePreviewIp: { limit: 60, windowSeconds: 60 },
       inviteUserEvent: { limit: 6, windowSeconds: 3600 },
       loginIpUser: { limit: 5, windowSeconds: 900 },
       loginUser: { limit: 10, windowSeconds: 900 },
+      manualEventUser: { limit: 10, windowSeconds: 3600 },
       signupIp: { limit: 10, windowSeconds: 3600 },
       recoveryIpUser: { limit: 3, windowSeconds: 1800 },
+      uploadPhotoUser: { limit: 10, windowSeconds: 3600 },
     });
   });
 
