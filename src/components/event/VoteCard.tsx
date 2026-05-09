@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +39,7 @@ export function VoteCard({
   className,
   disabled,
 }: Props) {
+  const t = useTranslations();
   const [animated, setAnimated] = useState(false);
   const mounted = useRef(false);
 
@@ -88,7 +90,11 @@ export function VoteCard({
           {countdown ? ` · ${countdown}` : ""}
         </div>
       </div>
-      <ul className="mt-2.5 grid gap-2">
+      <ul
+        className="mt-2.5 grid gap-2"
+        aria-live="polite"
+        aria-atomic="true"
+      >
         {options.map((o, i) => {
           const pct = totalVotes > 0 ? (o.votes / totalVotes) * 100 : 0;
           const isMine = myVote === o.id;
@@ -134,7 +140,7 @@ export function VoteCard({
                         className="mono ml-2 text-[10px] font-bold uppercase tracking-[0.1em]"
                         style={{ color: "var(--accent-deep)" }}
                       >
-                        Your vote
+                        {t("event.vote.yourVote")}
                       </span>
                     ) : null}
                   </span>
@@ -162,7 +168,7 @@ export function VoteCard({
             fontSize: 13,
           }}
         >
-          Close vote
+          {t("event.vote.close")}
         </button>
       ) : null}
     </div>
