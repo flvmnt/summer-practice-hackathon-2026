@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { CreateEventForm } from "@/components/events/CreateEventForm";
 import { CreateGroupEventForm } from "@/components/group/CreateGroupEventForm";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { Card } from "@/components/ui/Card";
@@ -31,10 +32,17 @@ const COPY = {
     created: "Event created.",
     openEvent: "Open event",
     genericError: "Something went wrong. Try again.",
-    emptyTitle: "You don't captain any groups yet",
-    emptyBody:
-      "Join a match on Today and you may be promoted to captain, or create a group from the Groups screen.",
-    emptyAction: "Open Groups",
+    manualHeading: "Or start your own event",
+    manualBody:
+      "Pick a sport, time, and venue. We'll create a group with you as captain and open the event for invites.",
+    manualSport: "Sport",
+    manualTime: "When",
+    manualVenue: "Venue",
+    manualVenueSearch: "Search venues",
+    manualSuggested: "Suggested",
+    manualSelected: "Selected",
+    manualSubmit: "Create event",
+    manualSubmitting: "Creating…",
     sportLabels: {
       football: "Football",
       basketball: "Basketball",
@@ -64,10 +72,17 @@ const COPY = {
     created: "Eveniment creat.",
     openEvent: "Deschide evenimentul",
     genericError: "Ceva nu a funcționat. Încearcă din nou.",
-    emptyTitle: "Nu ești căpitan în niciun grup",
-    emptyBody:
-      "Alătură-te unui match de pe Astăzi și poți fi promovat căpitan, sau creează un grup din ecranul Grupuri.",
-    emptyAction: "Deschide Grupuri",
+    manualHeading: "Sau pornește tu un eveniment",
+    manualBody:
+      "Alege sport, oră și loc. Creăm un grup cu tine ca și căpitan și deschidem evenimentul pentru invitați.",
+    manualSport: "Sport",
+    manualTime: "Când",
+    manualVenue: "Loc",
+    manualVenueSearch: "Caută locuri",
+    manualSuggested: "Sugestii",
+    manualSelected: "Selectat",
+    manualSubmit: "Creează eveniment",
+    manualSubmitting: "Se creează…",
     sportLabels: {
       football: "Fotbal",
       basketball: "Baschet",
@@ -183,16 +198,36 @@ export default async function CreateEventPage({
         </p>
 
         {captainGroups.length === 0 ? (
-          <Card variant="card" style={{ padding: 0 }}>
-            <EmptyState
-              glyph={<Glyph.groups size={28} />}
-              title={copy.emptyTitle}
-              body={copy.emptyBody}
-              action={{
-                label: copy.emptyAction,
-                href: `/${locale}/groups`,
-              }}
-            />
+          <Card variant="card" style={{ padding: 18 }}>
+            <h2
+              className="display"
+              style={{ fontSize: 18, lineHeight: 1.2 }}
+            >
+              {copy.manualHeading}
+            </h2>
+            <p
+              className="mt-1 text-[13px]"
+              style={{ color: "var(--ink-muted)", lineHeight: 1.5 }}
+            >
+              {copy.manualBody}
+            </p>
+            <div className="mt-4">
+              <CreateEventForm
+                locale={locale}
+                copy={{
+                  sportLabel: copy.manualSport,
+                  timeLabel: copy.manualTime,
+                  venueLabel: copy.manualVenue,
+                  venueSearch: copy.manualVenueSearch,
+                  suggestedVenues: copy.manualSuggested,
+                  selectedVenue: copy.manualSelected,
+                  submit: copy.manualSubmit,
+                  submitting: copy.manualSubmitting,
+                  errorGeneric: copy.genericError,
+                  sportLabels: copy.sportLabels,
+                }}
+              />
+            </div>
           </Card>
         ) : (
           <div className="flex flex-col gap-3">

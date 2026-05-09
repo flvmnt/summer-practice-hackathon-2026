@@ -1,12 +1,15 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Glyph } from "@/components/ui/Glyph";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { ToastProvider, useToast } from "@/components/ui/Toast";
 import { VenueRow } from "@/components/event/VenueRow";
 import { SEED_VENUES, type MapVenue } from "@/components/map/seed-venues";
+import type { AppLocale } from "@/i18n/routing";
+import { createManualEventAction } from "@/lib/manual-event-actions";
 import { SPORT_KEYS, type SportKey } from "@/lib/sports";
 
 type Copy = {
@@ -17,7 +20,8 @@ type Copy = {
   suggestedVenues: string;
   selectedVenue: string;
   submit: string;
-  comingSoon: string;
+  submitting: string;
+  errorGeneric: string;
   sportLabels: Record<SportKey, string>;
 };
 
@@ -46,16 +50,29 @@ function defaultDateTimeLocal(): string {
   );
 }
 
-export function CreateEventForm({ copy }: { copy: Copy }) {
+export function CreateEventForm({
+  copy,
+  locale,
+}: {
+  copy: Copy;
+  locale: AppLocale;
+}) {
   return (
     <ToastProvider>
-      <CreateEventFormInner copy={copy} />
+      <CreateEventFormInner copy={copy} locale={locale} />
     </ToastProvider>
   );
 }
 
-function CreateEventFormInner({ copy }: { copy: Copy }) {
+function CreateEventFormInner({
+  copy,
+  locale,
+}: {
+  copy: Copy;
+  locale: AppLocale;
+}) {
   const toast = useToast();
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [sport, setSport] = useState<SportKey>("football");
   const [whenAt, setWhenAt] = useState<string>(() => defaultDateTimeLocal());
@@ -76,15 +93,21 @@ function CreateEventFormInner({ copy }: { copy: Copy }) {
 
   function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // TODO(A12 backend): wire to a real createManualEventAction once the
-    // server contract supports public events without an active group.
-    // For now the existing createGroupEventAction requires a captain and a
-    // groupId, so a true manual event is out of scope.
-    startTransition(() => {
-      toast.push({
-        title: "Event creation coming soon",
-        description: copy.comingSoon,
+    startTransition(async () => {
+      const result = await createManualEventAction({
+        sport,
+        whenAt: new Date(whenAt).toISOString(),
+        customLocationText: selectedVenue?.name ?? null,
       });
+      if (!result.ok) {
+        toast.push({
+          title: copy.errorGeneric,
+          description: result.error,
+          variant: "alert",
+        });
+        return;
+      }
+      router.push(`/${locale}/events/${result.data.event.id}`);
     });
   }
 
