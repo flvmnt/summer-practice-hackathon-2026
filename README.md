@@ -99,9 +99,9 @@ The platform should match users based on:
 
 | Sport       | Group Size    |
 | ----------- | ------------- |
-| Football    | 10–14 people  |
-| Tennis      | 2–4 people    |
-| Basketball  | 6–10 people   |
+| Football    | 10-14 people  |
+| Tennis      | 2-4 people    |
+| Basketball  | 6-10 people   |
 
 ### 4. Captain Selection
 

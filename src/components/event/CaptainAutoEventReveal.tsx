@@ -13,7 +13,7 @@ export type CaptainAutoEventRevealCopy = {
   pillLabel: string; // "Captain auto-suggest"
   versionLabel: string; // "auto · v1"
   headline: string; // "Suggested plan"
-  whenRange: string; // "Today, 19:00 – 20:30"
+  whenRange: string; // "Today, 19:00 - 20:30"
   reasoning: string; // text for TypeOn (50ms/char per spec)
   recommendedSubLine: string; // "X km · price · weather"
   alternateLines: string[]; // small list of fallback rows (sub copy)
