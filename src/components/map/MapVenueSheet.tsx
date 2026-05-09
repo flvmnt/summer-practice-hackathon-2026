@@ -62,6 +62,9 @@ function wazeHref(venue: MapVenue) {
  * Desktop layouts hide this; the sidebar shows the same data.
  */
 export function MapVenueSheet({ venue, expanded, onToggleExpanded, labels }: Props) {
+  if (!venue) {
+    return null;
+  }
   return (
     <div
       role="region"
@@ -104,8 +107,7 @@ export function MapVenueSheet({ venue, expanded, onToggleExpanded, labels }: Pro
         />
       </button>
       <div className="px-4 pt-5">
-        {venue ? (
-          <>
+        <>
             <div className="flex items-start gap-3">
               <div
                 className="grid place-items-center"
@@ -202,15 +204,7 @@ export function MapVenueSheet({ venue, expanded, onToggleExpanded, labels }: Pro
                 </button>
               </div>
             ) : null}
-          </>
-        ) : (
-          <p
-            className="mt-2 text-center text-[13px]"
-            style={{ color: "var(--ink-muted)" }}
-          >
-            {labels.selectPrompt}
-          </p>
-        )}
+        </>
       </div>
     </div>
   );

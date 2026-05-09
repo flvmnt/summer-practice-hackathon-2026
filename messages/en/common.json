@@ -1096,7 +1096,13 @@
       "label": "Notifications",
       "labelUnread": "Notifications, {count} unread"
     },
-    "back": "Back to Today"
+    "back": "Back to Today",
+    "emptyAction": "Back home",
+    "emptyFilteredTitle": "Nothing in this filter",
+    "emptyFilteredBody": "Try a different filter or show all.",
+    "relativeTime": {
+      "justNow": "Just now"
+    }
   },
   "groupsList": {
     "eyebrow": "Groups",

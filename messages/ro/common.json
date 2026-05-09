@@ -7,7 +7,7 @@
     "eyebrow": "Practică de vară Haufe 2026",
     "title": "Intră în meciul care se formează deja lângă tine.",
     "subtitle": "O aplicație web mobile-first pentru potriviri sportive spontane - fotbal, tenis, baschet și alergare în Timișoara.",
-    "openToday": "Deschide Today",
+    "openToday": "Deschide pagina principală",
     "judgeMode": "Mod juriu",
     "loopSteps": [
       "Cont nou",
@@ -110,7 +110,7 @@
         "successTitle": "Parolă resetată",
         "successBody": "Salvează acest cod nou de recuperare. Codul vechi nu mai funcționează.",
         "recoveryWarning": "Nu va mai fi afișat din nou.",
-        "continue": "Continuă la Today"
+        "continue": "Continuă acasă"
       },
       "step1": "1. Identificare",
       "step2": "2. Parolă nouă",
@@ -271,7 +271,7 @@
         "invalidLongitude": "Longitudinea trebuie să fie între -180 și 180.",
         "successTitle": "Locație salvată",
         "successBody": "Contul are acum câmpurile obligatorii pentru profil, sporturi și proximitate în ShowUpToday.",
-        "continue": "Deschide Today"
+        "continue": "Deschide pagina principală"
       },
       "headerTitle": "Unde poți juca?",
       "headerSubtitle": "Orașul și distanța pe care o parcurgi",
@@ -296,7 +296,7 @@
       "changePhoto": "Alege altă poză",
       "optionalTitle": "Poza este opțională",
       "optionalBody": "Sari peste pasul acesta și adaugă o poză mai târziu din profil.",
-      "skipPrimary": "Sari peste. Deschide Today",
+      "skipPrimary": "Sari peste. Mergi acasă",
       "tryUploadLabel": "Încearcă încărcarea pozei",
       "tryUploadDescription": "Alege o poză, salveaz-o în profil și pornește analiza AI live când Groq este configurat.",
       "previewOnly": "Încărcăm poza...",
@@ -461,7 +461,7 @@
     }
   },
   "group": {
-    "back": "Înapoi la Today",
+    "back": "Înapoi acasă",
     "title": "Grup de {sport}",
     "summary": "{count}/{target} jucători potriviți pentru acest prompt.",
     "captain": "{name} este căpitan.",
@@ -998,9 +998,9 @@
   "routeStates": {
     "loadingAria": "Se încarcă {section}",
     "errorTitle": "Ceva nu a mers.",
-    "errorBody": "Nu am putut încărca {section}. Încearcă din nou sau revino la Today.",
+    "errorBody": "Nu am putut încărca {section}. Încearcă din nou sau revino acasă.",
     "retry": "Încearcă din nou",
-    "backToToday": "Înapoi la Today",
+    "backToToday": "Înapoi acasă",
     "sections": {
       "today": "Today",
       "groups": "grupurile tale",
@@ -1096,7 +1096,13 @@
       "label": "Notificări",
       "labelUnread": "Notificări, {count} necitite"
     },
-    "back": "Înapoi la Astăzi"
+    "back": "Înapoi la Astăzi",
+    "emptyAction": "Înapoi acasă",
+    "emptyFilteredTitle": "Nimic la acest filtru",
+    "emptyFilteredBody": "Încearcă alt filtru sau arată toate.",
+    "relativeTime": {
+      "justNow": "Chiar acum"
+    }
   },
   "groupsList": {
     "eyebrow": "Grupuri",
@@ -1110,8 +1116,8 @@
     "memberCount": "{count}/{target} jucători",
     "emptyTitle": "Niciun grup încă",
     "emptyBody": "Răspunde la promptul de azi pentru a forma primul grup.",
-    "emptyAction": "Deschide Today",
-    "back": "Înapoi la Today"
+    "emptyAction": "Deschide pagina principală",
+    "back": "Înapoi acasă"
   },
   "eventsList": {
     "eyebrow": "Evenimente",
