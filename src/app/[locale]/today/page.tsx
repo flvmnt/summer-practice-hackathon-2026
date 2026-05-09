@@ -171,7 +171,7 @@ export default async function TodayPage({
                   complete={requiredComplete}
                   total={totalSteps}
                   nextLabel="Add a photo"
-                  nextHref={`/${locale}/onboarding/photo`}
+                  nextHref={`/${locale}/onboarding/profile`}
                 />
               </div>
             ) : null}
@@ -185,7 +185,7 @@ export default async function TodayPage({
                   complete={requiredComplete}
                   total={totalSteps}
                   nextLabel="Add a photo"
-                  nextHref={`/${locale}/onboarding/photo`}
+                  nextHref={`/${locale}/onboarding/profile`}
                 />
               </div>
             ) : null}

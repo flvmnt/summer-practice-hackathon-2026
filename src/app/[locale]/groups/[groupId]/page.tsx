@@ -17,6 +17,7 @@ import { Glyph } from "@/components/ui/Glyph";
 import { Pill } from "@/components/ui/Pill";
 import type { AppLocale } from "@/i18n/routing";
 import { getGroupAction } from "@/lib/chat";
+import { unreadCount } from "@/lib/notifications";
 import { SPORTS, type SportKey } from "@/lib/sports";
 
 export const dynamic = "force-dynamic";
@@ -54,6 +55,7 @@ export default async function GroupPage({
   const sportLabel = t(`sports.${group.sport as SportKey}`);
   const currentTab = readTab(sp.tab);
   const events = groupResult.data.events;
+  const unread = await unreadCount(groupResult.data.currentUserId);
   const upcomingEvent = events[0] ?? null;
   const hasFirstMatch = groupResult.data.achievements.some(
     (achievement) => achievement.code === "first_match",
@@ -257,7 +259,7 @@ export default async function GroupPage({
           memberCount={members.length}
           sizeTarget={group.sizeTarget}
           sportLabel={sportLabel}
-          rightSlot={<HeaderBell unreadCount={0} locale={locale} />}
+          rightSlot={<HeaderBell unreadCount={unread} locale={locale} />}
         />
       </div>
 

@@ -9,6 +9,7 @@ import { Glyph } from "@/components/ui/Glyph";
 import { Pill } from "@/components/ui/Pill";
 import type { AppLocale } from "@/i18n/routing";
 import { getLeaderboardAction, type LeaderboardRow } from "@/lib/leaderboard";
+import { unreadCount } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -92,6 +93,7 @@ export default async function LeaderboardPage({
   const data = result.ok
     ? result.data
     : { rows: [], viewer: null };
+  const unread = data.viewer ? await unreadCount(data.viewer.userId) : 0;
 
   const todayLabel = locale === "ro" ? "Astăzi" : "Today";
   const liveLabel = locale === "ro" ? "Date live" : "Live data";
@@ -154,7 +156,7 @@ export default async function LeaderboardPage({
           </Link>
           <div className="flex items-center gap-2">
             <Pill variant="live">{liveLabel}</Pill>
-            <HeaderBell unreadCount={0} locale={locale} />
+            <HeaderBell unreadCount={unread} locale={locale} />
           </div>
         </header>
 

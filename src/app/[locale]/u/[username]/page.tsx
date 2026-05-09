@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Glyph } from "@/components/ui/Glyph";
 import type { AppLocale } from "@/i18n/routing";
 import { getCurrentUser } from "@/lib/auth-current-user";
+import { unreadCount } from "@/lib/notifications";
 import {
   getMatchPercentForViewer,
   getPublicUserByUsername,
@@ -105,6 +106,7 @@ export default async function PublicProfilePage({
 
   const viewer = await getCurrentUser();
   const isOwner = viewer?.id === target.id;
+  const unread = viewer ? await unreadCount(viewer.id) : 0;
 
   const sports = target.sports.map((sport) => ({
     sport,
@@ -157,7 +159,7 @@ export default async function PublicProfilePage({
             {copy.eyebrow}
           </div>
         </div>
-        {viewer ? <HeaderBell unreadCount={0} locale={locale} /> : null}
+        {viewer ? <HeaderBell unreadCount={unread} locale={locale} /> : null}
       </header>
 
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-5 pt-4 md:pt-10">

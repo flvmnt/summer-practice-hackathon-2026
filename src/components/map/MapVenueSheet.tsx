@@ -26,11 +26,9 @@ type Props = {
   };
 };
 
-// TODO: wire these to next-intl keys
-//   map.venueSheet.directions      EN: "Directions"          RO: "Direcții"
-//   map.venueSheet.directionsGoogle EN: "Google Maps"        RO: "Google Maps"
-//   map.venueSheet.directionsApple  EN: "Apple Maps"         RO: "Apple Maps"
-//   map.venueSheet.directionsWaze   EN: "Waze"               RO: "Waze"
+// Provider names are usually brand-stable across locales but the consumer can
+// still override via `labels.directionsGoogle/Apple/Waze` for accessibility
+// translations or RTL-only renderings.
 const DIRECTIONS_FALLBACK = {
   google: "Google Maps",
   apple: "Apple Maps",

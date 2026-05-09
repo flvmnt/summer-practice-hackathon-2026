@@ -12,6 +12,7 @@ import { ToastProvider } from "@/components/ui/Toast";
 import type { AppLocale } from "@/i18n/routing";
 import { getCurrentUser } from "@/lib/auth-current-user";
 import { getUserEventsList } from "@/lib/events";
+import { unreadCount } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -66,7 +67,10 @@ export default async function CalendarPage({
   }
 
   const copy = COPY[locale];
-  const events = await getUserEventsList(user.id, "upcoming");
+  const [events, unread] = await Promise.all([
+    getUserEventsList(user.id, "upcoming"),
+    unreadCount(user.id),
+  ]);
 
   const dateFmt = new Intl.DateTimeFormat(locale === "ro" ? "ro-RO" : "en-GB", {
     weekday: "short",
@@ -112,7 +116,7 @@ export default async function CalendarPage({
             <Glyph.back size={16} />
             {copy.back}
           </Link>
-          <HeaderBell unreadCount={0} locale={locale} />
+          <HeaderBell unreadCount={unread} locale={locale} />
         </header>
 
         <div style={{ marginTop: 24 }}>

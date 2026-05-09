@@ -2,6 +2,8 @@ import { setRequestLocale } from "next-intl/server";
 import { MapPageClient } from "@/components/map/MapPageClient";
 import type { MapVenue } from "@/components/map/seed-venues";
 import type { AppLocale } from "@/i18n/routing";
+import { getCurrentUser } from "@/lib/auth-current-user";
+import { unreadCount } from "@/lib/notifications";
 import type { SportKey } from "@/lib/sports";
 import { getNearbyVenuesAction } from "@/lib/venues";
 
@@ -22,6 +24,9 @@ const COPY = {
     useMyLocation: "Use my location",
     allSports: "All sports",
     directions: "Directions",
+    directionsGoogle: "Google Maps",
+    directionsApple: "Apple Maps",
+    directionsWaze: "Waze",
     join: "Join",
     startGame: "Start a game here",
     locationDeniedTitle: "Location unavailable",
@@ -62,6 +67,9 @@ const COPY = {
     useMyLocation: "Folosește locația mea",
     allSports: "Toate sporturile",
     directions: "Direcții",
+    directionsGoogle: "Google Maps",
+    directionsApple: "Apple Maps",
+    directionsWaze: "Waze",
     join: "Intră",
     startGame: "Începe un joc aici",
     locationDeniedTitle: "Locația indisponibilă",
@@ -104,7 +112,11 @@ export default async function MapPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const result = await getNearbyVenuesAction({ radiusKm: 10 });
+  const [result, user] = await Promise.all([
+    getNearbyVenuesAction({ radiusKm: 10 }),
+    getCurrentUser(),
+  ]);
+  const unread = user ? await unreadCount(user.id) : 0;
   const venues: ReadonlyArray<MapVenue> = result.ok
     ? result.data.venues.map((row) => ({
         id: row.id,
@@ -125,6 +137,7 @@ export default async function MapPage({
       filterSports={FILTER_SPORTS}
       locale={locale}
       labels={labels}
+      unreadCount={unread}
     />
   );
 }

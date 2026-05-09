@@ -21,6 +21,9 @@ type Labels = {
   useMyLocation: string;
   allSports: string;
   directions: string;
+  directionsGoogle: string;
+  directionsApple: string;
+  directionsWaze: string;
   join: string;
   startGame: string;
   locationDeniedTitle: string;
@@ -48,9 +51,16 @@ type Props = {
   filterSports: ReadonlyArray<SportKey>;
   locale: string;
   labels: Labels;
+  unreadCount: number;
 };
 
-export function MapPageClient({ venues, filterSports, locale, labels }: Props) {
+export function MapPageClient({
+  venues,
+  filterSports,
+  locale,
+  labels,
+  unreadCount,
+}: Props) {
   const [search, setSearch] = useState("");
   const [selectedSports, setSelectedSports] = useState<ReadonlyArray<SportKey>>([]);
   const [selectedTime, setSelectedTime] = useState<TimeFilter>(null);
@@ -146,6 +156,9 @@ export function MapPageClient({ venues, filterSports, locale, labels }: Props) {
     priceFree: labels.priceFree,
     priceLow: labels.priceLow,
     priceMedium: labels.priceMedium,
+    directionsGoogle: labels.directionsGoogle,
+    directionsApple: labels.directionsApple,
+    directionsWaze: labels.directionsWaze,
   };
 
   const deniedLabels = {
@@ -196,7 +209,7 @@ export function MapPageClient({ venues, filterSports, locale, labels }: Props) {
                 {labels.subtitle}
               </p>
             </div>
-            <HeaderBell unreadCount={0} locale={locale} />
+            <HeaderBell unreadCount={unreadCount} locale={locale} />
           </div>
 
           <Input

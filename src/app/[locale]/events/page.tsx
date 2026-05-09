@@ -9,6 +9,7 @@ import { Glyph } from "@/components/ui/Glyph";
 import type { AppLocale } from "@/i18n/routing";
 import { getCurrentUser } from "@/lib/auth-current-user";
 import { getUserEventsList, type UserEventsFilter } from "@/lib/events";
+import { unreadCount } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -63,7 +64,10 @@ export default async function EventsPage({
 
   const copy = COPY[locale];
   const filter = readFilter(sp.filter);
-  const all = await getUserEventsList(user.id, "all");
+  const [all, unread] = await Promise.all([
+    getUserEventsList(user.id, "all"),
+    unreadCount(user.id),
+  ]);
   const upcoming = all.filter((event) => !event.isPast);
   const past = all
     .filter((event) => event.isPast)
@@ -119,7 +123,7 @@ export default async function EventsPage({
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <HeaderBell unreadCount={0} locale={locale} />
+          <HeaderBell unreadCount={unread} locale={locale} />
           <Link
             href={`/${locale}/events/new`}
             className="grid place-items-center"

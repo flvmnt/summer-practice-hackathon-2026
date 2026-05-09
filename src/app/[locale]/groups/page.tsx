@@ -10,6 +10,7 @@ import { Pill } from "@/components/ui/Pill";
 import type { AppLocale } from "@/i18n/routing";
 import { getCurrentUser } from "@/lib/auth-current-user";
 import { getUserGroupsList } from "@/lib/groups";
+import { unreadCount } from "@/lib/notifications";
 import { SPORTS, type SportKey } from "@/lib/sports";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +27,7 @@ const COPY = {
     emptyTitle: "No groups yet",
     emptyBody: "Answer today's prompt to form your first group.",
     emptyAction: "Go to Today",
+    statsLabel: "Group stats",
     sportLabels: {
       football: "Football",
       basketball: "Basketball",
@@ -50,6 +52,7 @@ const COPY = {
     emptyTitle: "Niciun grup încă",
     emptyBody: "Răspunde la promptul de azi pentru a forma primul grup.",
     emptyAction: "Deschide Today",
+    statsLabel: "Statistici grupuri",
     sportLabels: {
       football: "Fotbal",
       basketball: "Baschet",
@@ -79,7 +82,10 @@ export default async function GroupsPage({
   }
 
   const copy = COPY[locale];
-  const list = await getUserGroupsList(user.id);
+  const [list, unread] = await Promise.all([
+    getUserGroupsList(user.id),
+    unreadCount(user.id),
+  ]);
   const captainCount = list.reduce((n, g) => (g.isCaptain ? n + 1 : n), 0);
 
   return (
@@ -114,7 +120,7 @@ export default async function GroupsPage({
             {copy.title}
           </h1>
         </div>
-        <HeaderBell unreadCount={0} locale={locale} />
+        <HeaderBell unreadCount={unread} locale={locale} />
       </header>
 
       <div className="mx-auto w-full max-w-3xl px-5 pt-4 md:pt-10">
@@ -136,7 +142,7 @@ export default async function GroupsPage({
         {list.length > 0 ? (
           <div
             className="mb-3 flex flex-wrap items-center gap-2"
-            aria-label={locale === "ro" ? "Statistici grupuri" : "Group stats"}
+            aria-label={copy.statsLabel}
           >
             <Pill icon={<Glyph.groups size={11} />}>
               {copy.activeGroups(list.length)}
