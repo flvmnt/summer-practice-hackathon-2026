@@ -431,6 +431,7 @@ export function PhotoForm({ locale, initialPhotoUrl }: PhotoFormProps) {
                   type="button"
                   onClick={handleAnalyze}
                   disabled={!pickedFile || aiState === "loading"}
+                  aria-busy={aiState === "loading"}
                   className="btn-s2m"
                   style={{
                     minHeight: 48,

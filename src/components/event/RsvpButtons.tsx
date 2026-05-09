@@ -47,6 +47,7 @@ export function RsvpButtons({ eventId, initial, copy }: Props) {
             type="button"
             role="radio"
             aria-checked={active}
+            aria-busy={pending}
             disabled={pending}
             onClick={async () => {
               if (pending || status === value) return;

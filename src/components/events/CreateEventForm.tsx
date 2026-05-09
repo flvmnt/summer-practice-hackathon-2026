@@ -199,11 +199,12 @@ function CreateEventFormInner({
       <button
         type="submit"
         disabled={pending}
+        aria-busy={pending}
         className="btn-s2m"
         style={{ minHeight: 48, fontSize: 15 }}
       >
         <Glyph.plus size={16} />
-        {copy.submit}
+        {pending ? copy.submitting : copy.submit}
       </button>
     </form>
   );

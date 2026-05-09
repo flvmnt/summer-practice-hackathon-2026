@@ -302,33 +302,49 @@ export default async function SettingsPage({
         <HeaderBell unreadCount={unread} locale={locale} />
       </header>
 
-      <SettingsTabs sections={sectionDefs} current={section} />
+      {/* Desktop header - global sidebar handles back nav, so no back arrow. */}
+      <header className="hidden items-end justify-between gap-4 px-8 pt-10 md:flex">
+        <div className="min-w-0">
+          <div
+            className="mono"
+            style={{
+              fontSize: 11,
+              color: "var(--ink-muted)",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+            }}
+          >
+            {copy.eyebrow}
+          </div>
+          <h1
+            className="display"
+            style={{
+              fontSize: 32,
+              lineHeight: 1.05,
+              marginTop: 4,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            {copy.title}
+          </h1>
+          <p
+            className="mt-2 max-w-xl text-[13px]"
+            style={{ color: "var(--ink-muted)", lineHeight: 1.5 }}
+          >
+            {copy.subtitle}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <LocaleFlagToggle locale={locale} pathWithinLocale="/settings" />
+          <HeaderBell unreadCount={unread} locale={locale} />
+        </div>
+      </header>
 
-      <div className="mx-auto w-full max-w-5xl px-5 pt-4 md:grid md:grid-cols-[220px_1fr] md:gap-8 md:pt-10">
-        <aside className="hidden md:block">
-          <header className="px-2 pb-3">
-            <div className="flex items-start justify-between gap-3">
-              <h1
-                className="display"
-                style={{ fontSize: 24, lineHeight: 1.05, color: "var(--ink)" }}
-              >
-                {copy.title}
-              </h1>
-              <LocaleFlagToggle
-                locale={locale}
-                pathWithinLocale="/settings"
-                size={32}
-              />
-            </div>
-            <p
-              className="mt-1 text-[12px]"
-              style={{ color: "var(--ink-muted)", lineHeight: 1.5 }}
-            >
-              {copy.subtitle}
-            </p>
-          </header>
-        </aside>
+      <div className="md:px-8 md:pt-6">
+        <SettingsTabs sections={sectionDefs} current={section} />
+      </div>
 
+      <div className="mx-auto w-full max-w-3xl px-5 pt-4 md:px-8 md:pt-6">
         <div className="flex flex-col gap-4 md:gap-5">
           {editableSection ? (
             <InlineEditPanels

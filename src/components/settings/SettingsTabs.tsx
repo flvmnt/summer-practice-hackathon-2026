@@ -46,10 +46,9 @@ export function SettingsTabs({ sections, current }: SettingsTabsProps) {
 
   return (
     <>
-      {/* Mobile: horizontal scroll pill row */}
+      {/* Single horizontal pill row - works at every breakpoint. */}
       <nav
         aria-label="Settings sections"
-        className="md:hidden"
         style={{
           display: "flex",
           gap: 6,
@@ -92,45 +91,6 @@ export function SettingsTabs({ sections, current }: SettingsTabsProps) {
         })}
       </nav>
 
-      {/* Desktop: vertical sidebar tabs with --accent underline (left rail) */}
-      <nav
-        aria-label="Settings sections"
-        className="hidden md:flex"
-        style={{
-          flexDirection: "column",
-          gap: 2,
-          padding: "16px 0",
-        }}
-      >
-        {sections.map((section) => {
-          const active = section.id === current;
-          return (
-            <Link
-              key={section.id}
-              href={buildHref(pathname, searchParams, section.id)}
-              aria-current={active ? "page" : undefined}
-              style={{
-                position: "relative",
-                padding: "10px 18px 10px 16px",
-                minHeight: 40,
-                display: "flex",
-                alignItems: "center",
-                fontSize: 14,
-                fontWeight: 600,
-                color: active ? "var(--ink)" : "var(--ink-muted)",
-                background: active ? "var(--surface-2)" : "transparent",
-                borderRadius: 8,
-                textDecoration: "none",
-                borderLeft: active
-                  ? "3px solid var(--accent)"
-                  : "3px solid transparent",
-              }}
-            >
-              {section.label}
-            </Link>
-          );
-        })}
-      </nav>
     </>
   );
 }
