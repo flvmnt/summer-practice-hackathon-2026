@@ -17,7 +17,7 @@ import { activePromptWindow } from "@/lib/prompt-window";
 
 export const DEMO_RUN_LABEL = "showup2move-demo";
 const DEMO_PASSWORD = "Showup2move!";
-const DEMO_RECOVERY_CODE = "DEMO-RECOV-2026";
+const DEMO_RECOVERY_CODE = "SM2M-DEMO-2026";
 
 const TIMISOARA = { lat: 45.7489, lng: 21.2087 };
 
