@@ -44,7 +44,7 @@ type AiState = "idle" | "loading" | "ok" | "down";
 type UploadState = "idle" | "uploading" | "uploaded" | "failed";
 type StatusTone = "info" | "alert";
 
-const ACCEPTED_TYPES = "image/jpeg,image/png,image/webp,image/heic,image/heif";
+const ACCEPTED_TYPES = "image/jpeg,image/png,image/webp";
 
 const SPORT_KEY_SET = new Set<SportKey>(SPORT_KEYS);
 function isSportKey(value: string): value is SportKey {
@@ -128,6 +128,7 @@ export function PhotoForm({ locale, initialPhotoUrl }: PhotoFormProps) {
       const result = await extractSportsFromPhotoAction(formData);
       if (!result.ok) {
         setAiState("down");
+        setStatusBanner({ tone: "alert", message: t("aiUnavailable") });
         return;
       }
       const mapped: Suggestion[] = result.suggestions
@@ -139,13 +140,16 @@ export function PhotoForm({ locale, initialPhotoUrl }: PhotoFormProps) {
         }));
       if (mapped.length === 0) {
         setAiState("down");
+        setStatusBanner({ tone: "alert", message: t("aiUnavailable") });
         return;
       }
       setSuggestions(mapped);
       setPicked(new Set(mapped.slice(0, 2).map((s) => s.sport)));
       setAiState("ok");
+      setStatusBanner(null);
     } catch {
       setAiState("down");
+      setStatusBanner({ tone: "alert", message: t("aiUnavailable") });
     }
   }
 

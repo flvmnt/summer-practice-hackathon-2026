@@ -19,7 +19,7 @@ import { updateOnboardingProfileAction } from "@/lib/onboarding";
 import { uploadProfilePhotoAction } from "@/lib/upload-actions";
 import { SPORT_KEYS, type SportKey } from "@/lib/sports";
 
-const ACCEPTED_PHOTO_TYPES = "image/jpeg,image/png,image/webp,image/heic,image/heif";
+const ACCEPTED_PHOTO_TYPES = "image/jpeg,image/png,image/webp";
 
 const BIO_MAX = 240;
 const NAME_MAX = 80;

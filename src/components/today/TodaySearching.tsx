@@ -1,6 +1,5 @@
 import { Glyph } from "@/components/ui/Glyph";
 import { Pill } from "@/components/ui/Pill";
-import { AIMark } from "@/components/ui/AIMark";
 import { RatchetRow } from "./RatchetRow";
 
 type Range = {
@@ -35,7 +34,7 @@ export function TodaySearching({
   matchingLabel = "Matching",
   headline = "Finding your group",
   elapsed = "00:18",
-  aiLabel = "AI scoring",
+  aiLabel = "Rule scoring",
   aiDescription = "weighing skill, schedule and proximity",
   className,
 }: Props) {
@@ -89,7 +88,7 @@ export function TodaySearching({
         className="mt-4 flex items-start gap-2.5 px-3.5 py-3"
         style={{ background: "var(--accent-tint)", borderRadius: "var(--r-card)" }}
       >
-        <AIMark className="mt-1 text-[var(--accent)]" />
+        <Glyph.check className="mt-1 text-[var(--accent)]" size={16} />
         <div className="text-[13px]" style={{ lineHeight: 1.4 }}>
           <strong>{aiLabel}</strong> · {aiDescription}
         </div>

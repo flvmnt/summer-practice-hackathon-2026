@@ -4,7 +4,10 @@ import { and, eq, isNull, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "@/db";
 import { achievements, userSports, users } from "@/db/schema";
-import { scoreCompatibility } from "@/lib/ai/compat-score";
+import {
+  scoreCompatibility,
+  type CompatibilityResult,
+} from "@/lib/ai/compat-score";
 import { haversineKm } from "@/lib/matching-core";
 import { SPORT_KEYS, type SportKey } from "@/lib/sports";
 
@@ -164,10 +167,10 @@ function hasOnboardingSignal(profile: CompatProfile): boolean {
   );
 }
 
-export async function getMatchPercentForViewer(
+export async function getCompatibilityForViewer(
   viewerId: string,
   targetId: string,
-): Promise<number | null> {
+): Promise<CompatibilityResult | null> {
   if (viewerId === targetId) return null;
 
   const [viewer, target] = await Promise.all([
@@ -214,5 +217,8 @@ export async function getMatchPercentForViewer(
     },
   );
 
-  return Math.max(0, Math.min(100, Math.round(result.score)));
+  return {
+    ...result,
+    score: Math.max(0, Math.min(100, Math.round(result.score))),
+  };
 }

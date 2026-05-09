@@ -9,6 +9,8 @@ export type MatchPercentPanelProps = {
   title: string;
   subtitle: string;
   percent: number; // 0-100
+  reason: string;
+  sourceLabel: string;
   breakdown: ReadonlyArray<MatchBreakdownRow>;
 };
 
@@ -22,6 +24,8 @@ export function MatchPercentPanel({
   title,
   subtitle,
   percent,
+  reason,
+  sourceLabel,
   breakdown,
 }: MatchPercentPanelProps) {
   const clamped = Math.max(0, Math.min(100, Math.round(percent)));
@@ -38,11 +42,22 @@ export function MatchPercentPanel({
     >
       <header className="flex items-center justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <div
-            className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
-            style={{ color: "var(--ink-muted)" }}
-          >
-            {title}
+          <div className="flex flex-wrap items-center gap-2">
+            <div
+              className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
+              style={{ color: "var(--ink-muted)" }}
+            >
+              {title}
+            </div>
+            <span
+              className="mono rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-[0.12em]"
+              style={{
+                background: "var(--accent-tint)",
+                color: "var(--accent-deep)",
+              }}
+            >
+              {sourceLabel}
+            </span>
           </div>
           <div
             className="display mt-0.5"
@@ -68,6 +83,10 @@ export function MatchPercentPanel({
           </span>
         </div>
       </header>
+
+      <p className="text-[13px]" style={{ color: "var(--ink-2)", lineHeight: 1.45 }}>
+        {reason}
+      </p>
 
       <ul className="flex flex-col gap-2">
         {breakdown.map((row) => {

@@ -1,7 +1,6 @@
 import "server-only";
 
 import { getOrCompute } from "@/lib/ai/cache";
-import { extractSportsByKeyword } from "@/lib/ai/bio-extract";
 import { bioExtractionSchema, type SportSuggestion } from "@/lib/contracts/ai";
 import { chatJson, getVisionModel, isGroqConfigured } from "@/lib/groq";
 import { SPORT_KEYS } from "@/lib/sports";
@@ -21,20 +20,12 @@ Rules:
 - Confidence is 0..1; omit suggestions below 0.35.
 - Reason is a short visual clue, max 120 characters.`;
 
-function fallbackPhotoSuggestions(): SportSuggestion[] {
-  return extractSportsByKeyword("running tennis football").map((entry) => ({
-    ...entry,
-    confidence: Math.min(entry.confidence, 0.52),
-    reason: "fallback photo hints",
-  }));
-}
-
 export async function extractSportsFromPhoto(
   mime: string,
   bytes: Uint8Array,
 ): Promise<{ suggestions: SportSuggestion[]; source: "ai" | "fallback" }> {
   if (!isGroqConfigured()) {
-    return { suggestions: fallbackPhotoSuggestions(), source: "fallback" };
+    return { suggestions: [], source: "fallback" };
   }
 
   try {
@@ -76,5 +67,5 @@ export async function extractSportsFromPhoto(
     // fall through to deterministic fallback
   }
 
-  return { suggestions: fallbackPhotoSuggestions(), source: "fallback" };
+  return { suggestions: [], source: "fallback" };
 }

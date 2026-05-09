@@ -1,19 +1,27 @@
+import { setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
+import { PhotoForm } from "@/components/onboarding/PhotoForm";
 import type { AppLocale } from "@/i18n/routing";
+import { getCurrentUser } from "@/lib/auth-current-user";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Photo capture moved into the merged profile step. This route now redirects
- * to /today so any deep link or stored back-stack entry still lands somewhere
- * sensible. Drop the route entirely once redirects/links elsewhere stop
- * pointing here.
- */
 export default async function PhotoOnboardingPage({
   params,
 }: Readonly<{
   params: Promise<{ locale: AppLocale }>;
 }>) {
   const { locale } = await params;
-  redirect(`/${locale}/today`);
+  setRequestLocale(locale);
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect(`/${locale}/login`);
+  }
+
+  return (
+    <main style={{ background: "var(--bg)", minHeight: "100dvh" }}>
+      <PhotoForm locale={locale} initialPhotoUrl={null} />
+    </main>
+  );
 }

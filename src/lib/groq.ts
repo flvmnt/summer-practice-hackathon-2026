@@ -1,10 +1,26 @@
 import "server-only";
 
-const GROQ_API_BASE = "https://api.groq.com/openai/v1";
+const GROQ_API_BASE =
+  process.env.GROQ_BASE_URL ?? "https://api.groq.com/openai/v1";
 
-const TEXT_MODEL = process.env.GROQ_TEXT_MODEL ?? "llama-3.3-70b-versatile";
+const TEXT_MODEL =
+  process.env.GROQ_MODEL_TEXT ??
+  process.env.GROQ_TEXT_MODEL ??
+  "llama-3.3-70b-versatile";
 const VISION_MODEL =
-  process.env.GROQ_VISION_MODEL ?? "meta-llama/llama-4-scout-17b-16e-instruct";
+  process.env.GROQ_MODEL_VISION ??
+  process.env.GROQ_VISION_MODEL ??
+  "meta-llama/llama-4-scout-17b-16e-instruct";
+
+const DEFAULT_TIMEOUT_MS = 8000;
+
+function getTimeoutMs(): number {
+  const raw = process.env.GROQ_TIMEOUT_MS;
+  if (!raw) return DEFAULT_TIMEOUT_MS;
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_TIMEOUT_MS;
+  return Math.min(parsed, 30_000);
+}
 
 export type ChatMessage = {
   role: "system" | "user" | "assistant";
@@ -68,14 +84,20 @@ export async function chatCompletion(
     body.response_format = { type: "json_object" };
   }
 
-  const res = await fetch(`${GROQ_API_BASE}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify(body),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${GROQ_API_BASE}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(getTimeoutMs()),
+    });
+  } catch (cause) {
+    throw new GroqError("groq_network_error", cause);
+  }
 
   if (!res.ok) {
     throw new GroqError(`groq_http_${res.status}`);

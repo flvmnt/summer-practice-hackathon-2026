@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { HeaderBell } from "@/components/layout/HeaderBell";
+import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import {
   MatchPercentPanel,
@@ -13,7 +14,7 @@ import type { AppLocale } from "@/i18n/routing";
 import { getCurrentUser } from "@/lib/auth-current-user";
 import { unreadCount } from "@/lib/notifications";
 import {
-  getMatchPercentForViewer,
+  getCompatibilityForViewer,
   getPublicUserByUsername,
 } from "@/lib/profile-public";
 import type { SportKey } from "@/lib/sports";
@@ -27,6 +28,14 @@ const COPY = {
     sportsLabel: "Sports",
     matchTitle: "Compatibility",
     matchSubtitle: "Estimated match with you",
+    matchSourceAi: "Groq AI score",
+    matchSourceFallback: "Rule-based estimate",
+    matchRows: {
+      sharedSports: "Shared sports",
+      skillFit: "Skill fit",
+      proximityFit: "Distance fit",
+      scheduleFit: "Schedule fit",
+    },
     notFoundTitle: "Player not found",
     notFoundBody: "This username doesn't exist or has been removed.",
     back: "Back",
@@ -49,6 +58,14 @@ const COPY = {
     sportsLabel: "Sporturi",
     matchTitle: "Compatibilitate",
     matchSubtitle: "Match estimativ cu tine",
+    matchSourceAi: "Scor AI Groq",
+    matchSourceFallback: "Estimare pe reguli",
+    matchRows: {
+      sharedSports: "Sporturi comune",
+      skillFit: "Potrivire skill",
+      proximityFit: "Potrivire distanță",
+      scheduleFit: "Potrivire program",
+    },
     notFoundTitle: "Jucător negăsit",
     notFoundBody: "Acest username nu există sau a fost șters.",
     back: "Înapoi",
@@ -81,13 +98,14 @@ export default async function PublicProfilePage({
   if (!target) {
     return (
       <main
-        className="relative min-h-screen w-full"
+        className="relative min-h-screen w-full md:pl-[240px]"
         style={{
           background: "var(--surface-2)",
           color: "var(--ink)",
           paddingBottom: "calc(78px + env(safe-area-inset-bottom) + 16px)",
         }}
       >
+        <DesktopSidebar />
         <div className="mx-auto w-full max-w-xl px-5 pt-10">
           <EmptyState
             glyph={<Glyph.profile size={28} />}
@@ -114,22 +132,63 @@ export default async function PublicProfilePage({
     label: copy.sportLabels[sport] ?? sport,
   }));
 
-  const matchPercent =
+  const compatibility =
     viewer && !isOwner
-      ? await getMatchPercentForViewer(viewer.id, target.id)
+      ? await getCompatibilityForViewer(viewer.id, target.id)
       : null;
 
-  const breakdownRows: MatchBreakdownRow[] = [];
+  const breakdownRows: MatchBreakdownRow[] = compatibility
+    ? [
+        {
+          label: `${copy.matchRows.sharedSports}: ${
+            compatibility.sharedSports.length > 0
+              ? compatibility.sharedSports
+                  .map((sport) => copy.sportLabels[sport] ?? sport)
+                  .join(", ")
+              : "0"
+          }`,
+          value: compatibility.sharedSports.length > 0 ? 100 : 0,
+        },
+        {
+          label: copy.matchRows.skillFit,
+          value:
+            compatibility.skillFit === "balanced"
+              ? 100
+              : compatibility.skillFit === "mentor"
+                ? 70
+                : 25,
+        },
+        {
+          label: copy.matchRows.proximityFit,
+          value:
+            compatibility.proximityFit === "near"
+              ? 100
+              : compatibility.proximityFit === "same_city"
+                ? 70
+                : 20,
+        },
+        {
+          label: copy.matchRows.scheduleFit,
+          value:
+            compatibility.scheduleFit === "high"
+              ? 100
+              : compatibility.scheduleFit === "medium"
+                ? 65
+                : 25,
+        },
+      ]
+    : [];
 
   return (
     <main
-      className="relative min-h-screen w-full"
+      className="relative min-h-screen w-full md:pl-[240px]"
       style={{
         background: "var(--surface-2)",
         color: "var(--ink)",
         paddingBottom: "calc(78px + env(safe-area-inset-bottom) + 16px)",
       }}
     >
+      {viewer ? <DesktopSidebar unreadCount={unread} /> : null}
       <header className="flex items-center gap-3 px-5 pt-6 md:hidden">
         <Link
           href={viewer ? `/${locale}/today` : `/${locale}`}
@@ -185,11 +244,17 @@ export default async function PublicProfilePage({
           sportsLabel={copy.sportsLabel}
         />
 
-        {matchPercent !== null ? (
+        {compatibility !== null ? (
           <MatchPercentPanel
             title={copy.matchTitle}
             subtitle={copy.matchSubtitle}
-            percent={matchPercent}
+            percent={compatibility.score}
+            reason={compatibility.reason}
+            sourceLabel={
+              compatibility.source === "ai"
+                ? copy.matchSourceAi
+                : copy.matchSourceFallback
+            }
             breakdown={breakdownRows}
           />
         ) : null}
