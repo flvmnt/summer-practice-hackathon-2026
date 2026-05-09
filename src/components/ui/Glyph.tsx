@@ -197,7 +197,7 @@ export const Glyph = {
     ],
   }),
   pulse: make({ d: "M3 12 H7 L9 6 L13 18 L15 12 H21" }),
-  spark: make({ paths: ["M5 12 H11", "M14 6 L19 12 L14 18", "M14 12 H19"] }), // chevron-burst
+  spark: make({ paths: ["M9 6 L15 12 L9 18"] }), // single chevron (no burst)
   camera: make({
     paths: [
       "M4 8 H8 L10 6 H14 L16 8 H20 V18 H4 Z",
