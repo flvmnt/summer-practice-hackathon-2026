@@ -224,7 +224,7 @@ export const RUBRIC_CATEGORIES: RubricCategory[] = [
         status: "seeded",
         evidence: "/map",
         evidenceLabel: "/map",
-        note: "Seeded venues + Overpass cache + manual entry. Price confidence labeled.",
+        note: "Seeded venues + manual entry + sort-by-distance. Price confidence labeled. Overpass live fetch is stretch.",
       },
       {
         id: "maps-fallback",
