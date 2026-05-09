@@ -5,7 +5,36 @@ import { fileURLToPath } from "node:url";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const messagesDir = path.join(root, "messages");
-const locales = ["ro", "en"];
+const routingFile = fs.readFileSync(path.join(root, "src/i18n/routing.ts"), "utf8");
+const localesMatch = routingFile.match(/locales:\s*\[([^\]]+)\]/m);
+const locales = localesMatch
+  ? [...localesMatch[1].matchAll(/"([^"]+)"/g)].map((match) => match[1])
+  : ["ro", "en"];
+
+function extractArguments(message) {
+  const args = new Set();
+  const matches = message.matchAll(/\{\s*([a-zA-Z][\w]*)\b[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g);
+  for (const match of matches) {
+    args.add(match[1]);
+  }
+  return [...args].sort();
+}
+
+function validateMessageSyntax(message, label) {
+  let depth = 0;
+  for (const char of message) {
+    if (char === "{") depth += 1;
+    if (char === "}") depth -= 1;
+    if (depth < 0) {
+      failures.push(`${label}: unmatched closing brace`);
+      return;
+    }
+  }
+
+  if (depth !== 0) {
+    failures.push(`${label}: unmatched opening brace`);
+  }
+}
 
 function flatten(value, prefix = "") {
   if (Array.isArray(value)) {
@@ -18,7 +47,7 @@ function flatten(value, prefix = "") {
     );
   }
 
-  return [[prefix, typeof value]];
+  return [[prefix, typeof value, value]];
 }
 
 function readJson(filePath) {
@@ -52,7 +81,13 @@ for (const namespace of namespaceSet) {
       continue;
     }
 
-    flattenedByLocale.set(locale, new Map(flatten(readJson(filePath))));
+    const flattened = flatten(readJson(filePath));
+    for (const [key, type, value] of flattened) {
+      if (type === "string") {
+        validateMessageSyntax(value, `${locale}/${namespace}:${key}`);
+      }
+    }
+    flattenedByLocale.set(locale, new Map(flattened.map(([key, type, value]) => [key, { type, value }])));
   }
 
   const baseline = flattenedByLocale.get(locales[0]);
@@ -62,11 +97,19 @@ for (const namespace of namespaceSet) {
     const current = flattenedByLocale.get(locale);
     if (!current) continue;
 
-    for (const [key, type] of baseline) {
+    for (const [key, baseEntry] of baseline) {
       if (!current.has(key)) {
         failures.push(`${namespace}: ${key} missing in ${locale}`);
-      } else if (current.get(key) !== type) {
+      } else if (current.get(key).type !== baseEntry.type) {
         failures.push(`${namespace}: ${key} type mismatch in ${locale}`);
+      } else if (baseEntry.type === "string") {
+        const baseArgs = extractArguments(baseEntry.value);
+        const currentArgs = extractArguments(current.get(key).value);
+        if (baseArgs.join(",") !== currentArgs.join(",")) {
+          failures.push(
+            `${namespace}: ${key} ICU argument mismatch in ${locale} (${locales[0]}: ${baseArgs.join(",") || "none"}; ${locale}: ${currentArgs.join(",") || "none"})`,
+          );
+        }
       }
     }
 

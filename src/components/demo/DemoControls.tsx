@@ -139,7 +139,7 @@ function DemoControlsInner({ locale, copy }: Props) {
         {resetting ? copy.resetting : copy.reset}
       </button>
       <Link
-        href={`/${locale}/today?demo=scripted`}
+        href={`/${locale}/demo/scripted`}
         className="btn-s2m btn-ghost"
         style={{
           minHeight: 44,
