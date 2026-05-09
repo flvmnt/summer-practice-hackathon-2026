@@ -5,9 +5,7 @@ import Link from "next/link";
 import { Glyph } from "@/components/ui/Glyph";
 import { IconButton } from "@/components/ui/IconButton";
 import { Input } from "@/components/ui/Input";
-import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
 import { HeaderBell } from "@/components/layout/HeaderBell";
-import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { MapDeniedFallback } from "./MapDeniedFallback";
 import { MapFilters, type TimeFilter } from "./MapFilters";
 import { MapVenueSheet } from "./MapVenueSheet";
@@ -180,9 +178,7 @@ export function MapPageClient({
     <main
       className="relative w-full md:pl-[240px]"
       style={{ minHeight: "100dvh", background: "var(--bg)" }}
-    >
-      <DesktopSidebar unreadCount={unreadCount} />
-      <div className="mx-auto flex w-full max-w-6xl flex-col md:grid md:grid-cols-[320px_1fr] md:gap-0">
+    >      <div className="mx-auto flex w-full max-w-6xl flex-col md:grid md:grid-cols-[320px_1fr] md:gap-0">
         {/* Sidebar (desktop) / top header (mobile) */}
         <aside
           className="flex flex-col gap-3 px-4 pt-4 md:h-[100dvh] md:overflow-y-auto md:border-r md:px-5 md:py-6"
@@ -298,12 +294,15 @@ export function MapPageClient({
           </p>
         </aside>
 
-        {/* Map area */}
+        {/* Map area. Mobile reserves space for the bottom tab bar (78px);
+            desktop has no bottom bar so the map gets the full viewport.
+            Inline styles trump Tailwind, so use class-only sizing here. */}
         <section
-          className="relative w-full md:h-[100dvh]"
-          style={{
-            height: showFallback ? "auto" : "calc(100dvh - 78px)",
-          }}
+          className={
+            showFallback
+              ? "relative h-auto w-full"
+              : "relative w-full h-[calc(100dvh-78px-env(safe-area-inset-bottom))] md:h-[100dvh]"
+          }
         >
           {showFallback ? (
             <div className="px-4 py-5 md:px-8 md:py-8">
@@ -346,9 +345,6 @@ export function MapPageClient({
           onToggleExpanded={() => setSheetExpanded((prev) => !prev)}
           labels={sheetLabels}
         />
-      ) : null}
-
-      <MobileTabBar />
-    </main>
+      ) : null}    </main>
   );
 }
