@@ -4,10 +4,10 @@
     "health": "Status",
     "login": "Autentificare",
     "signup": "Cont nou",
-    "eyebrow": "Practica de vara Haufe 2026",
-    "title": "Intra in jocul care se formeaza deja aproape de tine.",
-    "subtitle": "O aplicatie web mobile-first pentru potrivire sportiva spontana: fotbal, tenis, baschet si alergare in Timisoara.",
-    "openToday": "Deschide azi",
+    "eyebrow": "Practică de vară Haufe 2026",
+    "title": "Intră în meciul care se formează deja lângă tine.",
+    "subtitle": "O aplicație web mobile-first pentru potriviri sportive spontane — fotbal, tenis, baschet și alergare în Timișoara.",
+    "openToday": "Deschide Today",
     "judgeMode": "Mod juriu",
     "loopSteps": [
       "Cont nou",
@@ -16,146 +16,146 @@
       "Potrivire",
       "Chat de grup",
       "Plan de eveniment",
-      "Vot pe harta",
+      "Vot pe hartă",
       "Export calendar"
     ],
     "proofCards": [
       {
-        "title": "Determinist mai intai",
-        "text": "Regulile de potrivire raman explicabile; AI-ul imbogateste sugestiile fara sa controleze eligibilitatea."
+        "title": "Mai întâi determinist",
+        "text": "Regulile de potrivire rămân explicabile; AI-ul îmbogățește sugestiile fără să controleze eligibilitatea."
       },
       {
         "title": "Chat pe eveniment",
-        "text": "Coordonarea grupului si discutiile evenimentului sunt dovezi separate, nu un singur flux de mesaje."
+        "text": "Coordonarea grupului și discuțiile evenimentului sunt dovezi separate, nu un singur flux de mesaje."
       },
       {
-        "title": "Locatie privata",
-        "text": "Sunt vizibile locatii de terenuri si centre aproximative de grup; coordonatele exacte de acasa raman private."
+        "title": "Locație privată",
+        "text": "Sunt vizibile locațiile terenurilor și centrele aproximative ale grupurilor; coordonatele exacte de acasă rămân private."
       },
       {
         "title": "Mod juriu onest",
-        "text": "Fiecare rand din rubrica trebuie sa indice dovezi live, seeded sau fallback inainte sa fie revendicat."
+        "text": "Fiecare rând din rubrică trebuie să indice dovezi live, seeded sau fallback înainte să fie revendicat."
       }
     ]
   },
   "auth": {
     "signup": {
-      "back": "Inapoi",
+      "back": "Înapoi",
       "eyebrow": "Cont",
-      "title": "Creeaza contul ShowUp2Move.",
-      "body": "Foloseste un nume de utilizator si o parola. Afisam un singur cod de recuperare dupa creare, pentru ca MVP-ul nu foloseste resetare prin email sau telefon.",
-      "cardTitle": "Incepe cu un cod privat de recuperare",
-      "cardBody": "Salveaza-l o singura data. Este singura cale de recuperare a contului in aceasta faza.",
+      "title": "Creează contul ShowUp2Move.",
+      "body": "Folosește un nume de utilizator și o parolă. Afișăm un singur cod de recuperare după creare, pentru că MVP-ul nu folosește resetare prin email sau telefon.",
+      "cardTitle": "Începe cu un cod privat de recuperare",
+      "cardBody": "Salvează-l o singură dată. Este singura cale de recuperare a contului în această fază.",
       "hasAccount": "Ai deja cont?",
       "login": "Autentificare",
       "form": {
         "username": "Nume utilizator",
         "usernamePlaceholder": "alex_runner",
-        "password": "Parola",
+        "password": "Parolă",
         "passwordPlaceholder": "Minimum 8 caractere",
-        "submit": "Creeaza cont",
-        "pending": "Se creeaza contul",
-        "genericError": "Verifica datele si incearca din nou.",
+        "submit": "Creează cont",
+        "pending": "Se creează contul",
+        "genericError": "Verifică datele și încearcă din nou.",
         "usernameTaken": "Acest nume de utilizator este deja folosit.",
-        "recoveryTitle": "Salveaza acest cod de recuperare",
-        "recoveryBody": "Vei avea nevoie de cod daca resetezi parola.",
-        "recoveryWarning": "Nu va mai fi afisat din nou.",
-        "continue": "Continua la profil"
+        "recoveryTitle": "Salvează acest cod de recuperare",
+        "recoveryBody": "Vei avea nevoie de cod dacă resetezi parola.",
+        "recoveryWarning": "Nu va mai fi afișat din nou.",
+        "continue": "Continuă la profil"
       }
     },
     "login": {
-      "back": "Inapoi",
+      "back": "Înapoi",
       "eyebrow": "Bine ai revenit",
-      "title": "Autentifica-te ca jocul sa continue.",
-      "body": "Intri in acelasi flux MVP cu sesiune folosit de onboarding, potrivire, chat si dovezile pentru Mod juriu.",
+      "title": "Autentifică-te ca jocul să continue.",
+      "body": "Intri în același flux MVP cu sesiune folosit de onboarding, potrivire, chat și dovezile pentru Mod juriu.",
       "cardTitle": "Autentificare",
-      "cardBody": "Sesiunile sunt pastrate intr-un cookie criptat.",
+      "cardBody": "Sesiunile sunt păstrate într-un cookie criptat.",
       "needsRecovery": "Ai uitat parola?",
-      "recover": "Recupereaza contul",
-      "needsAccount": "Esti nou aici?",
-      "signup": "Creeaza cont",
+      "recover": "Recuperează contul",
+      "needsAccount": "Ești nou aici?",
+      "signup": "Creează cont",
       "form": {
         "username": "Nume utilizator",
         "usernamePlaceholder": "alex_runner",
-        "password": "Parola",
+        "password": "Parolă",
         "passwordPlaceholder": "Parola ta",
         "submit": "Autentificare",
-        "pending": "Se autentifica",
-        "genericError": "Verifica datele si incearca din nou.",
-        "invalidCredentials": "Numele de utilizator sau parola este gresita.",
-        "rateLimited": "Prea multe incercari. Incearca din nou in scurt timp."
+        "pending": "Se autentifică",
+        "genericError": "Verifică datele și încearcă din nou.",
+        "invalidCredentials": "Numele de utilizator sau parola sunt greșite.",
+        "rateLimited": "Prea multe încercări. Încearcă din nou în scurt timp."
       }
     },
     "recover": {
-      "back": "Inapoi la autentificare",
+      "back": "Înapoi la autentificare",
       "eyebrow": "Recuperare",
-      "title": "Reseteaza accesul cu codul de recuperare.",
-      "body": "Aceasta faza foloseste un cod unic de recuperare in loc de email, ca fluxul de resetare sa ramana sigur pentru demo si determinist.",
+      "title": "Resetează accesul cu codul de recuperare.",
+      "body": "Această fază folosește un cod unic de recuperare în loc de email, ca fluxul de resetare să rămână sigur pentru demo și determinist.",
       "cardTitle": "Recuperare cont",
-      "cardBody": "O resetare reusita iti da un cod de recuperare nou.",
+      "cardBody": "O resetare reușită îți dă un cod de recuperare nou.",
       "form": {
         "username": "Nume utilizator",
         "usernamePlaceholder": "alex_runner",
-        "recoveryCode": "Cod recuperare",
+        "recoveryCode": "Cod de recuperare",
         "recoveryCodePlaceholder": "SM2M-ABCD-1234",
-        "newPassword": "Parola noua",
+        "newPassword": "Parolă nouă",
         "newPasswordPlaceholder": "Minimum 8 caractere",
-        "submit": "Reseteaza parola",
-        "pending": "Se reseteaza parola",
-        "genericError": "Verifica datele si incearca din nou.",
-        "invalidRecovery": "Numele de utilizator sau codul de recuperare este gresit.",
-        "rateLimited": "Prea multe incercari. Incearca din nou in scurt timp.",
-        "successTitle": "Parola resetata",
-        "successBody": "Salveaza acest cod nou de recuperare. Codul vechi nu mai functioneaza.",
-        "recoveryWarning": "Nu va mai fi afisat din nou.",
-        "continue": "Continua la Today"
+        "submit": "Resetează parola",
+        "pending": "Se resetează parola",
+        "genericError": "Verifică datele și încearcă din nou.",
+        "invalidRecovery": "Numele de utilizator sau codul de recuperare sunt greșite.",
+        "rateLimited": "Prea multe încercări. Încearcă din nou în scurt timp.",
+        "successTitle": "Parolă resetată",
+        "successBody": "Salvează acest cod nou de recuperare. Codul vechi nu mai funcționează.",
+        "recoveryWarning": "Nu va mai fi afișat din nou.",
+        "continue": "Continuă la Today"
       }
     }
   },
   "onboarding": {
     "profile": {
-      "back": "Inapoi",
+      "back": "Înapoi",
       "eyebrow": "Onboarding",
-      "title": "Onboarding-ul de profil urmeaza.",
-      "body": "Adauga datele de identitate pe care le vad membrii grupului inainte de sporturi, poza, locatie si potrivire.",
+      "title": "Urmează onboarding-ul de profil.",
+      "body": "Adaugă datele de identitate pe care le văd membrii grupului înainte de sporturi, poză, locație și potrivire.",
       "cardTitle": "Profil public",
-      "cardBody": "Aceste informatii sunt vizibile pentru grupurile potrivite si membrii evenimentelor.",
+      "cardBody": "Aceste informații sunt vizibile pentru grupurile potrivite și membrii evenimentelor.",
       "form": {
         "fullName": "Nume complet",
         "fullNamePlaceholder": "Alex Ionescu",
         "bio": "Bio scurt",
-        "bioPlaceholder": "Ce joci, cand esti de obicei liber si ce fel de grup ti se potriveste?",
-        "submit": "Salveaza profilul",
-        "pending": "Se salveaza profilul",
-        "genericError": "Verifica datele si incearca din nou.",
-        "unauthorized": "Autentifica-te din nou inainte sa salvezi profilul.",
-        "fullNameRequired": "Introdu un nume real cu litere, spatii, apostrofuri sau cratime.",
-        "fullNameInvalid": "Foloseste litere, spatii, apostrofuri sau cratime pentru nume.",
-        "bioRequired": "Adauga un bio scurt inainte sa continui.",
+        "bioPlaceholder": "Ce joci, când ești de obicei liber și ce fel de grup ți se potrivește?",
+        "submit": "Salvează profilul",
+        "pending": "Se salvează profilul",
+        "genericError": "Verifică datele și încearcă din nou.",
+        "unauthorized": "Autentifică-te din nou înainte să salvezi profilul.",
+        "fullNameRequired": "Introdu un nume real cu litere, spații, apostrofuri sau cratime.",
+        "fullNameInvalid": "Folosește litere, spații, apostrofuri sau cratime pentru nume.",
+        "bioRequired": "Adaugă un bio scurt înainte să continui.",
         "successTitle": "Profil salvat",
-        "successBody": "Sporturile, poza de profil si locatia sunt urmatorii pasi de onboarding.",
+        "successBody": "Sporturile, poza de profil și locația sunt următorii pași de onboarding.",
         "continue": "Alege sporturi"
       }
     },
     "sports": {
-      "back": "Inapoi",
+      "back": "Înapoi",
       "eyebrow": "Onboarding",
       "title": "Alege sporturile la care ai veni.",
-      "body": "Alege cel putin un sport si seteaza nivelul. Aceste alegeri devin primul filtru determinist de potrivire.",
-      "cardTitle": "Sporturi si nivel",
-      "cardBody": "Nivelurile pe sport au prioritate fata de nivelul general al profilului.",
+      "body": "Alege cel puțin un sport și setează nivelul. Aceste alegeri devin primul filtru determinist de potrivire.",
+      "cardTitle": "Sporturi și nivel",
+      "cardBody": "Nivelurile pe sport au prioritate față de nivelul general al profilului.",
       "form": {
-        "submit": "Salveaza sporturile",
-        "pending": "Se salveaza sporturile",
-        "genericError": "Verifica datele si incearca din nou.",
-        "unauthorized": "Autentifica-te din nou inainte sa salvezi sporturile.",
-        "sportsRequired": "Alege cel putin un sport.",
+        "submit": "Salvează sporturile",
+        "pending": "Se salvează sporturile",
+        "genericError": "Verifică datele și încearcă din nou.",
+        "unauthorized": "Autentifică-te din nou înainte să salvezi sporturile.",
+        "sportsRequired": "Alege cel puțin un sport.",
         "successTitle": "Sporturi salvate",
-        "successBody": "Locatia si distanta sunt urmatorul filtru de proximitate.",
-        "continue": "Seteaza locatia",
+        "successBody": "Locația și distanța sunt următorul filtru de proximitate.",
+        "continue": "Setează locația",
         "levels": {
-          "1": "Incepator",
-          "2": "Casual",
+          "1": "Începător",
+          "2": "Cazual",
           "3": "Intermediar",
           "4": "Avansat",
           "5": "Competitiv"
@@ -169,57 +169,57 @@
           "running": "Alergare",
           "cycling": "Ciclism",
           "yoga": "Yoga",
-          "hiking": "Drumetie",
-          "table_tennis": "Tenis de masa"
+          "hiking": "Drumeție",
+          "table_tennis": "Tenis de masă"
         }
       }
     },
     "location": {
-      "back": "Inapoi",
+      "back": "Înapoi",
       "eyebrow": "Onboarding",
-      "title": "Seteaza zona de acasa si raza privata.",
-      "body": "Potrivirea foloseste coordonate pentru distanta, dar aplicatia expune doar locatii publice si centre aproximative de grup.",
-      "cardTitle": "Locatie si distanta",
-      "cardBody": "Valorile implicite pentru Timisoara ajuta fluxul de demo sa fie rapid.",
+      "title": "Setează zona de acasă și raza privată.",
+      "body": "Potrivirea folosește coordonate pentru distanță, dar aplicația expune doar locații publice și centre aproximative ale grupurilor.",
+      "cardTitle": "Locație și distanță",
+      "cardBody": "Valorile implicite pentru Timișoara ajută fluxul de demo să fie rapid.",
       "form": {
-        "city": "Oras",
-        "cityPlaceholder": "Timisoara",
+        "city": "Oraș",
+        "cityPlaceholder": "Timișoara",
         "latitude": "Latitudine",
         "longitude": "Longitudine",
-        "maxDistance": "Distanta maxima",
+        "maxDistance": "Distanță maximă",
         "km": "km",
-        "submit": "Salveaza locatia",
-        "pending": "Se salveaza locatia",
-        "genericError": "Verifica datele si incearca din nou.",
-        "unauthorized": "Autentifica-te din nou inainte sa salvezi locatia.",
-        "cityRequired": "Introdu un oras cu cel putin doua caractere.",
-        "invalidLatitude": "Latitudinea trebuie sa fie intre -90 si 90.",
-        "invalidLongitude": "Longitudinea trebuie sa fie intre -180 si 180.",
-        "successTitle": "Locatie salvata",
-        "successBody": "Contul are acum campurile obligatorii pentru profil, sporturi si proximitate in ShowUpToday.",
+        "submit": "Salvează locația",
+        "pending": "Se salvează locația",
+        "genericError": "Verifică datele și încearcă din nou.",
+        "unauthorized": "Autentifică-te din nou înainte să salvezi locația.",
+        "cityRequired": "Introdu un oraș cu cel puțin două caractere.",
+        "invalidLatitude": "Latitudinea trebuie să fie între -90 și 90.",
+        "invalidLongitude": "Longitudinea trebuie să fie între -180 și 180.",
+        "successTitle": "Locație salvată",
+        "successBody": "Contul are acum câmpurile obligatorii pentru profil, sporturi și proximitate în ShowUpToday.",
         "continue": "Deschide Today"
       }
     }
   },
   "today": {
-    "back": "Inapoi",
+    "back": "Înapoi",
     "title": "ShowUpToday",
-    "body": "Raspunde o singura data pentru fereastra activa din Romania. Un raspuns Da te pune in coada pentru potrivirea determinista din urmatoarea felie.",
+    "body": "Răspunde o singură dată pentru fereastra activă din România. Un răspuns „Da” te pune în coadă pentru potrivirea deterministă din următoarea felie.",
     "card": {
       "promptLabel": "Prompt activ",
       "yes": "Da, pot juca",
       "no": "Nu azi",
       "matchedTitle": "Grup format",
-      "matchedBody": "Exista un grup determinist pentru acest prompt. Chatul de grup si confirmarea vin in urmatoarea felie.",
-      "noMatchTitle": "Inca se cauta",
-      "noMatchBody": "Raspunsul este salvat, dar inca nu sunt destui jucatori compatibili in apropiere.",
-      "queuedTitle": "Esti in coada",
-      "queuedBody": "Raspunsul este salvat si va fi reconsiderat cand raspund mai multi jucatori compatibili.",
+      "matchedBody": "Există un grup determinist pentru acest prompt. Chatul de grup și confirmarea vin în următoarea felie.",
+      "noMatchTitle": "Încă se caută",
+      "noMatchBody": "Răspunsul este salvat, dar încă nu sunt destui jucători compatibili în apropiere.",
+      "queuedTitle": "Ești în coadă",
+      "queuedBody": "Răspunsul este salvat și va fi reconsiderat când răspund mai mulți jucători compatibili.",
       "unavailableTitle": "Marcat indisponibil",
-      "unavailableBody": "Raspunsul este salvat si poate fi schimbat cat timp aceasta fereastra este activa.",
-      "genericError": "Raspunsul nu a putut fi salvat. Verifica sesiunea si incearca din nou.",
+      "unavailableBody": "Răspunsul este salvat și poate fi schimbat cât timp această fereastră este activă.",
+      "genericError": "Răspunsul nu a putut fi salvat. Verifică sesiunea și încearcă din nou.",
       "sportPrefs": "Folosim sporturile selectate",
-      "maxDistance": "Raza",
+      "maxDistance": "Rază",
       "km": "km",
       "sports": {
         "football": "Fotbal",
@@ -230,19 +230,19 @@
         "running": "Alergare",
         "cycling": "Ciclism",
         "yoga": "Yoga",
-        "hiking": "Drumetie",
-        "table_tennis": "Tenis de masa"
+        "hiking": "Drumeție",
+        "table_tennis": "Tenis de masă"
       }
     }
   },
   "demo": {
     "title": "Placeholder pentru Mod juriu",
-    "enabledBody": "Dovada demo este activata prin variabila de mediu. Randurile de scor raman nerevendicate pana cand fazele urmatoare adauga dovezi live sau seeded.",
-    "disabledBody": "Dovada demo este dezactivata prin variabila de mediu. Randurile de scor raman nerevendicate pana cand fazele urmatoare adauga dovezi live sau seeded."
+    "enabledBody": "Dovada demo este activată prin variabilă de mediu. Rândurile de scor rămân nerevendicate până când fazele următoare adaugă dovezi live sau seeded.",
+    "disabledBody": "Dovada demo este dezactivată prin variabilă de mediu. Rândurile de scor rămân nerevendicate până când fazele următoare adaugă dovezi live sau seeded."
   },
   "notFound": {
-    "title": "Pagina nu a fost gasita",
-    "body": "Aceasta ruta nu face parte din faza curenta ShowUp2Move.",
-    "back": "Inapoi la ShowUp2Move"
+    "title": "Pagina nu a fost găsită",
+    "body": "Această rută nu face parte din faza curentă ShowUp2Move.",
+    "back": "Înapoi la ShowUp2Move"
   }
 }
