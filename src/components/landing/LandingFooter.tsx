@@ -115,20 +115,30 @@ export function LandingFooter({ locale, demoEnabled, githubUrl }: Props) {
             <Link
               href={`/${otherLocale}`}
               hrefLang={otherLocale}
-              className="mono"
+              aria-label={
+                otherLocale === "en"
+                  ? "Switch to English"
+                  : "Schimbă în română"
+              }
+              title={
+                otherLocale === "en"
+                  ? "Switch to English"
+                  : "Schimbă în română"
+              }
               style={{
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                padding: "6px 10px",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 36,
+                height: 36,
                 borderRadius: "var(--r-pill)",
                 background: "var(--surface)",
                 boxShadow: "inset 0 0 0 1px var(--line)",
-                color: "var(--ink)",
+                fontSize: 18,
+                lineHeight: 1,
               }}
             >
-              {locale.toUpperCase()} → {otherLocale.toUpperCase()}
+              <span aria-hidden="true">{locale === "ro" ? "🇷🇴" : "🇬🇧"}</span>
             </Link>
           </div>
         </div>
