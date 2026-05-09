@@ -200,7 +200,7 @@ export const RUBRIC_CATEGORIES: RubricCategory[] = [
         status: "live",
         evidence: "/events",
         evidenceLabel: "venue vote",
-        note: "Live vote counts; captain manual decision fallback.",
+        note: "castVenueVoteAction persists per-attendee picks with live counts; captain reveal panel kicks off the vote.",
       },
       {
         id: "team-balance",
