@@ -48,6 +48,7 @@ describe("auth rate limit helpers", () => {
     expect(AUTH_RATE_LIMIT_POLICIES).toEqual({
       aiBioUser: { limit: 30, windowSeconds: 3600 },
       aiPhotoUser: { limit: 10, windowSeconds: 3600 },
+      chatStreamUser: { limit: 10, windowSeconds: 60 },
       chatUserGroup: { limit: 20, windowSeconds: 60 },
       invitePreviewIp: { limit: 60, windowSeconds: 60 },
       inviteUserEvent: { limit: 6, windowSeconds: 3600 },

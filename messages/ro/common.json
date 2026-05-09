@@ -913,11 +913,11 @@
         },
         "notifications": {
           "label": "Centru persistent de notificări",
-          "note": "Randuri persistente + citit/necitit; intrare prin clopotelul din header."
+          "note": "Rânduri persistente + citit/necitit; intrare prin clopoțelul din header."
         },
         "calendar-export": {
           "label": "Export calendar .ics",
-          "note": "Ruta server + export client in pagina; linii pliate."
+          "note": "Ruta server + export client în pagină; linii pliate."
         },
         "achievements": {
           "label": "Realizare First Match",
