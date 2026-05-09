@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { TodayConfirmedCard } from "./TodayConfirmedCard";
 import { TodayFoundCard } from "./TodayFoundCard";
@@ -11,6 +11,55 @@ import { TodaySearching } from "./TodaySearching";
 import { todayPromptFormAction, type TodayPromptFormState } from "@/lib/prompt-form-actions";
 import type { TodayGroup, TodayPrompt, TodayResponse } from "@/lib/prompt";
 import type { SportKey } from "@/lib/sports";
+
+type FoundCopy = {
+  in: string;
+  groupHeadline: string;
+  memberCount: string;
+  captainLine: string;
+  noCaptainLine: string;
+  confirm: string;
+  confirming: string;
+  why: string;
+  venueName: string;
+  venueSub: string;
+  errorBody: string;
+};
+
+type QueuedCopy = {
+  title: string;
+  subhead: string;
+  lookingFor: string;
+  searchingLabel: string;
+  elapsedJustNow: string;
+  elapsedSeconds: string;
+  elapsedMinutes: string;
+  progressNearby: string;
+  progressSkill: string;
+  progressFinal: string;
+  planB: string;
+  planBHint: string;
+  tryRun: string;
+  createSmall: string;
+};
+
+type SaidNoCopy = {
+  title: string;
+  subhead: string;
+  change: string;
+  browseHint: string;
+};
+
+type ConfirmedCopy = {
+  label: string;
+  startsLabel: string;
+  headline: string;
+  venueLine: string;
+  rosterLine: string;
+  openChat: string;
+  calendar: string;
+  calendarPending: string;
+};
 
 type TodayPromptCopy = {
   promptLabel: string;
@@ -30,6 +79,11 @@ type TodayPromptCopy = {
   maxDistance: string;
   km: string;
   sports: Record<SportKey, string>;
+  /** Optional richer copy for the polished cards. Falls back to legacy keys. */
+  found?: FoundCopy;
+  queued?: QueuedCopy;
+  saidNo?: SaidNoCopy;
+  confirmed?: ConfirmedCopy;
 };
 
 type DerivedState = "prompt" | "searching" | "found" | "queued" | "said-no" | "confirmed";
@@ -49,14 +103,10 @@ function deriveState({
   group: TodayGroup | null;
   response: TodayResponse | null;
 }): DerivedState {
-  // While the action is in flight after a Yes click → animated funnel.
   if (pending && pendingAnswer === "yes") {
     return "searching";
   }
   if (group) {
-    // If we knew an event were confirmed, we'd flip to "confirmed".
-    // Wave-1 shape doesn't carry that; A6 / event flow takes over once an
-    // event row exists. Treat group-with-no-event as "found".
     return "found";
   }
   if (formStatus === "matched") {
@@ -84,11 +134,42 @@ function deriveState({
 }
 
 /**
- * Inner consumer of useFormStatus so we can derive the in-flight
- * "searching" state from outside the form children. Renders the
- * full state machine (A–F) within the same form so submissions
- * have access to the hidden inputs.
+ * Format a relative elapsed time using Intl.RelativeTimeFormat so RO/EN
+ * pluralization stays consistent with the rest of the app. Falls back to
+ * the localized "just now" string when the gap is < 5s.
  */
+function formatElapsed(
+  fromMs: number | null,
+  copy: QueuedCopy | undefined,
+  locale: string,
+  nowMs: number,
+): string {
+  if (!copy) return "";
+  if (fromMs == null) return copy.elapsedJustNow;
+  const deltaMs = Math.max(0, nowMs - fromMs);
+  const seconds = Math.floor(deltaMs / 1000);
+  if (seconds < 5) return copy.elapsedJustNow;
+  if (seconds < 60) {
+    return copy.elapsedSeconds.replace("{count}", String(seconds));
+  }
+  const minutes = Math.floor(seconds / 60);
+  // Use Intl for the count to honour locale digit shapes if any.
+  const count = new Intl.NumberFormat(locale).format(minutes);
+  return copy.elapsedMinutes.replace("{count}", count);
+}
+
+/**
+ * Locale-aware "starts at HH:mm" using Intl.DateTimeFormat. Returns the
+ * raw time string only - the parent template combines it via copy keys.
+ */
+function formatStartTime(date: Date, locale: string): string {
+  return new Intl.DateTimeFormat(locale === "ro" ? "ro-RO" : "en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(date);
+}
+
 function TodayBody({
   copy,
   group,
@@ -135,9 +216,25 @@ function TodayBody({
   const sportLabel = group ? copy.sports[group.sport] : primarySport ? copy.sports[primarySport] : "";
   const headline = prompt.messageText ?? "ShowUpToday?";
 
-  // The submit buttons must remain mounted inside the form during pending →
-  // useFormStatus only works while children render. We always render the
-  // hidden inputs so the action sees them, then render the right hero.
+  // Locale-aware elapsed for the queued card.
+  const [now, setNow] = useState<number>(() => Date.now());
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 15_000);
+    return () => window.clearInterval(id);
+  }, []);
+  const queuedSinceMs =
+    response?.lastMatchAttemptAt instanceof Date
+      ? response.lastMatchAttemptAt.getTime()
+      : null;
+  const elapsedLabel = formatElapsed(queuedSinceMs, copy.queued, locale, now);
+
+  // Locale-aware fixed start time for the confirmed card placeholder.
+  const startTime = useMemo(() => {
+    const today = new Date();
+    today.setHours(18, 30, 0, 0);
+    return formatStartTime(today, locale);
+  }, [locale]);
+
   return (
     <>
       <input name="promptId" type="hidden" value={prompt.id} />
@@ -201,25 +298,64 @@ function TodayBody({
           captainName={null}
           groupSize={null}
           locale={locale}
-          inLabel={`You're in · ${sportLabel}`}
+          inLabel={copy.found?.in ?? `You're in · ${sportLabel}`}
+          groupHeadline={
+            copy.found?.groupHeadline.replace("{sport}", sportLabel) ??
+            sportLabel
+          }
+          memberCountLabel={
+            copy.found?.memberCount
+              .replace("{current}", "10")
+              .replace("{ideal}", "12") ?? null
+          }
+          captainLine={copy.found?.noCaptainLine ?? null}
           openLabel={copy.openGroup}
-          confirmLabel="Confirm participation"
-          whyLabel="Why this group?"
-          venueName="Suggested venue nearby"
-          venueSub="Captain will lock the spot · ~2 km"
+          confirmLabel={copy.found?.confirm ?? "Confirm participation"}
+          whyLabel={copy.found?.why ?? "Why this group?"}
+          venueName={copy.found?.venueName ?? "Suggested venue nearby"}
+          venueSub={
+            copy.found?.venueSub ?? "Captain will lock the spot · ~2 km"
+          }
           matchScore={92}
         />
       ) : null}
 
       {state === "queued" ? (
         <TodayQueuedCard
-          sportLabel={sportLabel || "your sport"}
-          bodyText={copy.queuedBody}
-          elapsedLabel="just now"
-          planBLabel="Plan B"
+          title={copy.queued?.title ?? copy.queuedTitle}
+          subhead={copy.queued?.subhead ?? copy.queuedBody}
+          lookingForLabel={
+            copy.queued?.lookingFor.replace(
+              "{sport}",
+              sportLabel || "your sport",
+            ) ?? `Looking for ${sportLabel || "your sport"}`
+          }
+          elapsedLabel={elapsedLabel}
+          searchingLabel={copy.queued?.searchingLabel ?? "Searching"}
+          planBLabel={copy.queued?.planB ?? "Plan B"}
+          planBHint={
+            copy.queued?.planBHint ??
+            "While you wait, try one of these:"
+          }
+          progress={
+            copy.queued
+              ? [
+                  { label: copy.queued.progressNearby, state: "done" },
+                  { label: copy.queued.progressSkill, state: "active" },
+                  { label: copy.queued.progressFinal, state: "wait" },
+                ]
+              : undefined
+          }
           planBLinks={[
-            { label: "Try a nearby run instead", href: `/${locale}/today` },
-            { label: "Create a small manual event", href: `/${locale}/events/new` },
+            {
+              label: copy.queued?.tryRun ?? "Try a nearby run instead",
+              href: `/${locale}/today`,
+            },
+            {
+              label:
+                copy.queued?.createSmall ?? "Create a small manual event",
+              href: `/${locale}/events/new`,
+            },
           ]}
           primarySport={primarySport}
         />
@@ -227,9 +363,10 @@ function TodayBody({
 
       {state === "said-no" ? (
         <TodaySaidNoCard
-          title="Rest day logged."
-          body={copy.unavailableBody}
-          changeLabel="Change to Yes"
+          title={copy.saidNo?.title ?? "Rest day logged."}
+          body={copy.saidNo?.subhead ?? copy.unavailableBody}
+          changeLabel={copy.saidNo?.change ?? "Change to Yes"}
+          browseHint={copy.saidNo?.browseHint}
         />
       ) : null}
 
@@ -237,22 +374,42 @@ function TodayBody({
         <TodayConfirmedCard
           groupId={group.id}
           locale={locale}
-          startsLabel="Starts soon"
-          whenLabel={`${sportLabel} · 18:30`}
+          confirmedLabel={copy.confirmed?.label ?? "Confirmed for tonight"}
+          startsLabel={
+            copy.confirmed?.startsLabel.replace("{time}", startTime) ??
+            `Starts ${startTime}`
+          }
+          whenLabel={
+            copy.confirmed?.headline
+              .replace("{sport}", sportLabel)
+              .replace("{time}", startTime) ?? `${sportLabel} · ${startTime}`
+          }
+          rosterLabel={
+            copy.confirmed?.rosterLine
+              .replace("{going}", "8")
+              .replace("{maybe}", "2") ?? "8 going · 2 maybe"
+          }
           venueName="Baza 2"
-          venueSub="Tineretului · 2.1 km"
-          chatLabel="Open chat"
-          calendarLabel="Add to calendar"
+          venueSub={
+            copy.confirmed?.venueLine.replace(
+              "{venue}",
+              "Tineretului · 2.1 km",
+            ) ?? "Tineretului · 2.1 km"
+          }
+          chatLabel={copy.confirmed?.openChat ?? "Open chat"}
+          calendarLabel={copy.confirmed?.calendar ?? "Add to calendar"}
+          calendarPendingLabel={copy.confirmed?.calendarPending}
         />
       ) : null}
 
       {formError ? (
         <p
-          className="mt-4 rounded-md border px-3 py-2 text-sm font-semibold"
+          className="mt-4 px-3 py-2 text-sm font-semibold"
           style={{
             background: "var(--alert-soft)",
             color: "var(--alert)",
-            borderColor: "var(--alert)",
+            borderRadius: "var(--r-chip)",
+            border: "1px solid var(--alert)",
           }}
           role="alert"
         >

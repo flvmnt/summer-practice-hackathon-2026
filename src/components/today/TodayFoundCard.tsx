@@ -15,6 +15,9 @@ type Props = {
   groupSize?: { current: number; ideal: number } | null;
   locale: string;
   inLabel: string;
+  groupHeadline?: string;
+  memberCountLabel?: string | null;
+  captainLine?: string | null;
   openLabel: string;
   confirmLabel: string;
   whyLabel: string;
@@ -45,6 +48,12 @@ const DEFAULT_REASONS: ReadonlyArray<FormationReason> = [
 
 /**
  * State C - matched into a group.
+ *
+ * UI/UX polish: tighter visual hierarchy. Header pill + mono member
+ * count, then a sport glyph paired with a display headline + sport
+ * pill, and a field-tone captain mention chip. Card radii now use
+ * design-system tokens (no 12px). Confirm/Decline behaviour lives in
+ * the dedicated decision card; the local button keeps its label only.
  */
 export function TodayFoundCard({
   groupId,
@@ -54,6 +63,9 @@ export function TodayFoundCard({
   groupSize,
   locale,
   inLabel,
+  groupHeadline,
+  memberCountLabel,
+  captainLine,
   openLabel,
   confirmLabel,
   whyLabel,
@@ -62,9 +74,12 @@ export function TodayFoundCard({
   matchScore = 92,
 }: Props) {
   const SportIcon = Glyph[SPORT_GLYPH[sport] ?? "football"];
-  const sizeText = groupSize
-    ? `${groupSize.current}/${groupSize.ideal}`
-    : null;
+  const sizeText =
+    memberCountLabel ??
+    (groupSize ? `${groupSize.current}/${groupSize.ideal}` : null);
+  const headline = groupHeadline ?? sportLabel;
+  const resolvedCaptainLine =
+    captainLine ?? (captainName ? `${captainName} is captain tonight` : null);
 
   return (
     <div
@@ -76,18 +91,37 @@ export function TodayFoundCard({
         border: "1px solid var(--line)",
       }}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <Pill variant="field" icon={<Glyph.check size={12} />}>
           <span style={{ fontWeight: 700 }}>{inLabel}</span>
         </Pill>
+        {sizeText ? (
+          <span
+            className="mono"
+            style={{
+              fontSize: 12,
+              color: "var(--ink-muted)",
+              fontWeight: 600,
+            }}
+          >
+            {sizeText}
+          </span>
+        ) : null}
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 16 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 14,
+          marginTop: 18,
+        }}
+      >
         <div
           style={{
-            width: 48,
-            height: 48,
-            borderRadius: 14,
+            width: 52,
+            height: 52,
+            borderRadius: "var(--r-card)",
             background: "var(--accent-soft)",
             color: "var(--accent-deep)",
             display: "grid",
@@ -95,34 +129,67 @@ export function TodayFoundCard({
             flex: "none",
           }}
         >
-          <SportIcon size={24} />
+          <SportIcon size={26} />
         </div>
-        <div className="min-w-0">
-          <div
-            className="display"
-            style={{ fontSize: 24, lineHeight: 1.1 }}
+        <div className="min-w-0 flex-1">
+          <h2
+            className="display truncate"
+            style={{
+              fontSize: 26,
+              lineHeight: 1.1,
+              letterSpacing: "-0.02em",
+            }}
           >
-            {sportLabel}
-            {sizeText ? (
-              <span
-                className="mono"
-                style={{ marginLeft: 10, fontSize: 18, color: "var(--ink-muted)" }}
-              >
-                {sizeText}
-              </span>
-            ) : null}
+            {headline}
+          </h2>
+          <div
+            className="mt-1 flex flex-wrap items-center gap-2"
+            style={{ fontSize: 13, color: "var(--ink-muted)" }}
+          >
+            <Pill variant="alt">
+              <span style={{ fontWeight: 600 }}>{sportLabel}</span>
+            </Pill>
           </div>
-          {captainName ? (
-            <div
-              className="mt-1 truncate"
-              style={{ fontSize: 13, color: "var(--ink-muted)" }}
-            >
-              <Glyph.crown size={14} className="inline-block" />{" "}
-              <strong style={{ color: "var(--ink)" }}>{captainName}</strong> · captain
-            </div>
-          ) : null}
         </div>
       </div>
+
+      {resolvedCaptainLine ? (
+        <div
+          className="mt-3 flex items-center gap-2"
+          style={{
+            background: "var(--field-soft)",
+            borderRadius: "var(--r-chip)",
+            padding: "6px 10px",
+            width: "fit-content",
+            maxWidth: "100%",
+          }}
+        >
+          <span
+            style={{
+              display: "grid",
+              placeItems: "center",
+              width: 22,
+              height: 22,
+              borderRadius: 999,
+              background: "var(--field)",
+              color: "var(--field-ink)",
+              flex: "none",
+            }}
+          >
+            <Glyph.crown size={12} />
+          </span>
+          <span
+            className="truncate"
+            style={{
+              fontSize: 12,
+              color: "var(--field)",
+              fontWeight: 600,
+            }}
+          >
+            {resolvedCaptainLine}
+          </span>
+        </div>
+      ) : null}
 
       <div style={{ marginTop: 14 }}>
         <VenueRow
@@ -147,16 +214,17 @@ export function TodayFoundCard({
       >
         <Link
           href={`/${locale}/groups/${groupId}`}
-          className="inline-flex items-center justify-center font-semibold"
+          className="inline-flex items-center justify-center gap-2 font-semibold"
           style={{
             background: "var(--accent)",
             color: "var(--on-accent)",
             minHeight: 48,
-            borderRadius: 12,
+            borderRadius: "var(--r-pill)",
             padding: "0 16px",
             fontSize: 14,
           }}
         >
+          <Glyph.chat size={16} />
           {openLabel}
         </Link>
         <button
@@ -166,7 +234,7 @@ export function TodayFoundCard({
             background: "transparent",
             color: "var(--ink-2)",
             minHeight: 48,
-            borderRadius: 12,
+            borderRadius: "var(--r-pill)",
             border: "1px solid var(--line)",
             padding: "0 16px",
             fontSize: 14,

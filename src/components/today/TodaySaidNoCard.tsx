@@ -6,20 +6,33 @@ type Props = {
   title: string;
   body: string;
   changeLabel: string;
+  /** Optional secondary hint linking to public events. */
+  browseHint?: string;
   onChange?: () => void;
 };
 
 /**
  * State E - user clicked Not today.
- * Smaller card; offers a Change-to-Yes affordance.
+ *
+ * UI/UX polish: matches the empty/error visual rhythm of the other Today
+ * states - same surface radius, same icon-pill+title pairing, restful
+ * subhead, and an unambiguous "Change to Yes" affordance with arrow
+ * glyph for forward motion. Stable dimensions match State A so the card
+ * doesn't collapse when the user toggles.
  */
-export function TodaySaidNoCard({ title, body, changeLabel, onChange }: Props) {
+export function TodaySaidNoCard({
+  title,
+  body,
+  changeLabel,
+  browseHint,
+  onChange,
+}: Props) {
   return (
     <div
       style={{
         background: "var(--surface)",
         borderRadius: "var(--r-surface)",
-        padding: "22px 22px 20px",
+        padding: "22px 22px 22px",
         boxShadow: "var(--shadow-2)",
         border: "1px solid var(--line)",
       }}
@@ -39,12 +52,16 @@ export function TodaySaidNoCard({ title, body, changeLabel, onChange }: Props) {
         >
           <Glyph.close size={18} />
         </div>
-        <div
+        <h2
           className="display"
-          style={{ fontSize: 24, lineHeight: 1.1 }}
+          style={{
+            fontSize: 24,
+            lineHeight: 1.1,
+            letterSpacing: "-0.02em",
+          }}
         >
           {title}
-        </div>
+        </h2>
       </div>
       <p
         style={{
@@ -67,10 +84,24 @@ export function TodaySaidNoCard({ title, body, changeLabel, onChange }: Props) {
           padding: 0,
           cursor: "pointer",
           fontSize: 14,
+          minHeight: 44,
         }}
       >
         {changeLabel}
+        <Glyph.arrow size={14} />
       </button>
+      {browseHint ? (
+        <p
+          className="mt-3"
+          style={{
+            fontSize: 12,
+            color: "var(--ink-muted)",
+            lineHeight: 1.4,
+          }}
+        >
+          {browseHint}
+        </p>
+      ) : null}
     </div>
   );
 }

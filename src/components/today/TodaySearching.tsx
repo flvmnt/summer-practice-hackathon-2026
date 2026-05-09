@@ -87,7 +87,7 @@ export function TodaySearching({
       </div>
       <div
         className="mt-4 flex items-start gap-2.5 px-3.5 py-3"
-        style={{ background: "var(--accent-tint)", borderRadius: 12 }}
+        style={{ background: "var(--accent-tint)", borderRadius: "var(--r-card)" }}
       >
         <AIMark className="mt-1 text-[var(--accent)]" />
         <div className="text-[13px]" style={{ lineHeight: 1.4 }}>
