@@ -307,6 +307,18 @@ export default async function SettingsPage({
           >
             {copy.title}
           </h1>
+          <div
+            className="mono truncate"
+            style={{
+              marginTop: 2,
+              fontSize: 12,
+              color: "var(--ink-muted)",
+              letterSpacing: "0.01em",
+            }}
+          >
+            <span style={{ color: "var(--accent-deep)" }}>@</span>
+            {user.username}
+          </div>
         </div>
         <LocaleFlagToggle locale={locale} pathWithinLocale="/settings" />
         <HeaderBell unreadCount={unread} locale={locale} />
@@ -337,6 +349,18 @@ export default async function SettingsPage({
           >
             {copy.title}
           </h1>
+          <div
+            className="mono"
+            style={{
+              marginTop: 6,
+              fontSize: 13,
+              color: "var(--ink-muted)",
+              letterSpacing: "0.01em",
+            }}
+          >
+            <span style={{ color: "var(--accent-deep)" }}>@</span>
+            {user.username}
+          </div>
           <p
             className="mt-2 max-w-xl text-[13px]"
             style={{ color: "var(--ink-muted)", lineHeight: 1.5 }}
