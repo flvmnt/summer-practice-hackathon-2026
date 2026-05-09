@@ -1,17 +1,25 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import Image from "next/image";
+import { useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Camera } from "lucide-react";
 import { AIMark } from "@/components/ui/AIMark";
 import { Glyph } from "@/components/ui/Glyph";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { WizardMobileHeader } from "@/components/onboarding/WizardMobileHeader";
 import { WizardStickyActionBar } from "@/components/onboarding/WizardStickyActionBar";
 import type { AppLocale } from "@/i18n/routing";
-import { extractSportsForCurrentUserAction } from "@/lib/ai-actions";
+import {
+  extractSportsForCurrentUserAction,
+  extractSportsFromBioTextAction,
+} from "@/lib/ai-actions";
 import { updateOnboardingProfileAction } from "@/lib/onboarding";
+import { uploadProfilePhotoAction } from "@/lib/upload-actions";
 import { SPORT_KEYS, type SportKey } from "@/lib/sports";
+
+const ACCEPTED_PHOTO_TYPES = "image/jpeg,image/png,image/webp,image/heic,image/heif";
 
 const BIO_MAX = 240;
 const NAME_MAX = 80;
@@ -48,43 +56,6 @@ type Suggestion = {
 
 type AiState = "idle" | "loading" | "ok" | "down";
 
-/**
- * Bio → sports stub. Wave 1 has no `bioSuggestSportsAction` server action yet
- * (verified - no AI/Groq files exist in src/lib). We pick keywords from the
- * bio so the demo path stays deterministic. Real Groq wiring lands in a
- * later wave. Returns up to 4 suggestions.
- */
-function localBioSuggest(bio: string): Suggestion[] {
-  const text = bio.toLowerCase();
-  const candidates: Array<{ sport: SportKey; weight: number; keywords: RegExp }> = [
-    { sport: "tennis", weight: 0.92, keywords: /tennis|tenis/ },
-    { sport: "running", weight: 0.84, keywords: /run|running|jog|alergat/ },
-    { sport: "football", weight: 0.86, keywords: /football|soccer|fotbal/ },
-    { sport: "basketball", weight: 0.78, keywords: /basket|basketball|baschet/ },
-    { sport: "volleyball", weight: 0.74, keywords: /volley|volei/ },
-    { sport: "badminton", weight: 0.7, keywords: /badminton|fluturas/ },
-    { sport: "cycling", weight: 0.72, keywords: /cycl|bike|biking|ciclism/ },
-    { sport: "yoga", weight: 0.66, keywords: /yoga|pilates|stretch/ },
-    { sport: "hiking", weight: 0.62, keywords: /hik|trail|drume|munte/ },
-    { sport: "table_tennis", weight: 0.7, keywords: /ping[- ]?pong|table tennis|tenis de masa/ },
-  ];
-
-  const matched = candidates
-    .filter((c) => c.keywords.test(text))
-    .map((c) => ({ sport: c.sport, confidence: c.weight }));
-
-  if (matched.length > 0) {
-    return matched.slice(0, 4);
-  }
-
-  // Fallback: surface a friendly default trio so users still see the AI flow.
-  return [
-    { sport: "tennis", confidence: 0.62 },
-    { sport: "running", confidence: 0.58 },
-    { sport: "football", confidence: 0.54 },
-  ];
-}
-
 function fieldErrorText(code: string | undefined) {
   if (!code) return undefined;
   if (code === "full_name_required" || code === "full_name_too_long") {
@@ -102,13 +73,17 @@ function fieldErrorText(code: string | undefined) {
 export type ProfileFormProps = {
   defaultBio: string;
   defaultFullName: string;
+  defaultPhotoUrl?: string | null;
   username: string;
   locale: AppLocale;
 };
 
+type PhotoUploadState = "idle" | "uploading" | "uploaded" | "failed";
+
 export function ProfileForm({
   defaultBio,
   defaultFullName,
+  defaultPhotoUrl = null,
   username,
   locale,
 }: ProfileFormProps) {
@@ -120,10 +95,40 @@ export function ProfileForm({
   const [bioError, setBioError] = useState<string | undefined>();
   const [formError, setFormError] = useState<string | undefined>();
 
+  const photoInputRef = useRef<HTMLInputElement | null>(null);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(defaultPhotoUrl);
+  const [photoStatus, setPhotoStatus] = useState<PhotoUploadState>("idle");
+  const [photoError, setPhotoError] = useState<string | undefined>();
+
   const [aiState, setAiState] = useState<AiState>("idle");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [picked, setPicked] = useState<Set<SportKey>>(new Set());
   const [isPending, startTransition] = useTransition();
+
+  async function handlePhotoFile(file: File) {
+    if (!file.type.startsWith("image/")) {
+      setPhotoError(t("photoErrorType"));
+      return;
+    }
+    setPhotoError(undefined);
+    setPhotoUrl(URL.createObjectURL(file));
+    setPhotoStatus("uploading");
+    try {
+      const fd = new FormData();
+      fd.append("photo", file);
+      const result = await uploadProfilePhotoAction(fd);
+      if (result.ok) {
+        setPhotoStatus("uploaded");
+        if (result.data?.photoUrl) setPhotoUrl(result.data.photoUrl);
+      } else {
+        setPhotoStatus("failed");
+        setPhotoError(t("photoErrorUpload"));
+      }
+    } catch {
+      setPhotoStatus("failed");
+      setPhotoError(t("photoErrorUpload"));
+    }
+  }
 
   const remaining = useMemo(() => Math.max(0, BIO_MAX - bio.length), [bio]);
   const bioOverLimit = bio.length > BIO_MAX;
@@ -136,18 +141,23 @@ export function ProfileForm({
     setBioError(undefined);
     setAiState("loading");
     setSuggestions([]);
-    // Local stub - Wave 2 will swap to the real `bioSuggestSportsAction`.
-    window.setTimeout(() => {
-      try {
-        const result = localBioSuggest(bio);
-        setSuggestions(result);
-        // Pre-select the top two so users see immediate value.
-        setPicked(new Set(result.slice(0, 2).map((s) => s.sport)));
+    startTransition(async () => {
+      const result = await extractSportsFromBioTextAction({ bio });
+      if (result.ok) {
+        const next = result.suggestions
+          .filter((suggestion) => SPORT_KEYS.includes(suggestion.sport))
+          .slice(0, 4)
+          .map((suggestion) => ({
+            sport: suggestion.sport,
+            confidence: suggestion.confidence,
+          }));
+        setSuggestions(next);
+        setPicked(new Set(next.slice(0, 2).map((suggestion) => suggestion.sport)));
         setAiState("ok");
-      } catch {
+      } else {
         setAiState("down");
       }
-    }, 480);
+    });
   }
 
   function togglePick(sport: SportKey) {
@@ -238,14 +248,92 @@ export function ProfileForm({
       className="mx-auto flex w-full max-w-md flex-col"
       style={{ minHeight: "100dvh", background: "var(--bg)" }}
     >
-      <div className="flex flex-1 flex-col gap-5 px-5 pt-5 pb-6">
+      <div className="flex flex-1 flex-col gap-5 px-5 pt-5 pb-32">
         <WizardMobileHeader
           step={1}
-          total={4}
+          total={3}
           stepLabel={t("stepLabel")}
           title={t("title")}
           subtitle={t("subtitle")}
         />
+
+        {/* Profile photo (merged from former step 4) */}
+        <div className="mt-2 grid gap-2">
+          <span
+            className="mono text-[10px] font-bold uppercase tracking-[0.12em]"
+            style={{ color: "var(--ink-muted)" }}
+          >
+            {t("photoLabel")}
+          </span>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => photoInputRef.current?.click()}
+              aria-label={t("photoUpload")}
+              style={{
+                position: "relative",
+                width: 76,
+                height: 76,
+                borderRadius: "50%",
+                border: "2px dashed var(--line-2)",
+                background: photoUrl ? "transparent" : "var(--surface-2)",
+                cursor: "pointer",
+                overflow: "hidden",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "var(--ink-muted)",
+              }}
+            >
+              {photoUrl ? (
+                <Image
+                  src={photoUrl}
+                  alt=""
+                  fill
+                  sizes="76px"
+                  style={{ objectFit: "cover" }}
+                  unoptimized
+                />
+              ) : (
+                <Camera size={22} aria-hidden />
+              )}
+            </button>
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <span className="text-[13px] font-semibold" style={{ color: "var(--ink)" }}>
+                {photoStatus === "uploading"
+                  ? t("photoUploading")
+                  : photoStatus === "uploaded"
+                    ? t("photoUploaded")
+                    : t("photoOptional")}
+              </span>
+              <div className="flex flex-wrap gap-3 text-[12px]">
+                <button
+                  type="button"
+                  onClick={() => photoInputRef.current?.click()}
+                  className="font-semibold underline-offset-2 hover:underline"
+                  style={{ color: "var(--accent-deep)" }}
+                >
+                  {photoUrl ? t("photoChange") : t("photoUpload")}
+                </button>
+              </div>
+              {photoError ? (
+                <span className="text-[12px]" style={{ color: "var(--alert)" }}>
+                  {photoError}
+                </span>
+              ) : null}
+            </div>
+          </div>
+          <input
+            ref={photoInputRef}
+            type="file"
+            accept={ACCEPTED_PHOTO_TYPES}
+            hidden
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handlePhotoFile(file);
+            }}
+          />
+        </div>
 
         {/* Full name */}
         <div className="mt-2 grid gap-1.5">

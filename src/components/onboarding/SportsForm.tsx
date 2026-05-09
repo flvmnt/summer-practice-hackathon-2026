@@ -1,9 +1,24 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+  type ComponentType,
+} from "react";
+import {
+  MdSportsSoccer,
+  MdSportsBasketball,
+  MdSportsTennis,
+  MdSportsVolleyball,
+  MdSportsHandball,
+  MdDirectionsRun,
+} from "react-icons/md";
+import { FaTableTennisPaddleBall } from "react-icons/fa6";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
-import { Glyph } from "@/components/ui/Glyph";
 import { WizardMobileHeader } from "@/components/onboarding/WizardMobileHeader";
 import { WizardStickyActionBar } from "@/components/onboarding/WizardStickyActionBar";
 import type { AppLocale } from "@/i18n/routing";
@@ -12,6 +27,8 @@ import {
   type OnboardingSportsFormState,
 } from "@/lib/onboarding-form-actions";
 import type { SportKey } from "@/lib/sports";
+
+type SportIcon = ComponentType<{ size?: number; className?: string }>;
 
 type SportsFormCopy = {
   submit: string;
@@ -31,23 +48,33 @@ export type AiSuggestionsCopy = {
   hint: string;
 };
 
-// Direction B canvas tile sports - 6 tiles, 3×2 mobile, 6×1 desktop.
-const TILE_SPORTS = [
-  { key: "football" as SportKey, glyph: Glyph.football, label: "Football" },
-  { key: "basketball" as SportKey, glyph: Glyph.basketball, label: "Basketball" },
-  { key: "tennis" as SportKey, glyph: Glyph.tennis, label: "Tennis" },
-  { key: "padel" as const, glyph: Glyph.padel, label: "Padel" },
-  { key: "running" as SportKey, glyph: Glyph.running, label: "Running" },
-  { key: "volleyball" as SportKey, glyph: Glyph.volley, label: "Volley" },
-] as const;
+type TileKey = SportKey | "padel";
+
+// Direction B canvas tile sports - labels resolved per-locale via copy.sports.
+// Icons: Material Sports (react-icons/md) + Fa6 for table tennis.
+const TILE_SPORTS: ReadonlyArray<{
+  key: TileKey;
+  glyph: SportIcon;
+  copyKey: string;
+  fallbackLabel: string;
+}> = [
+  { key: "football", glyph: MdSportsSoccer, copyKey: "football", fallbackLabel: "Football" },
+  { key: "basketball", glyph: MdSportsBasketball, copyKey: "basketball", fallbackLabel: "Basketball" },
+  { key: "tennis", glyph: MdSportsTennis, copyKey: "tennis", fallbackLabel: "Tennis" },
+  { key: "table_tennis", glyph: FaTableTennisPaddleBall, copyKey: "table_tennis", fallbackLabel: "Table tennis" },
+  { key: "padel", glyph: MdSportsHandball, copyKey: "padel", fallbackLabel: "Padel" },
+  { key: "running", glyph: MdDirectionsRun, copyKey: "running", fallbackLabel: "Running" },
+  { key: "volleyball", glyph: MdSportsVolleyball, copyKey: "volleyball", fallbackLabel: "Volley" },
+];
 
 // Padel isn't in SPORT_KEYS yet; map to a supported sport on submit.
-// Schema is locked, so silently fall back to football for padel - that matches
+// Schema is locked, so silently fall back to tennis for padel - that matches
 // the deterministic-first rule (no fake sports surfaced to matching).
 const SUBMIT_SPORT: Record<string, SportKey> = {
   football: "football",
   basketball: "basketball",
   tennis: "tennis",
+  table_tennis: "table_tennis",
   padel: "tennis", // fallback to tennis (court sport) until schema adds padel
   running: "running",
   volleyball: "volleyball",
@@ -56,11 +83,12 @@ const SUBMIT_SPORT: Record<string, SportKey> = {
 // Reverse: canonical SportKey → display tile key. Suggestions arrive as
 // canonical keys; we surface them via the existing tile grid only when a
 // matching tile exists. Sports without a tile (yoga, hiking, badminton,
-// cycling, table_tennis) are dropped from the suggestion strip.
-const TILE_FROM_SPORT: Partial<Record<SportKey, (typeof TILE_SPORTS)[number]["key"]>> = {
+// cycling) are dropped from the suggestion strip.
+const TILE_FROM_SPORT: Partial<Record<SportKey, TileKey>> = {
   football: "football",
   basketball: "basketball",
   tennis: "tennis",
+  table_tennis: "table_tennis",
   volleyball: "volleyball",
   running: "running",
 };
@@ -107,11 +135,22 @@ export function SportsForm({
   const [pending, startTransition] = useTransition();
   const [state, setState] = useState<OnboardingSportsFormState>(initialState);
 
-  // Map of selected display key -> tier. Seed from existing user sports.
+  // Map of selected display key -> tier. Seed from existing user sports first
+  // (returning users keep their saved picks/levels), then layer AI suggestions
+  // from the previous step on top so a fresh signup arrives at this screen
+  // already pre-selected and only has to confirm or tweak.
   const [selected, setSelected] = useState<Record<string, LevelTier>>(() => {
     const initial: Record<string, LevelTier> = {};
     for (const entry of defaultSports) {
       initial[entry.sport] = tierFromNumeric(entry.level);
+    }
+    if (suggestedSports && suggestedSports.length > 0) {
+      for (const sport of suggestedSports) {
+        const tileKey = TILE_FROM_SPORT[sport];
+        if (tileKey && !(tileKey in initial)) {
+          initial[tileKey] = "casual";
+        }
+      }
     }
     return initial;
   });
@@ -171,32 +210,48 @@ export function SportsForm({
 
   const formError = errorText(state.fieldErrors?.sports ?? state.error, copy);
 
+  // Resolve a tile label from i18n copy with a safe fallback. Padel doesn't
+  // exist in `messages.*.onboarding.sports.form.sports` so we keep its tile
+  // fallback inline.
+  const labelFor = (tile: (typeof TILE_SPORTS)[number]) =>
+    copy.sports[tile.copyKey] ?? tile.fallbackLabel;
+
+  // De-duplicate hidden inputs by canonical SUBMIT_SPORT key. Padel and Tennis
+  // both submit as "tennis"; without dedupe the schema receives two rows with
+  // the same (userId, sport) and the DB primary key (user_sports.userId+sport)
+  // rejects the insert. Take the higher level when keys collide so the user's
+  // top tier on either tile wins.
+  const submitEntries = useMemo(() => {
+    const byKey = new Map<SportKey, number>();
+    for (const key of selectedKeys) {
+      const tier = selected[key];
+      const tierDef = LEVEL_TIERS.find((t) => t.value === tier) ?? LEVEL_TIERS[1];
+      const submitKey = (SUBMIT_SPORT[key] ?? key) as SportKey;
+      const existing = byKey.get(submitKey) ?? 0;
+      if (tierDef.numeric > existing) byKey.set(submitKey, tierDef.numeric);
+    }
+    return Array.from(byKey.entries());
+  }, [selected, selectedKeys]);
+
   return (
     <div className="flex w-full flex-col">
       <WizardMobileHeader
         step={2}
-        total={4}
+        total={3}
         title="Choose sports"
         subtitle="Pick what you like to play"
       />
 
       <form ref={formRef} className="contents" action={() => submit()}>
-        {/* Hidden inputs that mirror the selection state for the server action. */}
-        {selectedKeys.map((key) => {
-          const tier = selected[key];
-          const tierDef = LEVEL_TIERS.find((t) => t.value === tier) ?? LEVEL_TIERS[1];
-          const submitKey = SUBMIT_SPORT[key] ?? (key as SportKey);
-          return (
-            <div key={`hidden-${key}`} hidden>
-              <input name="sports" type="hidden" value={submitKey} />
-              <input
-                name={`${submitKey}Level`}
-                type="hidden"
-                value={String(tierDef.numeric)}
-              />
-            </div>
-          );
-        })}
+        {/* Hidden inputs that mirror the selection state for the server action.
+            Built from the deduped submitEntries so colliding tiles (padel→tennis)
+            don't produce duplicate primary-key rows on insert. */}
+        {submitEntries.map(([submitKey, level]) => (
+          <div key={`hidden-${submitKey}`} hidden>
+            <input name="sports" type="hidden" value={submitKey} />
+            <input name={`${submitKey}Level`} type="hidden" value={String(level)} />
+          </div>
+        ))}
 
         {/* AI-suggested sports row - shown only when bio yielded matches */}
         {aiSuggestionTiles.length > 0 ? (
@@ -246,7 +301,7 @@ export function SportsForm({
                     }}
                   >
                     <Icon size={16} />
-                    <span>{tile.label}</span>
+                    <span>{labelFor(tile)}</span>
                   </button>
                 );
               })}
@@ -298,7 +353,7 @@ export function SportsForm({
                     lineHeight: 1.1,
                   }}
                 >
-                  {sport.label}
+                  {labelFor(sport)}
                 </span>
               </button>
             );
@@ -341,14 +396,14 @@ export function SportsForm({
                     }}
                   >
                     <Icon size={16} />
-                    {sport.label}
+                    {labelFor(sport)}
                   </span>
                   <SegmentedControl<LevelTier>
                     options={LEVEL_TIERS.map((t) => ({ value: t.value, label: t.label }))}
                     value={selected[key]}
                     onChange={(next) => setTier(key, next)}
                     size="sm"
-                    ariaLabel={`Level for ${sport.label}`}
+                    ariaLabel={`Level for ${labelFor(sport)}`}
                   />
                 </div>
               );
@@ -377,7 +432,6 @@ export function SportsForm({
           </p>
         ) : null}
 
-        <div className="h-24" aria-hidden="true" />
       </form>
 
       <WizardStickyActionBar

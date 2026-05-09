@@ -162,8 +162,17 @@
         "successBody": "Sports, profile photo, and location are the next onboarding steps.",
         "continue": "Choose sports"
       },
-      "stepLabel": "Step 1 of 4",
-      "subtitle": "Set your display name and bio.",
+      "stepLabel": "Step 1 of 3",
+      "subtitle": "Set your display name, bio, and a profile photo.",
+      "photoLabel": "Profile photo",
+      "photoOptional": "Optional - helps captains recognize you.",
+      "photoUpload": "Upload",
+      "photoChange": "Change",
+      "photoRemove": "Remove",
+      "photoUploading": "Uploading photo...",
+      "photoUploaded": "Photo saved.",
+      "photoErrorType": "Pick an image file (JPG, PNG, WebP, or HEIC).",
+      "photoErrorUpload": "Upload failed. Try again or skip.",
       "fullName": "Full name",
       "fullNamePlaceholder": "Alex Ionescu",
       "usernameLabel": "Username",
@@ -741,7 +750,7 @@
       "toastSeedFailed": "Seed failed",
       "toastResetOk": "Reset complete",
       "toastResetFailed": "Reset failed",
-      "notWired": "Action not wired yet - run scripts/seed-demo.ts from CLI."
+      "notWired": "Seed unavailable. Set ALLOW_DEMO_SEED=true and DEMO_SEED_CONFIRM=showup2move."
     },
     "rubricLegend": {
       "live": "Live",

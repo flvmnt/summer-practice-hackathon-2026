@@ -162,8 +162,17 @@
         "successBody": "Sporturile, poza de profil și locația sunt următorii pași de onboarding.",
         "continue": "Alege sporturi"
       },
-      "stepLabel": "Pasul 1 din 4",
-      "subtitle": "Setează numele afișat și o scurtă bio.",
+      "stepLabel": "Pasul 1 din 3",
+      "subtitle": "Adaugă numele afișat, un bio scurt și o poză de profil.",
+      "photoLabel": "Poză de profil",
+      "photoOptional": "Opțional - ajută căpitanii să te recunoască.",
+      "photoUpload": "Încarcă",
+      "photoChange": "Schimbă",
+      "photoRemove": "Șterge",
+      "photoUploading": "Se încarcă poza...",
+      "photoUploaded": "Poza salvată.",
+      "photoErrorType": "Alege un fișier imagine (JPG, PNG, WebP sau HEIC).",
+      "photoErrorUpload": "Încărcarea a eșuat. Încearcă din nou sau sari peste.",
       "fullName": "Nume complet",
       "fullNamePlaceholder": "Alex Ionescu",
       "usernameLabel": "Nume utilizator",
@@ -741,7 +750,7 @@
       "toastSeedFailed": "Populare eșuată",
       "toastResetOk": "Reset făcut",
       "toastResetFailed": "Reset eșuat",
-      "notWired": "Acțiunea nu este conectată încă - rulează scripts/seed-demo.ts din CLI."
+      "notWired": "Seed indisponibil. Setează ALLOW_DEMO_SEED=true și DEMO_SEED_CONFIRM=showup2move."
     },
     "rubricLegend": {
       "live": "Live",

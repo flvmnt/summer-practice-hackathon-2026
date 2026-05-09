@@ -8,7 +8,12 @@ const VISION_MODEL =
 
 export type ChatMessage = {
   role: "system" | "user" | "assistant";
-  content: string;
+  content:
+    | string
+    | Array<
+        | { type: "text"; text: string }
+        | { type: "image_url"; image_url: { url: string } }
+      >;
 };
 
 export type ChatJsonSchema<T> = {

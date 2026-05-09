@@ -1,9 +1,9 @@
 "use client";
 
+import { MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import { Glyph } from "@/components/ui/Glyph";
 import { Input } from "@/components/ui/Input";
 import { Slider } from "@/components/ui/Slider";
 import { WizardMobileHeader } from "@/components/onboarding/WizardMobileHeader";
@@ -94,7 +94,9 @@ export function LocationForm({
 
   useEffect(() => {
     if (state.saved) {
-      router.push(`/${locale}/onboarding/photo`);
+      // Onboarding is now 3 steps - photo capture moved into step 1, so the
+      // last step (location) lands directly on /today.
+      router.push(`/${locale}/today`);
     }
   }, [state.saved, locale, router]);
 
@@ -148,7 +150,7 @@ export function LocationForm({
     <div className="flex w-full flex-col">
       <WizardMobileHeader
         step={3}
-        total={4}
+        total={3}
         title="Where can you play?"
         subtitle="City and how far you'll travel"
       />
@@ -184,7 +186,7 @@ export function LocationForm({
               className="gap-2 self-start"
               style={{ minHeight: 48, color: "var(--accent-deep)" }}
             >
-              <Glyph.pin size={16} />
+              <MapPin size={16} />
               {geoStatus === "loading" ? "Locating…" : "Use my location"}
             </Button>
           </div>
@@ -321,7 +323,7 @@ export function LocationForm({
             fontSize: 12,
           }}
         >
-          <Glyph.pin size={14} />
+          <MapPin size={14} />
           <span>
             Within <span style={{ fontFamily: "var(--f-mono)", color: "var(--ink)" }}>{distanceLabel} km</span> of {cityForChip}
           </span>
@@ -341,7 +343,6 @@ export function LocationForm({
           </p>
         ) : null}
 
-        <div className="h-24" aria-hidden="true" />
       </form>
 
       <WizardStickyActionBar

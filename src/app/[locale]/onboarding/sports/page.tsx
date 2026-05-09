@@ -46,7 +46,7 @@ export default async function SportsOnboardingPage({
 
   return (
     <main
-      className="mx-auto flex min-h-screen w-full max-w-xl flex-col px-5 pt-6"
+      className="mx-auto flex min-h-screen w-full max-w-xl flex-col px-5 pt-6 pb-32"
       style={{ background: "var(--bg)", color: "var(--ink)" }}
     >
       <SportsForm

@@ -268,6 +268,13 @@ export const Glyph = {
       "M5 18 c2 -5 5 -8 12 -10",
     ],
   }),
+  tableTennis: make({
+    paths: [
+      "M10 13 a5 5 0 1 0 0 -10 a5 5 0 1 0 0 10",
+      "M8 13 L8 22 H11 L11 13",
+      "M19 17 a1.5 1.5 0 1 0 0 -3 a1.5 1.5 0 1 0 0 3",
+    ],
+  }),
 } satisfies Record<string, FC<GlyphProps>>;
 
 export type GlyphName = keyof typeof Glyph;

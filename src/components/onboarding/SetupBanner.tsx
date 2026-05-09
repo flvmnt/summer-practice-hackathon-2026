@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Glyph } from "@/components/ui/Glyph";
 
 type Props = {
   complete: number;
