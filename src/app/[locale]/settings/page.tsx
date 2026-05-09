@@ -15,6 +15,7 @@ import { getDb } from "@/db";
 import { users } from "@/db/schema";
 import type { AppLocale } from "@/i18n/routing";
 import { getOnboardingUserState } from "@/lib/onboarding-state";
+import { unreadCount } from "@/lib/notifications";
 import type { SportKey } from "@/lib/sports";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +25,6 @@ const SECTION_IDS: ReadonlyArray<SettingsSectionId> = [
   "sports",
   "location",
   "privacy",
-  "reminders",
   "integrations",
 ];
 
@@ -32,13 +32,12 @@ const COPY = {
   en: {
     eyebrow: "Settings",
     title: "Settings",
-    subtitle: "Profile, sports, location, privacy, reminders.",
+    subtitle: "Profile, sports, location, privacy, integrations.",
     tabs: {
       profile: "Profile",
       sports: "Sports",
       location: "Location",
       privacy: "Privacy",
-      reminders: "Reminders",
       integrations: "Integrations",
     },
     profile: {
@@ -56,12 +55,6 @@ const COPY = {
     privacy: {
       title: "Privacy",
       body: "Decide what others can see.",
-    },
-    reminders: {
-      title: "Reminders",
-      body: "We'll nudge you about prompts and events.",
-      email: "Email reminders coming soon",
-      emailBody: "We'll surface this once Resend is wired in.",
     },
     integrations: {
       title: "Integrations",
@@ -121,13 +114,12 @@ const COPY = {
   ro: {
     eyebrow: "Setări",
     title: "Setări",
-    subtitle: "Profil, sporturi, locație, confidențialitate, reminder-e.",
+    subtitle: "Profil, sporturi, locație, confidențialitate, integrări.",
     tabs: {
       profile: "Profil",
       sports: "Sporturi",
       location: "Locație",
       privacy: "Confidențialitate",
-      reminders: "Reminder-e",
       integrations: "Integrări",
     },
     profile: {
@@ -145,12 +137,6 @@ const COPY = {
     privacy: {
       title: "Confidențialitate",
       body: "Decide ce văd ceilalți.",
-    },
-    reminders: {
-      title: "Reminder-e",
-      body: "Te avertizăm despre prompt și evenimente.",
-      email: "Reminder pe email curând",
-      emailBody: "Apare odată ce Resend este conectat.",
     },
     integrations: {
       title: "Integrări",
@@ -235,11 +221,15 @@ export default async function SettingsPage({
     redirect(`/${locale}/login`);
   }
 
-  const [visibilityRow] = await getDb()
-    .select({ profileVisibility: users.profileVisibility })
-    .from(users)
-    .where(eq(users.id, user.id))
-    .limit(1);
+  const [visibilityRows, unread] = await Promise.all([
+    getDb()
+      .select({ profileVisibility: users.profileVisibility })
+      .from(users)
+      .where(eq(users.id, user.id))
+      .limit(1),
+    unreadCount(user.id),
+  ]);
+  const [visibilityRow] = visibilityRows;
 
   const isPublic = (visibilityRow?.profileVisibility ?? "public") === "public";
 
@@ -254,7 +244,6 @@ export default async function SettingsPage({
     { id: "sports", label: copy.tabs.sports },
     { id: "location", label: copy.tabs.location },
     { id: "privacy", label: copy.tabs.privacy },
-    { id: "reminders", label: copy.tabs.reminders },
     { id: "integrations", label: copy.tabs.integrations },
   ];
 
@@ -310,7 +299,7 @@ export default async function SettingsPage({
             {copy.title}
           </h1>
         </div>
-        <HeaderBell unreadCount={0} locale={locale} />
+        <HeaderBell unreadCount={unread} locale={locale} />
       </header>
 
       <SettingsTabs sections={sectionDefs} current={section} />
@@ -355,34 +344,6 @@ export default async function SettingsPage({
                 privacy: copy.privacy,
               }}
             />
-          ) : null}
-
-          {section === "reminders" ? (
-            <SettingsSection
-              title={copy.reminders.title}
-              description={copy.reminders.body}
-            >
-              <div
-                className="flex items-start gap-3 rounded-md p-3"
-                style={{
-                  background: "var(--surface-2)",
-                  border: "1px solid var(--line)",
-                }}
-              >
-                <Glyph.bell size={16} />
-                <div className="min-w-0 flex-1">
-                  <div className="text-[13px] font-semibold">
-                    {copy.reminders.email}
-                  </div>
-                  <div
-                    className="mt-0.5 text-[12px]"
-                    style={{ color: "var(--ink-muted)", lineHeight: 1.5 }}
-                  >
-                    {copy.reminders.emailBody}
-                  </div>
-                </div>
-              </div>
-            </SettingsSection>
           ) : null}
 
           {section === "integrations" ? (

@@ -9,7 +9,6 @@ export type SettingsSectionId =
   | "sports"
   | "location"
   | "privacy"
-  | "reminders"
   | "integrations";
 
 export type SettingsTabsProps = {
