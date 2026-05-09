@@ -21,7 +21,7 @@ export default async function LoginPage({
 
   return (
     <main
-      className="mx-auto flex min-h-screen w-full flex-col items-stretch px-4 py-8 sm:max-w-md sm:px-6 sm:py-12"
+      className="mx-auto flex min-h-screen w-full flex-col items-stretch px-3 py-6 sm:max-w-2xl sm:px-6 sm:py-12"
       style={{ background: "var(--bg)" }}
     >
       <Link

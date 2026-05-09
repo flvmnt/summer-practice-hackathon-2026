@@ -36,7 +36,7 @@ function Wordmark({ size = 28 }: { size?: number }) {
 
 export async function Hero({ locale, demoEnabled }: Props) {
   const t = await getTranslations("landing");
-  const demoHref = demoEnabled ? `/${locale}/demo` : `/${locale}/today`;
+  const demoHref = demoEnabled ? `/${locale}/demo/scripted` : `/${locale}/signup`;
 
   return (
     <section

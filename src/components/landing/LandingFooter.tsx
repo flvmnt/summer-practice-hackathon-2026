@@ -58,7 +58,7 @@ export function LandingFooter({ locale, demoEnabled, githubUrl }: Props) {
           <div className="flex flex-wrap items-center" style={{ gap: 18 }}>
             {demoEnabled ? (
               <Link
-                href={`/${locale}/demo`}
+                href={`/${locale}/demo/scripted`}
                 style={{
                   fontSize: 13,
                   color: "var(--ink)",
