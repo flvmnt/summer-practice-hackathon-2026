@@ -404,3 +404,9 @@ export const authRateLimits = pgTable(
     index("auth_rate_limits_window_idx").on(table.windowStartedAt),
   ],
 );
+
+export const aiCache = pgTable("ai_cache", {
+  inputHash: text("input_hash").primaryKey(),
+  outputJson: jsonb("output_json").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
