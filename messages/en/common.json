@@ -314,7 +314,8 @@
       "aiUnavailable": "AI photo analysis needs a configured Groq vision model. No fallback guesses were added.",
       "skip": "Skip",
       "finish": "Finish",
-      "back": "Back"
+      "back": "Back",
+      "previewAlt": "Profile preview"
     },
     "wizard": {
       "stepOfTotal": "Step {step} of {total}",

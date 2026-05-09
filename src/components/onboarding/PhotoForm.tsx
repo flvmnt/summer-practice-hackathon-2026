@@ -21,19 +21,6 @@ const SPORT_GLYPHS: Partial<Record<SportKey, keyof typeof Glyph>> = {
   running: "running",
 };
 
-const SPORT_LABELS: Record<SportKey, string> = {
-  football: "Football",
-  basketball: "Basketball",
-  tennis: "Tennis",
-  volleyball: "Volleyball",
-  badminton: "Badminton",
-  running: "Running",
-  cycling: "Cycling",
-  yoga: "Yoga",
-  hiking: "Hiking",
-  table_tennis: "Table tennis",
-};
-
 type Suggestion = {
   sport: SportKey;
   confidence: number;
@@ -59,6 +46,7 @@ export type PhotoFormProps = {
 export function PhotoForm({ locale, initialPhotoUrl }: PhotoFormProps) {
   const router = useRouter();
   const t = useTranslations("onboarding.photo");
+  const tSports = useTranslations("onboarding.sports.form.sports");
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialPhotoUrl);
   const [pickedFile, setPickedFile] = useState<File | null>(null);
@@ -335,7 +323,7 @@ export function PhotoForm({ locale, initialPhotoUrl }: PhotoFormProps) {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={previewUrl}
-                    alt="Profile preview"
+                    alt={t("previewAlt")}
                     style={{
                       width: "100%",
                       height: "100%",
@@ -511,7 +499,7 @@ export function PhotoForm({ locale, initialPhotoUrl }: PhotoFormProps) {
                               }}
                             >
                               <SportGlyph size={16} />
-                              <span>{SPORT_LABELS[suggestion.sport]}</span>
+                              <span>{tSports(suggestion.sport)}</span>
                               {isPicked ? <Glyph.check size={12} /> : null}
                             </button>
                             <span

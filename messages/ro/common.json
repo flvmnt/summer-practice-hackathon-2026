@@ -314,7 +314,8 @@
       "aiUnavailable": "Analiza AI a pozei cere un model Groq vision configurat. Nu am adăugat sugestii fallback.",
       "skip": "Sari peste",
       "finish": "Finalizează",
-      "back": "Înapoi"
+      "back": "Înapoi",
+      "previewAlt": "Previzualizare profil"
     },
     "wizard": {
       "stepOfTotal": "Pasul {step} din {total}",
