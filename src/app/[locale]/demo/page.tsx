@@ -83,11 +83,26 @@ export default async function JudgeModePage({
   const buildSha =
     process.env.NEXT_PUBLIC_BUILD_SHA ?? health.commit ?? "dev";
 
-  // Localized category labels keyed by stable RubricCategoryId. Falls back to
-  // the canonical English label from scoring-proofs.ts if a key is ever missing.
+  // Localized labels keyed by stable IDs from scoring-proofs.ts. Falls back to
+  // the canonical English text if a key is ever missing in the locale file.
   const categoryLabel = (id: RubricCategoryId, fallback: string): string => {
     try {
-      return t(`categories.${id}`);
+      return t(`rubric.categories.${id}`);
+    } catch {
+      return fallback;
+    }
+  };
+  const rowLabel = (id: string, fallback: string): string => {
+    try {
+      return t(`rubric.rows.${id}.label`);
+    } catch {
+      return fallback;
+    }
+  };
+  const rowNote = (id: string, fallback: string | undefined): string | undefined => {
+    if (!fallback) return undefined;
+    try {
+      return t(`rubric.rows.${id}.note`);
     } catch {
       return fallback;
     }
@@ -181,6 +196,8 @@ export default async function JudgeModePage({
             label={categoryLabel(category.id, category.label)}
             rows={category.rows.map((row) => ({
               ...row,
+              label: rowLabel(row.id, row.label),
+              note: rowNote(row.id, row.note),
               evidence: localizeEvidence(row.evidence, locale),
             }))}
             statusLabels={statusLabels}
