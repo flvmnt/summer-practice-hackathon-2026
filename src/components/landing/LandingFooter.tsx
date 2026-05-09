@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LocaleFlagToggle } from "@/components/layout/LocaleFlagToggle";
 import type { AppLocale } from "@/i18n/routing";
 
 type Props = {
@@ -26,8 +27,6 @@ function FooterWordmark() {
 }
 
 export function LandingFooter({ locale, demoEnabled, githubUrl }: Props) {
-  const otherLocale: AppLocale = locale === "ro" ? "en" : "ro";
-
   return (
     <footer
       className="w-full"
@@ -112,34 +111,8 @@ export function LandingFooter({ locale, demoEnabled, githubUrl }: Props) {
             >
               Privacy (soon)
             </span>
-            <Link
-              href={`/${otherLocale}`}
-              hrefLang={otherLocale}
-              aria-label={
-                otherLocale === "en"
-                  ? "Switch to English"
-                  : "Schimbă în română"
-              }
-              title={
-                otherLocale === "en"
-                  ? "Switch to English"
-                  : "Schimbă în română"
-              }
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: 36,
-                height: 36,
-                borderRadius: "var(--r-pill)",
-                background: "var(--surface)",
-                boxShadow: "inset 0 0 0 1px var(--line)",
-                fontSize: 18,
-                lineHeight: 1,
-              }}
-            >
-              <span aria-hidden="true">{locale === "ro" ? "🇷🇴" : "🇬🇧"}</span>
-            </Link>
+            <LocaleFlagToggle locale={locale} />
+
           </div>
         </div>
         <div
